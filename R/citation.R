@@ -1,12 +1,3 @@
-
-
-# citation network
-
-
-library(dplyr)
-library(igraph)
-
-
 #'
 #' @title Citation Network Construction
 #' @name constructCitationNetwork

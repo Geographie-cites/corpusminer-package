@@ -22,3 +22,4 @@ Depends:
 VignetteBuilder: knitr
 LazyData: yes
 License: AGPL-3
+Imports: dplyr, igraph, rmongodb

@@ -1,14 +1,4 @@
 
-## semantic network
-
-library(rmongodb)
-library(igraph)
-library(dplyr)
-
-
-
-
-
 #'
 #' @title Semantic Network construction
 #' @name constructSemanticNetwork
