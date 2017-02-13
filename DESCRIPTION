@@ -7,9 +7,6 @@ Authors@R: c(
     person( "Hadrien", "Commenges", role = c("aut", "cre"), email = "hcommenges@parisgeo.cnrs.fr"), 
     person( "Pierre-Olivier", "Chasset", role = "aut" ), 
     person( "Clementine", "Cottineau", email = "clementine.cottineau@iscpif.fr", role = "aut"), 
-    person( "Robin", "Cura", role = "aut"), 
-    person( "Romain", "Reuillon", email = "romain.reuillon@iscpif.fr", role = "aut"), 
-    person( "Rey", role = "aut"), 
     person( "Juste", "Raimbault", email = "juste.raimbault@polytechnique.edu", role = "aut"), 
     
     person( "Romain", "Francois", email = "romain@thinkr.fr", role = "ctr"),
