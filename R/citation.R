@@ -6,6 +6,10 @@
 #' @param nodefile
 #' @param outputfile
 #' 
+#' @importFrom utils read.csv
+#' @importFrom dplyr filter as.tbl
+#' @importFrom igraph graph.data.frame V
+#' @export
 constructCitationNetwork <- function(edgefile,nodefile,outputfile){
   
   edges <- read.csv(edgefile,header=FALSE,sep="\t",colClasses=c("character","character"))

@@ -8,18 +8,21 @@ Authors@R: c(
     person( "Pierre-Olivier", "Chasset", role = "aut" ), 
     person( "Clementine", "Cottineau", email = "clementine.cottineau@iscpif.fr", role = "aut"), 
     person( "Juste", "Raimbault", email = "juste.raimbault@polytechnique.edu", role = "aut"), 
-    
     person( "Romain", "Francois", email = "romain@thinkr.fr", role = "ctr"),
     person( "Vincent", "Guyader", email = "vincent@thinkr.fr", role = "ctr"), 
     person( "Diane", "Beldame", email = "diane@thinkr.fr", role = "ctr"), 
-    
     person( "UMR Géographie-cités", role = "cph")
     )
 URL: https://github.com/Geographie-cites/corpusminer-package
 BugReports: https://github.com/Geographie-cites/corpusminer-package/issues
-Depends: 
+Depends:
     R (>= 3.3.1)
 VignetteBuilder: knitr
 LazyData: yes
 License: AGPL-3
-Imports: dplyr, igraph, rmongodb
+Imports:
+    dplyr,
+    igraph,
+    utils,
+    methods
+RoxygenNote: 5.0.1
