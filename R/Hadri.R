@@ -67,7 +67,7 @@ VisuComm <- function(g, # igraph network
 #' @param textsizemin 
 #' @param textsizemax 
 #'
-#' @importFrom ggplot2 theme_bw theme ggplot geom_line geom_text scale_colour_manual scale_size_continuous coord_polar
+#' @importFrom ggplot2 theme_bw theme ggplot geom_line geom_text scale_colour_manual scale_size_continuous coord_polar element_rect  element_blank
 #' @importFrom igraph get.data.frame
 #' @importFrom magrittr %>%
 #' @importFrom dplyr left_join group_by mutate
