@@ -1,0 +1,26 @@
+Package: corpusminer
+Type: Package
+Version: 0.0.9000
+Title: Corpus Miner
+Description: Mining scientific journals corpus: semantics, networks and maps
+Authors@R: c(
+    person( "Hadrien", "Commenges", role = c("aut", "cre"), email = "hcommenges@parisgeo.cnrs.fr"), 
+    person( "Pierre-Olivier", "Chasset", role = "aut" ), 
+    person( "Clementine", "Cottineau", email = "clementine.cottineau@iscpif.fr", role = "aut"), 
+    person( "Robin", "Cura", role = "aut"), 
+    person( "Romain", "Reuillon", email = "romain.reuillon@iscpif.fr", role = "aut"), 
+    person( "Rey", role = "aut"), 
+    
+    person( "Romain", "Francois", email = "romain@thinkr.fr", role = "ctr"),
+    person( "Vincent", "Guyader", email = "vincent@thinkr.fr", role = "ctr"), 
+    person( "Diane", "Beldame", email = "diane@thinkr.fr", role = "ctr"), 
+    
+    person( "UMR Géographie-cités", role = "cph")
+    )
+URL: https://github.com/Geographie-cites/corpusminer-package
+BugReports: https://github.com/Geographie-cites/corpusminer-package/issues
+Depends: 
+    R (>= 3.3.1)
+VignetteBuilder: knitr
+LazyData: yes
+License: AGPL-3
