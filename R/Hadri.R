@@ -8,7 +8,23 @@
 #####################################
 
 
-# Description: plot the communities (result of any community detection algo, here Louvain method)
+#' plot the communities 
+#' 
+#' plot the communities. result of any community detection algo, here Louvain method
+#'
+#' @param g 
+#' @param comm 
+#' @param vertcol 
+#' @param vertsize 
+#' @param vfacsize 
+#' @param edgesize 
+#' @param efacsize 
+#' @param textsize 
+#' 
+#' @importFrom igraph layout_in_circle
+#' @importFrom graphics plot
+#' 
+#' @export
 VisuComm <- function(g, # igraph network
                      comm, # scalar, character, name of the community
                      vertcol, # scalar, character, vertex color 
@@ -41,8 +57,21 @@ VisuComm <- function(g, # igraph network
 }
 
 
-
-# Description: plot the semantic field of a selected keyword (inverse proportional distance to pseudo-chi2 distance)
+#' plot the semantic field of a selected keyword
+#'
+#' plot the semantic field of a selected keyword (inverse proportional distance to pseudo-chi2 distance)
+#' 
+#' @param g 
+#' @param kw 
+#' @param chidist 
+#' @param textsizemin 
+#' @param textsizemax 
+#'
+#' @importFrom ggplot2 theme_bw theme ggplot geom_line geom_text scale_colour_manual scale_size_continuous coord_polar
+#' @importFrom igraph get.data.frame
+#' @importFrom magrittr %>%
+#' @importFrom dplyr left_join group_by mutate
+#' @export
 VisuSem <- function(g, # igraph network
                     kw, # scalar, character, name of the keyword
 		    chidist, # scalar, character, name of the field storing pseudo-chi2 distance
@@ -102,7 +131,12 @@ VisuSem <- function(g, # igraph network
 #####################################
 
 
-# Description: sample x values for polar coordinates for the semantic field visualization (VisuSem function)
+#' sample x values for polar coordinates for the semantic field visualization (VisuSem function)
+#'
+#' @param df 
+#'
+#' @return
+#' @noRd
 GetXvalues <- function(df){
   initVal <- sample(x = 0:360, size = 1, replace = FALSE)
   tempRange <- seq(initVal, initVal + 360, 360/unique(df$NPTS))
@@ -111,9 +145,14 @@ GetXvalues <- function(df){
   return(df)
 }
 
-
-
-# Description: create an ego subgraph for the semantic field visualization (VisuSem function)
+#' create an ego subgraph for the semantic field visualization (VisuSem function)
+#'
+#' @param g 
+#' @param kw 
+#'
+#' @return
+#' @noRd
+#' @importFrom igraph get.edge.ids subgraph.edges
 SemanticField <- function(g,  # igraph network
 			  kw) # scalar, character, selected keyword
 {  
@@ -136,9 +175,16 @@ SemanticField <- function(g,  # igraph network
 # Fonctions de pré-production
 #####################################
 
-
-
-# Description: function to be lapplied to a list of vectors (each vector is the set of keywords for a given article). Clean the keywords list (no punctuation, no digits, trim white spaces)
+#' Clean a corpus
+#' 
+#' function to be lapplied to a list of vectors (each vector is the set of keywords for a given article). 
+#' Clean the keywords list (no punctuation, no digits, trim white spaces)
+#'
+#' @param mystr 
+#'
+#' @return
+#' @noRd
+#' @importFrom stringr str_to_lower str_trim
 CleanCorpus <- function(mystr){
   mystr <- str_to_lower(mystr)
   mystr <- gsub("[[:punct:]]", "", mystr)
@@ -148,8 +194,18 @@ CleanCorpus <- function(mystr){
 }
 
 
-
-# Description: function to be lapplied to a list of vectors (each vector is the set of keywords for a given article). Convert a list of keywords into a list of edges for creating a semantic network. Called inside MakeNetwork function (peut-être pas une bonne idée ??)
+#' Make edges list
+#'
+#' function to be lapplied to a list of vectors (each vector is the set of keywords for a given article). 
+#' Convert a list of keywords into a list of edges for creating a semantic network. 
+#' Called inside MakeNetwork function (peut-être pas une bonne idée ??)
+#'
+#' @param x 
+#'
+#' @return
+#' @noRd
+#' @importFrom magrittr %>%
+#' @importFrom dplyr filter mutate
 MakeEdgesList <- function(x) # vector, character, keywords list for one article
 {
   if (length(x) == 1){
@@ -165,8 +221,17 @@ MakeEdgesList <- function(x) # vector, character, keywords list for one article
   }
 } 
 
+# Description: 
 
-# Description: create an igraph network from the list of edges created by function MakeEdgesList, enrich the network with keywords' degree and the corresponding number of articles
+#' make network
+#'
+#' create an igraph network from the list of edges created by function MakeEdgesList, enrich the network with keywords degree and the corresponding number of articles
+#' @param colist 
+#'
+#' @noRd
+#' 
+#' @importFrom reshape2 colsplit
+#' @importFrom igraph graph_from_data_frame V degree
 MakeNetwork <- function(colist) # list of vectors (each vector is the set of keywords for a given article)
 {
   # get edges
@@ -187,11 +252,3 @@ MakeNetwork <- function(colist) # list of vectors (each vector is the set of key
   
   return(netWork)
 }
-
-
-
-
-
-
-
-

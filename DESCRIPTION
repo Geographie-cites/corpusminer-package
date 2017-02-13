@@ -24,5 +24,9 @@ Imports:
     dplyr,
     igraph,
     utils,
-    methods
+    methods,
+    ggplot2,
+    magrittr,
+    stringr,
+    reshape2
 RoxygenNote: 5.0.1
