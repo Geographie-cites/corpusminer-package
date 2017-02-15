@@ -12,43 +12,47 @@
 #' 
 #' plot the communities. result of any community detection algo, here Louvain method
 #'
-#' @param g 
-#' @param comm 
-#' @param vertcol 
-#' @param vertsize 
-#' @param vfacsize 
-#' @param edgesize 
-#' @param efacsize 
-#' @param textsize 
+#' @param g igraph network
+#' @param comm scalar, character, name of the community
+#' @param vertcol scalar, character, vertex color
+#' @param vertsize scalar, numeric, vertex size
+#' @param vfacsize scalar, numeric, expansion factor for vertex size
+#' @param edgesize scalar, numeric, edge width
+#' @param efacsize scalar, numeric, expansion factor for edge width
+#' @param textsize scalar, numeric, font size
+#' @param bg background, see \code{\link[graphics]{par}}
+#' @param edge.color edge color
+#' @param vertex.frame.color vertex frame color
+#' @param vertex.label.color vertex label color
 #' 
 #' @importFrom igraph layout_in_circle
 #' @importFrom graphics plot
 #' 
 #' @export
-VisuComm <- function(g, # igraph network
-                     comm, # scalar, character, name of the community
-                     vertcol, # scalar, character, vertex color 
-                     vertsize, # scalar, numeric, vertex size
-                     vfacsize, # scalar, numeric, expansion factor for vertex size
-                     edgesize, # scalar, numeric, edge width
-                     efacsize, # scalar, numeric, expansion factor for edge width
-                     textsize) # scalar, numeric, font size
-{  
-  par(bg = "#4e5d6c")
+VisuComm <- function(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize, 
+                     bg = "#4e5d6c", edge.color = "#df691a", vertex.frame.color = "#df691a", 
+                     vertex.label.color = "#ebebeb"){  
+  
+  assert_that(
+    is.string(comm), is.string(vertcol), is.number(vertsize), is.number(vfacsize), 
+    is.number(edgesize), is.number(efacsize), is.number(textsize)
+  )
+  
+  par(bg = bg)
   # circle layout with sampled coordinates
   oriCoords <- layout_in_circle(g)
   corrCoords <- oriCoords[sample(seq(1, nrow(oriCoords), 1), size = nrow(oriCoords), replace = FALSE), ]
   
   plot(g,
-       edge.color = "#df691a",
+       edge.color = edge.color,
        edge.width = efacsize * edgesize,
        edge.curved = F,
        edge.arrow.mode = "-",
        edge.arrow.size = 0.01,
        vertex.color = vertcol,
-       vertex.frame.color = "#df691a",
+       vertex.frame.color = vertex.frame.color,
        vertex.label = V(g)$name,
-       vertex.label.color = "#ebebeb",
+       vertex.label.color = vertex.label.color,
        vertex.label.family = "sans-serif",
        vertex.label.cex = textsize / 10,
        vertex.size = vfacsize * vertsize,

@@ -4,24 +4,34 @@
 \alias{VisuComm}
 \title{plot the communities}
 \usage{
-VisuComm(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize)
+VisuComm(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize,
+  bg = "#4e5d6c", edge.color = "#df691a", vertex.frame.color = "#df691a",
+  vertex.label.color = "#ebebeb")
 }
 \arguments{
-\item{g}{}
+\item{g}{igraph network}
 
-\item{comm}{}
+\item{comm}{scalar, character, name of the community}
 
-\item{vertcol}{}
+\item{vertcol}{scalar, character, vertex color}
 
-\item{vertsize}{}
+\item{vertsize}{scalar, numeric, vertex size}
 
-\item{vfacsize}{}
+\item{vfacsize}{scalar, numeric, expansion factor for vertex size}
 
-\item{edgesize}{}
+\item{edgesize}{scalar, numeric, edge width}
 
-\item{efacsize}{}
+\item{efacsize}{scalar, numeric, expansion factor for edge width}
 
-\item{textsize}{}
+\item{textsize}{scalar, numeric, font size}
+
+\item{bg}{background, see \code{\link[graphics]{par}}}
+
+\item{edge.color}{edge color}
+
+\item{vertex.frame.color}{vertex frame color}
+
+\item{vertex.label.color}{vertex label color}
 }
 \description{
 plot the communities. result of any community detection algo, here Louvain method

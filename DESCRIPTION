@@ -28,5 +28,6 @@ Imports:
     ggplot2,
     magrittr,
     stringr,
-    reshape2
+    reshape2,
+    assertthat
 RoxygenNote: 5.0.1
