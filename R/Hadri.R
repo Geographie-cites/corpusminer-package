@@ -13,49 +13,81 @@
 #' plot the communities. result of any community detection algo, here Louvain method
 #'
 #' @param g igraph network
-#' @param comm scalar, character, name of the community
-#' @param vertcol scalar, character, vertex color
-#' @param vertsize scalar, numeric, vertex size
-#' @param vfacsize scalar, numeric, expansion factor for vertex size
-#' @param edgesize scalar, numeric, edge width
-#' @param efacsize scalar, numeric, expansion factor for edge width
-#' @param textsize scalar, numeric, font size
-#' @param bg background, see \code{\link[graphics]{par}}
-#' @param edge.color edge color
-#' @param vertex.frame.color vertex frame color
-#' @param vertex.label.color vertex label color
+#' @param vsize.prop One of "uni", "poi" or "deg" to control on what nodes are proportional
+#' @param vsize.fac Expansion factor for vertex size
+#' @param vsize.default default value for vertex size, e.g. 1 for direct plot or 30 for svg rendering
+#' @param esize.prop One of "nbl" or "rel" to control on what edges are proportional 
+#' @param esize.fac Expansion factor for edge sizes
+#' @param vertex.label.cex 
+#' @param edge.color 
+#' @param edge.curved 
+#' @param edge.arrow.mode 
+#' @param edge.arrow.size 
+#' @param vertex.color 
+#' @param vertex.frame.color 
+#' @param vertex.label.color 
+#' @param vertex.label.family 
 #' 
 #' @importFrom igraph layout_in_circle
 #' @importFrom graphics plot
 #' @importFrom dplyr sample_frac
 #' @export
-VisuComm <- function(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize, 
-                     bg = "#4e5d6c", edge.color = "#df691a", vertex.frame.color = "#df691a", 
-                     vertex.label.color = "#ebebeb"){  
+#' 
+VisuComm <- function(g, 
+                     vsize.prop, vsize.fac = .5, vsize.default = 1, 
+                     esize.prop, esize.fac = .5,  
+                     vertex.label.cex,
+                     edge.color = "#df691a", 
+                     edge.curved = FALSE, 
+                     edge.arrow.mode = "-", 
+                     edge.arrow.size = 0.01, 
+                     vertex.color = "#2b3e50", 
+                     vertex.frame.color = "#df691a", 
+                     vertex.label.color = "#ebebeb", 
+                     vertex.label.family = "sans-serif"
+                     ){
   
-  assert_that(
-    is.string(comm), is.string(vertcol), is.number(vertsize), is.number(vfacsize), 
-    is.number(edgesize), is.number(efacsize), is.number(textsize)
-  )
-  
-  # circle layout with sampled coordinates
+  # sample layout
   corrCoords <- sample_frac( layout_in_circle(g), 1 )
   
+  # calculate edgesize and vertsize depending on 
+  edges <- E(g)
+  vertices <- V(g)
+  vertsize <- vsize.default
+  if(vsize.prop == "uni" && esize.prop == "rel"){
+    edgesize <- edges$relresid
+  } else if(vsize.prop == "uni" && esize.prop == "nbl"){
+    edgesize <- edges$obsfreq
+  } else if(vsize.prop == "poi" && esize.prop == "rel"){
+    vertsize <- vertices$nbauth
+    edgesize <- edges$relresid
+  } else if(vsize.prop == "poi" && esize.prop == "nbl"){
+    vertsize <- vertices$nbauth
+    edgesize <- edges$obsfreq
+  } else if(vsize.prop == "deg" && esize.prop == "rel"){
+    vertsize <- vertices$degbeg
+    edgesize <- edges$relresid
+  } else if(vsize.prop == "deg" && esize.prop == "nbl"){
+    vertsize <- vertices$degbeg
+    edgesize <- edges$obsfreq
+  }
+  
   par(bg = bg)
+  
   plot(g,
-       edge.color = edge.color,
-       edge.width = efacsize * edgesize,
-       edge.curved = F,
-       edge.arrow.mode = "-",
-       edge.arrow.size = 0.01,
-       vertex.color = vertcol,
-       vertex.frame.color = vertex.frame.color,
-       vertex.label = V(g)$name,
-       vertex.label.color = vertex.label.color,
-       vertex.label.family = "sans-serif",
-       vertex.label.cex = textsize / 10,
-       vertex.size = vfacsize * vertsize,
-       layout = corrCoords
+       edge.color          = edge.color,
+       edge.width          = edgesize * esize.fac,
+       edge.curved         = edge.curved,
+       edge.arrow.mode     = edge.arrow.mode,
+       edge.arrow.size     = edge.arrow.size,
+       vertex.color        = vertex.color,
+       vertex.frame.color  = vertex.frame.color,
+       vertex.label        = V(g)$name,
+       vertex.label.color  = vertex.label.color,
+       vertex.label.family = vertex.label.family,
+       vertex.label.cex    = vertex.label.cex,
+       vertex.size         = vertsize * vsize.fac,
+       layout              = corrCoords
   )
 }
 
@@ -286,43 +318,4 @@ info_table_edges <- function(g){
     rename( KEYWORD1 = from, KEYWORD2 = to, OBSERVED_WEIGHT = obsfreq, EXPECTED_WEIGHT = theofreq, RESIDUALS = relresid ) %>%
     mutate_each( funs(round(., 2) ), EXPECTED_WEIGHT, RESIDUALS )
 }
-
-#' Get vertsize and edgesize
-#'
-#' @param vsizecom 
-#' @param esizecom 
-#' @param edges 
-#' @param vertices 
-#' @param default_vertsize default value for \code{vertsize}
-#'
-#' @return a list with items \code{vertsize} and \code{edgesize}
-#' @export
-#' @importFrom igraph E V
-#'
-#' @examples
-plotcomm_sizes <- function( vsizecom, esizecom, edges, vertices, default_vertsize = 1 ){
-  edges <- E(data)
-  vertices <- V(data)
-  
-  vertsize <- default_vertsize
-  if(vsizecom == "uni" && esizecom == "rel"){
-    edgesize <- edges$relresid
-  } else if(vsizecom == "uni" && esizecom == "nbl"){
-    edgesize <- edges$obsfreq
-  } else if(vsizecom == "poi" && esizecom == "rel"){
-    vertsize <- vertices$nbauth
-    edgesize <- edges$relresid
-  } else if(vsizecom == "poi" && esizecom == "nbl"){
-    vertsize <- vertices$nbauth
-    edgesize <- edges$obsfreq
-  } else if(vsizecom == "deg" && esizecom == "rel"){
-    vertsize <- vertices$degbeg
-    edgesize <- edges$relresid
-  } else if(vsizecom == "deg" && esizecom == "nbl"){
-    vertsize <- vertices$degbeg
-    edgesize <- edges$obsfreq
-  }
-  list( vertsize = vertsize, edgesize = edgesize )
-}
-
 

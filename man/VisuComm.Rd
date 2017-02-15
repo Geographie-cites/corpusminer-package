@@ -4,34 +4,42 @@
 \alias{VisuComm}
 \title{plot the communities}
 \usage{
-VisuComm(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize,
-  bg = "#4e5d6c", edge.color = "#df691a", vertex.frame.color = "#df691a",
-  vertex.label.color = "#ebebeb")
+VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
+  esize.fac = 0.5, vertex.label.cex, edge.color = "#df691a",
+  edge.curved = FALSE, edge.arrow.mode = "-", edge.arrow.size = 0.01,
+  vertex.color = "#2b3e50", vertex.frame.color = "#df691a",
+  vertex.label.color = "#ebebeb", vertex.label.family = "sans-serif")
 }
 \arguments{
 \item{g}{igraph network}
 
-\item{comm}{scalar, character, name of the community}
+\item{vsize.prop}{One of "uni", "poi" or "deg" to control on what nodes are proportional}
 
-\item{vertcol}{scalar, character, vertex color}
+\item{vsize.fac}{Expansion factor for vertex size}
 
-\item{vertsize}{scalar, numeric, vertex size}
+\item{vsize.default}{default value for vertex size, e.g. 1 for direct plot or 30 for svg rendering}
 
-\item{vfacsize}{scalar, numeric, expansion factor for vertex size}
+\item{esize.prop}{One of "nbl" or "rel" to control on what edges are proportional}
 
-\item{edgesize}{scalar, numeric, edge width}
+\item{esize.fac}{Expansion factor for edge sizes}
 
-\item{efacsize}{scalar, numeric, expansion factor for edge width}
+\item{vertex.label.cex}{}
 
-\item{textsize}{scalar, numeric, font size}
+\item{edge.color}{}
 
-\item{bg}{background, see \code{\link[graphics]{par}}}
+\item{edge.curved}{}
 
-\item{edge.color}{edge color}
+\item{edge.arrow.mode}{}
 
-\item{vertex.frame.color}{vertex frame color}
+\item{edge.arrow.size}{}
 
-\item{vertex.label.color}{vertex label color}
+\item{vertex.color}{}
+
+\item{vertex.frame.color}{}
+
+\item{vertex.label.color}{}
+
+\item{vertex.label.family}{}
 }
 \description{
 plot the communities. result of any community detection algo, here Louvain method
