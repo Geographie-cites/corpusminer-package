@@ -245,3 +245,14 @@ MakeNetwork <- function(colist){
   
   return(netWork)
 }
+
+#' Describe network
+#' 
+#' Describe number of vertices and and edges
+#' @param g a network
+#' @export
+#' @importFrom igraph vcount ecount
+describe_network <- function(g){
+  sprintf("<strong>Description :</strong> The network has <strong>%d vertices</strong> (number of keywords) and <strong>%d edges</strong> (number of edges between keywords).", vcount(g), ecount(g))
+}
+
