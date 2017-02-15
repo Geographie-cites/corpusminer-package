@@ -29,5 +29,6 @@ Imports:
     magrittr,
     stringr,
     reshape2,
-    assertthat
+    assertthat,
+    tibble
 RoxygenNote: 5.0.1

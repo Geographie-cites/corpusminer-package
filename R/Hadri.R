@@ -256,3 +256,16 @@ describe_network <- function(g){
   sprintf("<strong>Description :</strong> The network has <strong>%d vertices</strong> (number of keywords) and <strong>%d edges</strong> (number of edges between keywords).", vcount(g), ecount(g))
 }
 
+
+#' create information table for nodes
+#'
+#' @param g a network
+#'
+#' @return A data frame with columns \code{KEYWORDS}, \code{NB_ARTICLES} and \code{DEGREE}
+#' @export
+#' @importFrom tibble data_frame
+#' @importFrom igraph V
+info_table_nodes <- function(g){
+  v <- V(g)
+  data_frame( KEYWORDS = v$name, NA_ARTICLES = v$nbauth, DEGREE = v$degbeg)
+}
