@@ -286,3 +286,42 @@ info_table_edges <- function(g){
     rename( KEYWORD1 = from, KEYWORD2 = to, OBSERVED_WEIGHT = obsfreq, EXPECTED_WEIGHT = theofreq, RESIDUALS = relresid ) %>%
     mutate_each( funs(round(., 2) ), EXPECTED_WEIGHT, RESIDUALS )
 }
+
+#' Get vertsize and edgesize
+#'
+#' @param vsizecom 
+#' @param esizecom 
+#' @param edges 
+#' @param vertices 
+#'
+#' @return a list with items \code{vertsize} and \code{edgesize}
+#' @export
+#'
+#' @examples
+plotcomm_sizes <- function( vsizecom, esizecom, edges, vertices ){
+  edges <- E(data)
+  vertices <- V(data)
+  
+  if(vsizecom == "uni" && esizecom == "rel"){
+    vertsize <- 1
+    edgesize <- edges$relresid
+  } else if(vsizecom == "uni" && esizecom == "nbl"){
+    vertsize <- 1
+    edgesize <- edges$obsfreq
+  } else if(vsizecom == "poi" && esizecom == "rel"){
+    vertsize <- vertices$nbauth
+    edgesize <- edges$relresid
+  } else if(vsizecom == "poi" && esizecom == "nbl"){
+    vertsize <- vertices$nbauth
+    edgesize <- edges$obsfreq
+  } else if(vsizecom == "deg" && esizecom == "rel"){
+    vertsize <- vertices$degbeg
+    edgesize <- edges$relresid
+  } else if(vsizecom == "deg" && esizecom == "nbl"){
+    vertsize <- vertices$degbeg
+    edgesize <- edges$obsfreq
+  }
+  list( vertsize = vertsize, edgesize = edgesize )
+}
+
+
