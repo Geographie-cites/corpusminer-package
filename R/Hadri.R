@@ -148,15 +148,13 @@ GetXvalues <- function(df){
 
 #' create an ego subgraph for the semantic field visualization (VisuSem function)
 #'
-#' @param g 
-#' @param kw 
+#' @param g igraph network
+#' @param kw scalar, character, selected keyword
 #'
 #' @return
 #' @noRd
-#' @importFrom igraph get.edge.ids subgraph.edges
-SemanticField <- function(g,  # igraph network
-			  kw) # scalar, character, selected keyword
-{  
+#' @importFrom igraph get.edge.ids subgraph.edges neighborhood
+SemanticField <- function(g, kw){  
   # list of neighbors
   neiNodes <- unlist(neighborhood(g, order = 1, nodes = V(g)[V(g)$name == kw], mode = "all"))
   pairedNodes <- unlist(paste(which(V(g)$name == kw), neiNodes[-1], sep = ","))
@@ -201,14 +199,13 @@ CleanCorpus <- function(mystr){
 #' Convert a list of keywords into a list of edges for creating a semantic network. 
 #' Called inside MakeNetwork function (peut-être pas une bonne idée ??)
 #'
-#' @param x 
+#' @param x vector, character, keywords list for one article
 #'
 #' @return
 #' @noRd
 #' @importFrom magrittr %>%
 #' @importFrom dplyr filter mutate
-MakeEdgesList <- function(x) # vector, character, keywords list for one article
-{
+MakeEdgesList <- function(x) {
   if (length(x) == 1){
     return(paste(x, x, sep = "_"))
   } else {
@@ -222,19 +219,17 @@ MakeEdgesList <- function(x) # vector, character, keywords list for one article
   }
 } 
 
-# Description: 
-
 #' make network
 #'
 #' create an igraph network from the list of edges created by function MakeEdgesList, enrich the network with keywords degree and the corresponding number of articles
-#' @param colist 
+#' 
+#' @param colist list of vectors (each vector is the set of keywords for a given article)
 #'
 #' @noRd
 #' 
 #' @importFrom reshape2 colsplit
 #' @importFrom igraph graph_from_data_frame V degree
-MakeNetwork <- function(colist) # list of vectors (each vector is the set of keywords for a given article)
-{
+MakeNetwork <- function(colist){
   # get edges
   edgesList <- lapply(colist, MakeEdgesList) %>% unlist()
   edgesTab <- data.frame(table(edgesList), stringsAsFactors = FALSE)
