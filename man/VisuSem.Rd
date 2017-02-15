@@ -7,15 +7,15 @@
 VisuSem(g, kw, chidist, textsizemin, textsizemax)
 }
 \arguments{
-\item{g}{}
+\item{g}{igraph network}
 
-\item{kw}{}
+\item{kw}{scalar, character, name of the keyword}
 
-\item{chidist}{}
+\item{chidist}{scalar, character, name of the field storing pseudo-chi2 distance}
 
-\item{textsizemin}{}
+\item{textsizemin}{scalar, numeric, minimum font size}
 
-\item{textsizemax}{}
+\item{textsizemax}{scalar, numeric, maximum font sizes}
 }
 \description{
 plot the semantic field of a selected keyword (inverse proportional distance to pseudo-chi2 distance)

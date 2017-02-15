@@ -28,7 +28,6 @@
 #' @importFrom igraph layout_in_circle
 #' @importFrom graphics plot
 #' @importFrom dplyr sample_frac
-#' 
 #' @export
 VisuComm <- function(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize, 
                      bg = "#4e5d6c", edge.color = "#df691a", vertex.frame.color = "#df691a", 
@@ -65,23 +64,21 @@ VisuComm <- function(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, t
 #'
 #' plot the semantic field of a selected keyword (inverse proportional distance to pseudo-chi2 distance)
 #' 
-#' @param g 
-#' @param kw 
-#' @param chidist 
-#' @param textsizemin 
-#' @param textsizemax 
+#' @param g igraph network
+#' @param kw scalar, character, name of the keyword
+#' @param chidist scalar, character, name of the field storing pseudo-chi2 distance
+#' @param textsizemin scalar, numeric, minimum font size
+#' @param textsizemax scalar, numeric, maximum font sizes
 #'
 #' @importFrom ggplot2 theme_bw theme ggplot geom_line geom_text scale_colour_manual scale_size_continuous coord_polar element_rect  element_blank
 #' @importFrom igraph get.data.frame
 #' @importFrom magrittr %>%
 #' @importFrom dplyr left_join group_by mutate
 #' @export
-VisuSem <- function(g, # igraph network
-                    kw, # scalar, character, name of the keyword
-		    chidist, # scalar, character, name of the field storing pseudo-chi2 distance
-                    textsizemin, # scalar, numeric, minimum font size
-                    textsizemax) # scalar, numeric, maximum font sizes
-{
+VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
+  
+  assert_that( is.string(kw), is.string(chidist), is.number(textsizemin), is.number(textsizemax) )
+  
   # make theme empty
   theme_empty <- theme_bw() +
     theme(plot.background = element_rect(fill = "#4e5d6c"),
