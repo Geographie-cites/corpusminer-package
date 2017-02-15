@@ -293,20 +293,21 @@ info_table_edges <- function(g){
 #' @param esizecom 
 #' @param edges 
 #' @param vertices 
+#' @param default_vertsize default value for \code{vertsize}
 #'
 #' @return a list with items \code{vertsize} and \code{edgesize}
 #' @export
+#' @importFrom igraph E V
 #'
 #' @examples
-plotcomm_sizes <- function( vsizecom, esizecom, edges, vertices ){
+plotcomm_sizes <- function( vsizecom, esizecom, edges, vertices, default_vertsize = 1 ){
   edges <- E(data)
   vertices <- V(data)
   
+  vertsize <- default_vertsize
   if(vsizecom == "uni" && esizecom == "rel"){
-    vertsize <- 1
     edgesize <- edges$relresid
   } else if(vsizecom == "uni" && esizecom == "nbl"){
-    vertsize <- 1
     edgesize <- edges$obsfreq
   } else if(vsizecom == "poi" && esizecom == "rel"){
     vertsize <- vertices$nbauth

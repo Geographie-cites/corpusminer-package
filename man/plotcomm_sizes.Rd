@@ -4,7 +4,7 @@
 \alias{plotcomm_sizes}
 \title{Get vertsize and edgesize}
 \usage{
-plotcomm_sizes(vsizecom, esizecom, edges, vertices)
+plotcomm_sizes(vsizecom, esizecom, edges, vertices, default_vertsize = 1)
 }
 \arguments{
 \item{vsizecom}{}
@@ -14,6 +14,8 @@ plotcomm_sizes(vsizecom, esizecom, edges, vertices)
 \item{edges}{}
 
 \item{vertices}{}
+
+\item{default_vertsize}{default value for \code{vertsize}}
 }
 \value{
 a list with items \code{vertsize} and \code{edgesize}
