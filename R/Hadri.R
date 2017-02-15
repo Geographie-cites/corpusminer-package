@@ -27,6 +27,7 @@
 #' 
 #' @importFrom igraph layout_in_circle
 #' @importFrom graphics plot
+#' @importFrom dplyr sample_frac
 #' 
 #' @export
 VisuComm <- function(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, textsize, 
@@ -38,11 +39,10 @@ VisuComm <- function(g, comm, vertcol, vertsize, vfacsize, edgesize, efacsize, t
     is.number(edgesize), is.number(efacsize), is.number(textsize)
   )
   
-  par(bg = bg)
   # circle layout with sampled coordinates
-  oriCoords <- layout_in_circle(g)
-  corrCoords <- oriCoords[sample(seq(1, nrow(oriCoords), 1), size = nrow(oriCoords), replace = FALSE), ]
+  corrCoords <- sample_frac( layout_in_circle(g), 1 )
   
+  par(bg = bg)
   plot(g,
        edge.color = edge.color,
        edge.width = efacsize * edgesize,
