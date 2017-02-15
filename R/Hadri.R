@@ -269,3 +269,20 @@ info_table_nodes <- function(g){
   v <- V(g)
   data_frame( KEYWORDS = v$name, NA_ARTICLES = v$nbauth, DEGREE = v$degbeg)
 }
+
+
+#' create information table for edges
+#'
+#' @param g a network
+#'
+#' @return A data frame with columns code{KEYWORD1}, \code{KEYWORD2}, \code{OBSERVED_WEIGHT}, \code{EXPECTED_WEIGHT} and \code{RESIDUALS}
+#' @export
+#'
+#' @importFrom igraph get.data.frame
+#' @importFrom dplyr rename mutate_each funs
+#' @importFrom magrittr %>%
+info_table_edges <- function(g){
+  get.data.frame(g) %>%
+    rename( KEYWORD1 = from, KEYWORD2 = to, OBSERVED_WEIGHT = obsfreq, EXPECTED_WEIGHT = theofreq, RESIDUALS = relresid ) %>%
+    mutate_each( funs(round(., 2) ), EXPECTED_WEIGHT, RESIDUALS )
+}
