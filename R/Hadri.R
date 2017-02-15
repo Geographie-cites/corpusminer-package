@@ -203,19 +203,16 @@ CleanCorpus <- function(mystr){
 #'
 #' @return
 #' @noRd
-#' @importFrom magrittr %>%
-#' @importFrom dplyr filter mutate
+#' @importFrom utils combn
 MakeEdgesList <- function(x) {
+  x <- sort(unique(x))
+  
   if (length(x) == 1){
     return(paste(x, x, sep = "_"))
   } else {
-    crossCntry <- expand.grid(ID1 = as.vector(x), 
-                              ID2 = as.vector(x), 
-                              stringsAsFactors = FALSE)
-    crossCntry <- crossCntry %>% 
-      filter(ID1 != ID2) %>% 
-      mutate(EDGE = ifelse(ID1 < ID2, paste(ID1, ID2, sep = "_"), paste(ID2, ID1, sep = "_")))
-    return(unique(crossCntry$EDGE))
+    combs <- combn(length(x), 2)
+    edges <- paste( x[combs[1,]], x[combs[2,]], sep = "_")
+    edges
   }
 } 
 
