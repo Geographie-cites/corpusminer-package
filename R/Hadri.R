@@ -49,8 +49,8 @@ VisuComm <- function(g,
                      ){
 
   # sample layout
-  layout <- layout_in_circle(g)
-  layout <- layout[ sample(nrow(layout)), ]
+  corrCoords <- layout_in_circle(g)
+  corrCoords <- corrCoords[ sample(nrow(corrCoords)), ]
 
   # calculate edgesize and vertsize depending on
   edges <- E(g)
