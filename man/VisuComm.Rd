@@ -8,7 +8,8 @@ VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
   esize.fac = 0.5, vertex.label.cex, edge.color = "#df691a",
   edge.curved = FALSE, edge.arrow.mode = "-", edge.arrow.size = 0.01,
   vertex.color = "#2b3e50", vertex.frame.color = "#df691a",
-  vertex.label.color = "#ebebeb", vertex.label.family = "sans-serif")
+  vertex.label.color = "#ebebeb", vertex.label.family = "sans-serif",
+  bg = "#4e5d6c")
 }
 \arguments{
 \item{g}{igraph network}
@@ -23,7 +24,7 @@ VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
 
 \item{esize.fac}{Expansion factor for edge sizes}
 
-\item{vertex.label.family}{}
+\item{bg}{background}
 }
 \description{
 plot the communities. result of any community detection algo, here Louvain method

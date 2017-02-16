@@ -27,6 +27,7 @@
 #' @param vertex.frame.color
 #' @param vertex.label.color
 #' @param vertex.label.family
+#' @param bg background
 #'
 #' @importFrom igraph layout_in_circle
 #' @importFrom graphics plot
@@ -43,7 +44,8 @@ VisuComm <- function(g,
                      vertex.color = "#2b3e50",
                      vertex.frame.color = "#df691a",
                      vertex.label.color = "#ebebeb",
-                     vertex.label.family = "sans-serif"
+                     vertex.label.family = "sans-serif", 
+                     bg = "#4e5d6c"
                      ){
 
   # sample layout
