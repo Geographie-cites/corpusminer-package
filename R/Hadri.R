@@ -86,7 +86,7 @@ VisuComm <- function(g,
        vertex.frame.color  = vertex.frame.color,
        vertex.label        = V(g)$name,
        vertex.label.color  = vertex.label.color,
-       vertex.label.family = vertex.label.family,
+       # vertex.label.family = vertex.label.family,
        vertex.label.cex    = vertex.label.cex,
        vertex.size         = vertsize * vsize.fac,
        layout              = corrCoords
@@ -103,7 +103,7 @@ VisuComm <- function(g,
 #' @param chidist scalar, character, name of the field storing pseudo-chi2 distance
 #' @param textsizemin scalar, numeric, minimum font size
 #' @param textsizemax scalar, numeric, maximum font sizes
-#'
+#' 
 #' @importFrom ggplot2 theme_bw theme ggplot geom_line geom_text scale_colour_manual scale_size_continuous coord_polar element_rect  element_blank
 #' @importFrom igraph get.data.frame
 #' @importFrom magrittr %>%
@@ -220,8 +220,7 @@ SemanticField <- function(g, kw){
 #' @importFrom stringr str_to_lower str_trim
 CleanCorpus <- function(mystr){
   mystr <- str_to_lower(mystr)
-  mystr <- gsub("[[:punct:]]", "", mystr)
-  mystr <- gsub("[[:digit:]]", "", mystr)
+  mystr <- gsub("[[:punct:][:digit:]]", " ", mystr)
   mystr <- gsub("\\s+", " ", str_trim(mystr))
   return(mystr)
 }
