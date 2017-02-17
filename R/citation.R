@@ -1,9 +1,10 @@
 #' load citation edges given an reference id
-citationLoadEdges<-function(id){
-  res=data.frame()
-  res=rbind(res,dbGetQuery(citationdbcit,paste0("SELECT * FROM edges WHERE `from`='",id,"';")))
-  res=rbind(res,dbGetQuery(citationdbcit,paste0("SELECT * FROM edges WHERE `to`='",id,"';")))
-  return(res)
+#'
+#' @param con database connection
+#' @param id edge id
+citationLoadEdges <- function(con, id){
+  query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s'", id, id )
+  dbGetQuery(con,query)
 }
 
 #' @name  citationLoadKeywords
