@@ -45,14 +45,13 @@ plot_overview_map <- function( world, articles, years, indicator = c("A", "S", "
   # extract the countries
   countries <- substr( names(data_indicator), 3, 5)
   counts <- colSums(data_indicator)
+  counts <- counts[ match(countries, as.character(world$CNTR_ID)) ]
 
-  # reorder counts to match the data in the world map
-  # maybe not useful
-  # counts <- counts[ match(countries, as.character(world$CNTR_ID)) ]
-
+  # title and colors
   plot_title <- paste( overview_plot_prefix[indicator], pretty_years_interval(years), sep = " | ")
   col  <- ifelse( counts > 0, overview_plot_col[indicator], "lightgrey")
 
+  # plot
   par( bg = "#2b3e50", mar = c(0,0,1,0) )
   plot( world, col = col, border = "white", lwd = 0.7)
   title( plot_title, col.main = "white")
