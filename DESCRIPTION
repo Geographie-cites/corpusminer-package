@@ -30,6 +30,7 @@ Imports:
     stringr,
     reshape2,
     assertthat,
-    tibble
+    tibble,
+    stats
 RoxygenNote: 5.0.1
 Suggests: testthat
