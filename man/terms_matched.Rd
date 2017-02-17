@@ -8,6 +8,8 @@ terms_matched(patterns, terms)
 }
 \arguments{
 \item{patterns}{a string vector of regexp patterns to match}
+
+\item{terms}{terms dataset}
 }
 \value{
 a data frame of matched terms

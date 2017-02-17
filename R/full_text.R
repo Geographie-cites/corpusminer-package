@@ -3,6 +3,8 @@
 #' Compute a dataframe of matched terms
 #' 
 #' @param patterns a string vector of regexp patterns to match
+#' @param terms terms dataset
+#' 
 #' @return a data frame of matched terms
 #' 
 #' @importFrom tibble data_frame
