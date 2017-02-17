@@ -79,8 +79,8 @@ overview_stats <- function( data ){
   nStudiedCountries <- sum( studied > 0)
   SC5 <- overview_summary_country( studied )
 
-  citedby <- sum(data$citedby)
-  citing <- sum(data$citing)
+  citedby <- sum(data$citedby, na.rm = TRUE)
+  citing <- sum(data$citing, na.rm = TRUE)
 
   data_frame(
     Indicator = c("Number of scientific articles", "Number of authors", "Number of countries authoring",
