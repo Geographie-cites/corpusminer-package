@@ -2,25 +2,39 @@
 #'
 #' @param con database connection
 #' @param id edge id
+#' 
+#' @importMethodsFrom DBI dbGetQuery
 citationLoadEdges <- function(con, id){
-  query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s'", id, id )
+  query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
   dbGetQuery(con,query)
 }
 
-#' @name  citationLoadKeywords
-#' @description load neighbors keywords given an id
-citationLoadKeywords<-function(id){
+#' load neighbors keywords given an id
+#'
+#' @param con_citation connection to the citation db
+#' @param con_keywords connection to the keywords db
+#' @param id article id
+#' 
+#' @return keywords
+#' @importMethodsFrom DBI dbGetQuery
+citationLoadKeywords <- function(con_citation, con_keywords, id){
   # load edges
-  toids=dbGetQuery(citationdbcit,paste0("SELECT `to` FROM edges WHERE `from`='",id,"';"))[,1]
-  fromids=dbGetQuery(citationdbcit,paste0("SELECT `from` FROM edges WHERE `to`='",id,"';"))[,1]
-  ids=c(id,toids,fromids)
-  req = "SELECT * FROM keywords WHERE "
-  for(i in ids[1:(length(ids)-1)]){req=paste0(req,"`id`='",i,"' OR ")}
-  req=paste0(req,"`id`='",ids[length(ids)],"';")
-  res=dbGetQuery(citationdbkws,req)
-  l = sapply(res$keywords,function(s){strsplit(s,";")})
-  names(l)<-res$id
-  return(l)
+  to_query   <- sprintf( "SELECT `to` FROM edges WHERE `from`='%s' ;", id )
+  to_id      <- dbGetQuery(con_citation,to_query)[,1]
+  
+  from_query <- sprintf( "SELECT `from` FROM edges WHERE `to`='%s' ;", id )
+  from_id    <- dbGetQuery(con_citation,from_query)[,1]
+  
+  ids <- c(id, to_id, from_id)
+  
+  query <- paste( 
+    "SELECT * FROM keywords WHERE ", 
+    paste( "`id`='", ids, "'", sep = "", collapse = " OR " )
+  )
+  res <- dbGetQuery(con_keywords, query)
+  keywords <- strsplit( res$keywords, ";")
+  names(keywords) <- res$id
+  keywords
 }
 
 
