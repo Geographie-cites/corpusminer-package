@@ -33,7 +33,7 @@ cahCountriesBasedOnTerms = function(themes_By_country_bf, numberOfGroups, themes
 #' 
 #' @return a dataframe in which lines represent country codes and columns represent the number of articles for each theme
 #' @export
-aggregateCountriesBasedOnTerms = function(themesFile, themes, countries_to_aggregate){
+aggregateCountriesBasedOnTerms <- function(themesFile, themes, countries_to_aggregate){
   themes_By_country_bf <- data.frame("CountryID" = countries_to_aggregate)
   themes_By_country_bf[,themes] <- NA
   themes_By_country_bf$n <- NA
@@ -52,3 +52,28 @@ aggregateCountriesBasedOnTerms = function(themesFile, themes, countries_to_aggre
   
   themes_By_country_bf
 }
+
+
+#' Computes the average frquencies of themes by cah group
+#' 
+#' it is used in the legend of the cah map
+#'   
+#' @param x a dataframe of theme frequency by country (themes_By_country_bf) 
+#'          in which lines represent country codes and columns represent 
+#'          the number of articles for each themes
+#' @param y a vector of group numbers the length of the dataframe rows
+#' @return a dataframe in which lines represent cah groups of country and columns represent the frequency of articles for each theme
+#' @export
+stat.comp <- function(x, y){
+  K <- length(unique(y))
+  n <- length(x)
+  m <- mean(x)
+  TSS <- sum((x-m)^2)
+  nk <- table(y)
+  mk <- tapply(x,y,mean)
+  BSS <- sum(nk* (mk-m)^2)
+  result <- c(mk,100.0*BSS/TSS)
+  names(result) <- c( paste("G",1:K),"% epl.")
+  return(result)
+}
+
