@@ -31,6 +31,7 @@ Imports:
     reshape2,
     assertthat,
     tibble,
-    stats
+    stats,
+    wordcloud
 RoxygenNote: 5.0.1
 Suggests: testthat

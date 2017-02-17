@@ -2,6 +2,7 @@
 % Please edit documentation in R/citation.R
 \name{citationWordclouds}
 \alias{citationWordclouds}
+\title{plots word clouds, one for the keywords of the ref itself, the other for the provided keywords (neighborhood)}
 \usage{
 citationWordclouds(id, keywords)
 }

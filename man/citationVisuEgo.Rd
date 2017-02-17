@@ -2,6 +2,7 @@
 % Please edit documentation in R/citation.R
 \name{citationVisuEgo}
 \alias{citationVisuEgo}
+\title{visualize an ego network given edges}
 \usage{
 citationVisuEgo(edges)
 }
