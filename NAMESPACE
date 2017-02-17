@@ -2,6 +2,7 @@
 
 export(VisuComm)
 export(VisuSem)
+export(aggregateCountriesBasedOnTerms)
 export(cahCountriesBasedOnTerms)
 export(describe_network)
 export(info_table_edges)
