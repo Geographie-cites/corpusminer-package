@@ -30,22 +30,18 @@ overview_plot_col <- c(A = "orange", S = "#1C6F91", L = "#df691a")
 #' @param years
 #' @param indicator
 #'
-#' @importFrom dplyr select starts_with
 #' @importFrom graphics par title
 #' @importMethodsFrom sp plot
 #' @export
 plot_overview_map <- function( world, articles, years, indicator = c("A", "S", "L") ){
 
   indicator <- match.arg(indicator)
-  prefix <- paste0( indicator , "_" )
+
+  countries <- as.character( world@data$CNTR_ID )
+  columns <- paste( indicator, countries, sep = "_")
 
   # data for the chosen indicator
-  data_indicator <- select( articles, starts_with(prefix) )
-
-  # extract the countries
-  countries <- substr( names(data_indicator), 3, 5)
-  counts <- colSums(data_indicator)
-  counts <- counts[ match(countries, as.character(world$CNTR_ID)) ]
+  data_indicator <-  colSums( articles[, columns ] )
 
   # title and colors
   plot_title <- paste( overview_plot_prefix[indicator], pretty_years_interval(years), sep = " | ")
