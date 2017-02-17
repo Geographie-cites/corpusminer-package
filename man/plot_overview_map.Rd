@@ -7,12 +7,6 @@
 plot_overview_map(world, articles, years, indicator = c("A", "S", "L"))
 }
 \arguments{
-\item{world}{}
-
-\item{articles}{}
-
-\item{years}{}
-
 \item{indicator}{}
 }
 \description{

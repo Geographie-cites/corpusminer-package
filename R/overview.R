@@ -24,14 +24,15 @@ overview_plot_prefix <- c(
 overview_plot_col <- c(A = "orange", S = "#1C6F91", L = "#df691a")
 
 #' Overview map plot
-#' 
-#' @param world 
-#' @param articles 
-#' @param years 
-#' @param indicator 
+#'
+#' @param world
+#' @param articles
+#' @param years
+#' @param indicator
 #'
 #' @importFrom dplyr select starts_with
-#' @importFrom graphics par plot title
+#' @importFrom graphics par title
+#' @importMethodsFrom sp plot
 #' @export
 plot_overview_map <- function( world, articles, years, indicator = c("A", "S", "L") ){
 
@@ -42,12 +43,12 @@ plot_overview_map <- function( world, articles, years, indicator = c("A", "S", "
   data_indicator <- select( articles, starts_with(prefix) )
 
   # extract the countries
-  countries <- substr( names(data_indicator), 1, 3)
+  countries <- substr( names(data_indicator), 3, 5)
   counts <- colSums(data_indicator)
 
   # reorder counts to match the data in the world map
   # maybe not useful
-  counts <- counts[ match(countries, world$CNTR_ID) ]
+  # counts <- counts[ match(countries, as.character(world$CNTR_ID)) ]
 
   plot_title <- paste( overview_plot_prefix[indicator], pretty_years_interval(years), sep = " | ")
   col  <- ifelse( counts > 0, overview_plot_col[indicator], "lightgrey")
