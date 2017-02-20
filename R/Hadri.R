@@ -1,13 +1,3 @@
-
-###################################################################
-######### Fonctions pour module d'analyse des mots-clés ###########
-###################################################################
-
-#####################################
-# Fonctions pour l'application shiny
-#####################################
-
-
 #' plot the communities
 #'
 #' plot the communities. result of any community detection algo, here Louvain method
@@ -44,7 +34,7 @@ VisuComm <- function(g,
                      vertex.color = "#2b3e50",
                      vertex.frame.color = "#df691a",
                      vertex.label.color = "#ebebeb",
-                     vertex.label.family = "sans-serif", 
+                     vertex.label.family = "sans-serif",
                      bg = "#4e5d6c"
                      ){
 
@@ -103,7 +93,7 @@ VisuComm <- function(g,
 #' @param chidist scalar, character, name of the field storing pseudo-chi2 distance
 #' @param textsizemin scalar, numeric, minimum font size
 #' @param textsizemax scalar, numeric, maximum font sizes
-#' 
+#'
 #' @importFrom ggplot2 theme_bw theme ggplot geom_line geom_text scale_colour_manual scale_size_continuous coord_polar element_rect  element_blank
 #' @importFrom igraph get.data.frame
 #' @importFrom magrittr %>%
@@ -300,7 +290,7 @@ describe_network <- function(g){
 #' @importFrom igraph V
 info_table_nodes <- function(g){
   v <- V(g)
-  data_frame( KEYWORDS = v$name, NA_ARTICLES = v$nbauth, DEGREE = v$degbeg)
+  data_frame( KEYWORDS = v$name, ARTICLES = v$nbauth, DEGREE = v$degbeg)
 }
 
 
@@ -312,10 +302,24 @@ info_table_nodes <- function(g){
 #' @export
 #'
 #' @importFrom igraph get.data.frame
-#' @importFrom dplyr rename mutate_each funs
+#' @importFrom dplyr rename mutate_each funs tbl_df
 #' @importFrom magrittr %>%
 info_table_edges <- function(g){
   get.data.frame(g) %>%
+    tbl_df %>%
     rename( KEYWORD1 = from, KEYWORD2 = to, OBSERVED_WEIGHT = obsfreq, EXPECTED_WEIGHT = theofreq, RESIDUALS = relresid ) %>%
     mutate_each( funs(round(., 2) ), EXPECTED_WEIGHT, RESIDUALS )
+}
+
+
+#' extract subgraph for a given community
+#'
+#' @param g full graph
+#' @param community community
+#'
+#' @export
+#' @importFrom igraph V induced.subgraph
+extract_community_graph <- function( g, community ){
+  vertices <- V(g)
+  induced.subgraph(g, vids=vertices[vertices$clus == community])
 }
