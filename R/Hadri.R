@@ -40,7 +40,7 @@ VisuComm <- function(g,
 
   # sample layout
   corrCoords <- layout_in_circle(g)
-  corrCoords <- corrCoords[ sample(nrow(corrCoords)), ]
+  # corrCoords <- corrCoords[ sample(nrow(corrCoords)), ]
 
   # calculate edgesize and vertsize depending on
   edges <- E(g)
@@ -101,7 +101,7 @@ VisuComm <- function(g,
 #' @export
 VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
 
-  assert_that( is.string(kw), is.string(chidist), is.number(textsizemin), is.number(textsizemax) )
+  assert_that( is.string(kw), is.number(textsizemin), is.number(textsizemax) )
 
   # make theme empty
   theme_empty <- theme_bw() +
