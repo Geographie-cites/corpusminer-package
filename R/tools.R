@@ -29,3 +29,8 @@ cybergeo_head <- function(){
     google_font( family = "Orbitron|Cabin:400,700")
   )
 }
+
+sub_app <- function(app){
+  file <- sprintf( "ui/%s.R", app)
+  source( file, local = TRUE)$value
+}
