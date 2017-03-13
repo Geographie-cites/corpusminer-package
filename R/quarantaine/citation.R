@@ -7,8 +7,6 @@
 #' @param outputfile
 #' 
 #' @importFrom utils read.csv
-#' @importFrom dplyr filter as.tbl
-#' @importFrom igraph graph.data.frame V
 #' @export
 constructCitationNetwork <- function(edgefile,nodefile,outputfile){
   

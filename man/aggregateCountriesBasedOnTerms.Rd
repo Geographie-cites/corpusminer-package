@@ -17,7 +17,7 @@ aggregateCountriesBasedOnTerms(themesFile, themes, countries_to_aggregate)
 a dataframe in which lines represent country codes and columns represent the number of articles for each theme
 }
 \description{
-This function summarises the number of articles by theme for each country it is used 
+This function summarises the number of articles by theme for each country it is used
 in the reactive object 'clusterCountries' for every analysis at the country level
 }
 

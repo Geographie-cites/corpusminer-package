@@ -1,0 +1,45 @@
+---
+title: "CybergeoNetwork Navigation Guide"
+author: "Clementine Cottineau"
+date: "04/02/2017"
+output: html_document
+---
+
+The app opens to a page describing the context and purpose of this app. The menu on the left gives access to 5 types of analysis: an overview of 20 years of publication in Cybergeo, the citation network, the semantic network, the keywork network and the geosemantic networks of Cybergeo.
+
+## Overview
+
+The Overview summarizes the spatial distribution of articles published in Cybergeo during the chose period. The countries highlighted correspond to the countries where the authors are affiliated to (“authoring countries”), to the countries studied in the article (“studied countries”) or to the countries studied by an author affiliated locally (“countries studied by locals”).
+This page also gives a summary of the publication over the period studied; in terms of authors, themes and citations.
+
+## Citation Network
+
+The Citation Network tab shows all the articles published in Cybergeo since 1996 and allows to follow a paper (by picking its ID in the first table).
+With this ID, one can explore the citation neighbourhood and citation content of the article chosen. The citation neighbourhood corresponds to the articles citing and the articles cited by the article chosen. The word clouds show the keywords of the article and of its citation neighbours, with size giving the frequency and colour its field (see legend in User Guide sub-tab).
+
+## Semantic network
+
+The full semantic network is visualised in the next tab, where the user can zoom in and out of the graph of themes linked together by co-citation patterns.
+
+The Semantic network analysis focuses on the words chosen to write Cybergeo articles.
+The Chronograms show the evolution of articles published in Cybergeo which include a pattern given by the user. Multiple patterns can be tracked simultaneously to suggest evolutions of research trends in the journal.
+
+The wordclouds shows the relative importance of the different words from the same root over 20 years of Cybergeo articles. The sentences report the contextualised uses of this root.
+
+## Keywords network
+
+The Keywords network tab shows the distribution of articles by keyword as well as the centrality of single keywords and the frequences of co-occurences of pairs of keywords (compared to their expected association).
+
+From the graph of co-occurence of keywords, communities are identified and displayed in the “community” sub-tab. 
+
+The relative distance between keywords (compared to their expected distance) is mapped in the “semantic area” sub-tab of this analysis.
+
+## Geo Semantic network
+
+The Geo-Semantic network tab shows the clustering of countries based on the semantic networks of the articles authored or studied. Three methods of semantic networking can be compared (one based on the citations, one based on the full text analysis, and one based on the keyword network). The clustering of countries based on citations shows the way countries are similar or not in the way cybergeo articles are used by the academinc community in practice. The clustering of countries based on full text semantic analysis shows the way countries are similar or not in the way cybergeo articles are written in or about them. The clustering of keywords based on citations shows the way countries are similar or not in the way cybergeo articles in or about them are advertised  and categorised.
+
+For each of them and for each set of countries (authoring or studied), there is a map showing the allocation of countries in clusters and histograms showing the average semantic profile of the clusters.
+
+## Acknowledgments
+
+The last tab acknowledges the creators and partners of the application.

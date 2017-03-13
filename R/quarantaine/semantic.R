@@ -11,8 +11,6 @@
 #' @param target : name of output file
 #' @param mongohost : adress of mongodb
 #' 
-#' @importFrom dplyr as.tbl 
-#' @importFrom igraph graph_from_data_frame
 #' @importFrom methods show
 #' @export
 constructSemanticNetwork<-function(relevantcollection,kwcollection,nwcollection,edge_th,target,mongohost){
@@ -76,7 +74,6 @@ constructSemanticNetwork<-function(relevantcollection,kwcollection,nwcollection,
 #' @name filterGraph
 #' @description filter nodes : grep -v -f file for nodes names
 #' 
-#' @importFrom igraph induced.subgraph
 #' @importFrom utils read.csv
 #' @export
 filterGraph<-function(graph,file){
@@ -102,7 +99,6 @@ filterGraph<-function(graph,file){
 #'  @param freqmax ; maximal filtering frequency
 #'  @param edge_th ; edge weight threshold
 #'  
-#'  @importFrom igraph V induced_subgraph degree subgraph.edges clusters cluster_louvain
 #'  @export
 extractSubGraphCommunities<-function(ggiant,kmin,kmax,freqmin,freqmax,edge_th){
   dd = V(ggiant)$docfreq
@@ -137,7 +133,6 @@ summarySubGraphCommunities<-function(sub){
 #'  @name computeThemProbas
 #'  @description Compute thematic probability matrix
 #'  
-#'  @importFrom igraph V
 #'  @export
 computeThemProbas<-function(gg,com,keyword_dico){
   # construct kw -> thematic dico
@@ -165,7 +160,6 @@ computeThemProbas<-function(gg,com,keyword_dico){
 #' @name networkSensitivity
 #' @description Network measures for filtering parameter ranges
 #' 
-#' @importFrom igraph V degree induced_subgraph subgraph.edges cluster_louvain
 networkSensitivity <- function(db,filters,freqmaxvals,freqminvals,kmaxvals,ethvals,outputfile){
   
   

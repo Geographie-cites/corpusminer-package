@@ -7,8 +7,8 @@
 stat.comp(x, y)
 }
 \arguments{
-\item{x}{a dataframe of theme frequency by country (themes_By_country_bf) 
-in which lines represent country codes and columns represent 
+\item{x}{a dataframe of theme frequency by country (themes_By_country_bf)
+in which lines represent country codes and columns represent
 the number of articles for each themes}
 
 \item{y}{a vector of group numbers the length of the dataframe rows}
