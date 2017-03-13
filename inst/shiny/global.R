@@ -31,8 +31,6 @@ library(stringr)
 
 #### Keywords network
 
-ARTICLES <- readRDS( "app_data/ARTICLES.rds" )
-
 NETKW <- readRDS( "app_data/NETKW.rds")
 choices_communities <- sort( unique( V(NETKW)$clus ))
 choices_keywords <- sort( unique( V(NETKW)$name ))
