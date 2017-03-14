@@ -11,3 +11,6 @@ NULL
 
 #' @export
 "NETKW"
+
+#' @export
+"world"

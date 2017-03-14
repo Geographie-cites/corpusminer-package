@@ -27,18 +27,9 @@ library(stringr)
 
 # load data ----
 
-
-
-#### Keywords network
-
-choices_communities <- sort( unique( V(NETKW)$clus ))
-choices_keywords <- sort( unique( V(NETKW)$name ))
-
-
 #### Geographical data
 
-world = readOGR(dsn="data/world_withZoom.shp", layer = "world_withZoom",
-  encoding="utf8", verbose = F)
+world = readOGR(dsn="data/world_withZoom.shp", layer = "world_withZoom", encoding="utf8", verbose = F)
 
 countries = as.character(world@data$CNTR_ID)
 geo_semantic_data <- list(
