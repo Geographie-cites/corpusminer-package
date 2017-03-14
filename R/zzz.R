@@ -4,6 +4,7 @@
 #' @import igraph
 #' @import ggplot2
 #' @import svgPanZoom
+#' @import RSQLite
 #' @importFrom magrittr %>%
 NULL
 

@@ -2,8 +2,6 @@
 #'
 #' @param con database connection
 #' @param id edge id
-#'
-#' @importMethodsFrom RSQLite dbGetQuery
 citationLoadEdges <- function(con, id){
   query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
   dbGetQuery(con,query)
@@ -16,7 +14,6 @@ citationLoadEdges <- function(con, id){
 #' @param id article id
 #'
 #' @return keywords
-#' @importMethodsFrom RSQLite dbGetQuery
 citationLoadKeywords <- function(con_citation, con_keywords, id){
   # load edges
   to_query   <- sprintf( "SELECT `to` FROM edges WHERE `from`='%s' ;", id )
@@ -143,7 +140,6 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 
 }
 
-#' @importFrom RSQLite dbConnect SQLite
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
 
