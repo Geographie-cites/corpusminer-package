@@ -25,17 +25,6 @@ library(lubridate)
 library(stringr)
 
 
-# load data ----
-
-#### Geographical data
-
-countries = as.character(world@data$CNTR_ID)
-geo_semantic_data <- list(
-  Keywords  = load_geo_semantic_data( "app_data/keyword_themes.csv", ARTICLES, countries ),
-  Citations = load_geo_semantic_data( "app_data/citation_themes.csv", ARTICLES, countries ),
-  Semantic  = load_geo_semantic_data( "app_data/semantic_themes.csv", ARTICLES, countries )
-)
-
 ######## PO :
 ##   Regexp terms in full textes
 

@@ -21,6 +21,8 @@ NULL
 #' @export
 "world"
 
-#'
 #' @export
 "geo_semantic_data"
+
+#' @export
+"terms"
