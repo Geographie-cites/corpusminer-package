@@ -28,38 +28,8 @@ library(stringr)
 ######## PO :
 ##   Regexp terms in full textes
 
-#-- Loading data --------------------------------------------------------------
-
-# Read the terms dataframe
-terms <- read.table(
-  "data/terms.csv",
-  sep = ";",
-  quote = "",
-  comment.char = "",
-  header = TRUE,
-  stringsAsFactors = FALSE
-) %>%
-  tbl_df() %>%
-  dplyr::mutate(
-    article_id = id,
-    id = row_number()
-  ) %>%
-  dplyr::select(id, article_id, term, count)
 
 # Read the sentences dataframe
-sentences <- read.table(
-  "data/sentences.csv",
-  sep = "|",
-  quote = "",
-  comment.char = "",
-  header = TRUE,
-  stringsAsFactors=FALSE
-) %>%
-  tbl_df() %>%
-  dplyr::mutate(
-    article_id = id,
-    id = row_number()
-  )
 
 # Read the metadata of articles
 articles <- read.table(

@@ -26,3 +26,6 @@ NULL
 
 #' @export
 "terms"
+
+#' @export
+"sentences"
