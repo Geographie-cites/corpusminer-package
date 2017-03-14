@@ -3,6 +3,7 @@
 #' @import dplyr
 #' @import igraph
 #' @import ggplot2
+#' @import svgPanZoom
 #' @importFrom magrittr %>%
 NULL
 
@@ -32,3 +33,15 @@ NULL
 
 #' @export
 "cybergeo"
+
+#' @export
+"cybergeo"
+
+#' @export
+"citation_cybergeodata"
+
+#' @export
+"citationkwfreqs"
+
+#' @export
+"citationkwthemdico"
