@@ -2,7 +2,7 @@
 #'
 #' @param con database connection
 #' @param id edge id
-#' 
+#'
 #' @importMethodsFrom DBI dbGetQuery
 citationLoadEdges <- function(con, id){
   query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
@@ -14,21 +14,21 @@ citationLoadEdges <- function(con, id){
 #' @param con_citation connection to the citation db
 #' @param con_keywords connection to the keywords db
 #' @param id article id
-#' 
+#'
 #' @return keywords
 #' @importMethodsFrom DBI dbGetQuery
 citationLoadKeywords <- function(con_citation, con_keywords, id){
   # load edges
   to_query   <- sprintf( "SELECT `to` FROM edges WHERE `from`='%s' ;", id )
   to_id      <- dbGetQuery(con_citation,to_query)[,1]
-  
+
   from_query <- sprintf( "SELECT `from` FROM edges WHERE `to`='%s' ;", id )
   from_id    <- dbGetQuery(con_citation,from_query)[,1]
-  
+
   ids <- c(id, to_id, from_id)
-  
-  query <- paste( 
-    "SELECT * FROM keywords WHERE ", 
+
+  query <- paste(
+    "SELECT * FROM keywords WHERE ",
     paste( "`id`='", ids, "'", sep = "", collapse = " OR " )
   )
   res <- dbGetQuery(con_keywords, query)
@@ -68,7 +68,7 @@ citationVisuEgo <- function(edges){
 }
 
 #' plots word clouds, one for the keywords of the ref itself, the other for the provided keywords (neighborhood)
-#' 
+#'
 #' @importFrom graphics par
 #' @importFrom wordcloud wordcloud
 citationWordclouds<-function(id, keywords){
@@ -80,7 +80,7 @@ citationWordclouds<-function(id, keywords){
               colors=unlist(semanticcolors[citationkwthemdico[keywords[[id]]]]),
               ordered.colors = TRUE
     )
-    
+
     allkws=unlist(keywords)
     wordcloud(words=allkws,
               freq=citationkwfreqs[allkws],
@@ -94,9 +94,9 @@ citationWordclouds<-function(id, keywords){
 #' @export
 cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
   ns <- NS(id)
-  
-  navbarMenu("Citation network", 
-    
+
+  navbarMenu("Citation network",
+
     tabPanel("Citation Network",
       # select article to visualize
       fluidRow(
@@ -104,7 +104,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
         tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
         dataTableOutput( ns("citationcybergeo") )
       ),
-      
+
       # citation ego network
       fluidRow(
         h4("Citation network neighborhood"),
@@ -115,7 +115,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
         ),
         plotOutput( ns("citationegoplot"), width = "100%", height = "800px")
       ),
-      
+
       # word clouds of semantic content
       fluidRow(
         h4("Semantic content"),
@@ -127,36 +127,37 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
         plotOutput( ns("citationesemanticplot"), width = "100%", height = "800px")
       )
     ),
-    
+
     # svg viusalization of the full semantic network
     tabPanel("Semantic Network",
       h4("Full Semantic Network"),
       svgPanZoomOutput(ns("citationsemanticnw"), width = "100%", height = "100%")
     ),
-    
+
     # user guide
     tabPanel("User guide",
       includeMarkdown("doc/CitationNetwork.md")
     )
-    
+
   )
 
 }
 
 #' @export
-cybergeo_module_citation <- function( input, output, session, 
-  citation_cybergeodata, citationdbcit, citationdbkws
-){
-  
+cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
+
+  citationdbcit <- dbConnect(SQLite(), system.file("sqlite", "CitationNetwork.sqlite3"), package = "corpusminer")
+  citationdbkws <- dbConnect(SQLite(), system.file("sqlite", "CitationKeywords.sqlite3"), package = "corpusminer")
+
   # global vars (needed e.g. to avoid numerous db request with reactive functions)
   citationGlobalVars <- reactiveValues(
-    citationSelected = "0", 
+    citationSelected = "0",
     citationSemanticSelected = "0"
   )
-  
+
   ## selection datatable
   output$citationcybergeo <- renderDataTable({
-    citation_cybergeodata %>% 
+    citation_cybergeodata %>%
       filter(linknum > 0 | kwcount > 0) %>%
       select(id, SCHID, title, authors)
   })
@@ -164,7 +165,7 @@ cybergeo_module_citation <- function( input, output, session,
   citationSelectedCybergeoArticle <- reactive({
     input$citationcybergeo_rows_selected
   })
-  
+
   # observer make data update requests
   observe({
     selected <- citationSelectedCybergeoArticle()
@@ -175,16 +176,16 @@ cybergeo_module_citation <- function( input, output, session,
     if(length(selected) == 1){
       if(selected != citationGlobalVars$citationSelected ){
         citationGlobalVars$citationSelected <- selected
-        
+
         selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
-        
+
         # make request for edges in sqlitedb
         citationGlobalVars$edges = citationLoadEdges(citationdbcit, selectedschid)
       }
     }
   })
-  
-  
+
+
   # similar observer for semantic plot
   observe({
     selected <- citationSelectedCybergeoArticle()
@@ -200,27 +201,24 @@ cybergeo_module_citation <- function( input, output, session,
       }
     }
   })
-  
+
   # render citation graph around selected article
   output$citationegoplot = renderPlot({
     citationVisuEgo(citationGlobalVars$edges)
   })
-  
+
   # render wordclouds
   output$citationesemanticplot = renderPlot({
     schid <- citation_cybergeodata$SCHID[citationGlobalVars$citationSemanticSelected]
     citationWordclouds(schid,citationGlobalVars$keywords)
   })
-  
+
   output$citationsemanticnw<-renderSvgPanZoom({
     svgPanZoom(
-      'data/semantic.svg', 
+      'data/semantic.svg',
       zoomScaleSensitivity=1, minZoom=2, maxZoom=20, contain=TRUE
     )
   })
-  
-  
+
+
 }
-
-
-
