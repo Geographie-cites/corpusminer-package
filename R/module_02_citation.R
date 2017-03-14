@@ -143,11 +143,12 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 
 }
 
+#' @importFrom RSQLite dbConnect SQLite
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
 
-  citationdbcit <- dbConnect(SQLite(), system.file("sqlite", "CitationNetwork.sqlite3"), package = "corpusminer")
-  citationdbkws <- dbConnect(SQLite(), system.file("sqlite", "CitationKeywords.sqlite3"), package = "corpusminer")
+  citationdbcit <- dbConnect(SQLite(), system.file("sqlite", "CitationNetwork.sqlite3", package = "corpusminer"))
+  citationdbkws <- dbConnect(SQLite(), system.file("sqlite", "CitationKeywords.sqlite3", package = "corpusminer"))
 
   # global vars (needed e.g. to avoid numerous db request with reactive functions)
   citationGlobalVars <- reactiveValues(
