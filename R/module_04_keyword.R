@@ -36,11 +36,11 @@ VisuComm <- function(g,
                      vertex.label.family = "sans-serif",
                      bg = "#4e5d6c"
 ){
-  
+
   # sample layout
   corrCoords <- layout_in_circle(g)
   # corrCoords <- corrCoords[ sample(nrow(corrCoords)), ]
-  
+
   # calculate edgesize and vertsize depending on
   edges <- E(g)
   vertices <- V(g)
@@ -62,9 +62,9 @@ VisuComm <- function(g,
     vertsize <- vertices$degbeg
     edgesize <- edges$obsfreq
   }
-  
+
   par(bg = bg)
-  
+
   plot(g,
        edge.color          = edge.color,
        edge.width          = edgesize * esize.fac,
@@ -95,9 +95,9 @@ VisuComm <- function(g,
 #'
 #' @export
 VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
-  
+
   assert_that( is.string(kw), is.number(textsizemin), is.number(textsizemax) )
-  
+
   # make theme empty
   theme_empty <- theme_bw() +
     theme(plot.background = element_rect(fill = "#4e5d6c"),
@@ -111,27 +111,27 @@ VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
           axis.ticks = element_blank(),
           legend.position = "none",
           legend.background = element_rect(fill = "#4e5d6c"))
-  
+
   # graph layout
   tabPoints <- get.data.frame(x = g, what = "vertices")
   tabLinks <- get.data.frame(x = g, what = "edges")
   tabLinks$NODES <- ifelse(tabLinks$from == kw, tabLinks$to, tabLinks$from)
   tabPoints <- tabPoints %>% left_join(x = ., y = tabLinks, by = c("name" = "NODES"))
-  
+
   # compute distance from ego
   tabPoints$DIST <- 1 / tabPoints[[chidist]]
   thresRadis <- seq(0, 0.1 + max(tabPoints$DIST, na.rm = TRUE), 0.1)
   tabPoints$X <- cut(tabPoints$DIST, breaks = thresRadis, labels = thresRadis[-1], include.lowest = TRUE, right = FALSE)
   tabPoints <- tabPoints %>% group_by(X) %>% mutate(NPTS = n())
-  
+
   # get x values
   tabPoints <- tabPoints %>% do(GetXvalues(df = .))
   tabPoints[tabPoints$name == kw, c("XVAL", "DIST")] <- c(0, 0)
-  
+
   # prepare plot
   tabPoints$IDEGO <- ifelse(tabPoints$name == kw, 2, 1)
   tabCircle <- data.frame(XVAL = c(0, 360), DIST = 1)
-  
+
   # draw plot
   circVis <- ggplot() +
     geom_line(data = tabCircle, aes(x = XVAL, y = DIST), color = "#df691a") +
@@ -140,7 +140,7 @@ VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
     scale_size_continuous("Number of articles", range = c(textsizemin, textsizemax)) +
     coord_polar(theta = "x") +
     theme_empty
-  
+
   return(circVis)
 }
 
@@ -178,11 +178,11 @@ SemanticField <- function(g, kw){
   pairedNodes <- unlist(paste(which(V(g)$name == kw), neiNodes[-1], sep = ","))
   collapseNodes <- paste(pairedNodes, collapse = ",")
   vecNodes <- as.integer(unlist(strsplit(collapseNodes, split = ",")))
-  
+
   # get edges and create graph
   edgeIds <- get.edge.ids(g, vp = vecNodes)
   gSem <- subgraph.edges(g, eids = edgeIds, delete.vertices = TRUE)
-  
+
   return(gSem)
 }
 
@@ -223,7 +223,7 @@ CleanCorpus <- function(mystr){
 #' @importFrom utils combn
 MakeEdgesList <- function(x) {
   x <- sort(unique(x))
-  
+
   if (length(x) == 1){
     return(paste(x, x, sep = "_"))
   } else {
@@ -249,16 +249,16 @@ MakeNetwork <- function(colist){
   edgesTab <- data.frame(colsplit(edgesTab$edgesList, pattern = "_", names = c("ITEM1", "ITEM2")),
                          obsfreq = edgesTab$Freq,
                          stringsAsFactors = FALSE)
-  
+
   # build network
   netWork <- graph_from_data_frame(edgesTab, directed = FALSE) %>% simplify(graph = ., remove.loops = TRUE, remove.multiple = FALSE)
-  
+
   # enrich network
   countItems <- as.data.frame(table(unlist(colist)), stringsAsFactors = FALSE)
   idMatch <- match(V(netWork)$name, countItems$Var1)
   V(netWork)$nbitems <- countItems$Freq[idMatch]
   V(netWork)$degree <- degree(netWork)
-  
+
   return(netWork)
 }
 
@@ -314,30 +314,33 @@ extract_community_graph <- function( g, community ){
 #### ------------ module shiny
 
 #' @export
-cybergeo_module_keyword_UI <- function(id, choices_communities, choices_keywords){
+cybergeo_module_keyword_UI <- function(id, NETKW ){
   ns <- NS(id)
-  
+
+  choices_communities <- sort( unique( V(NETKW)$clus ))
+  choices_keywords <- sort( unique( V(NETKW)$name ))
+
   navbarMenu("Keyword network",
-             
+
     tabPanel("Data summary",
       htmlOutput( ns("textfull") ),
       tags$hr(),
       dataTableOutput( ns("contentsnodes")),
       dataTableOutput( ns("contentsedges"))
     ),
-    
+
     tabPanel("Communities",
-      selectInput(ns("commid"), label = "Choose a community", 
+      selectInput(ns("commid"), label = "Choose a community",
         choices = choices_communities, selected = "", multiple = FALSE
       ),
       fluidRow(
-        column(3, 
+        column(3,
           wellPanel(
             tags$strong("Graphic options"),
-            radioButtons(ns("vsizecom"), "Nodes proportional to:", 
+            radioButtons(ns("vsizecom"), "Nodes proportional to:",
               list("Uniforme" = "uni", "Number of articles" = "poi","Nodes degree" = "deg")
             ),
-            radioButtons(ns("esizecom"), "Edges proportional to:", 
+            radioButtons(ns("esizecom"), "Edges proportional to:",
               list("Observed weight" = "nbl","Residuals" = "rel")
             ),
             sliderInput(ns("vfacsizecom"), label = "Nodes size",
@@ -352,14 +355,14 @@ cybergeo_module_keyword_UI <- function(id, choices_communities, choices_keywords
           )
         ),
         column(9,
-          plotOutput(ns("plotcomm"), width = "100%", height = "800px"), 
+          plotOutput(ns("plotcomm"), width = "100%", height = "800px"),
           downloadButton(ns("downcomm"), "Download plot")
         )
       )
     ),
     tabPanel("Semantic area",
-      selectInput(ns("kwid2"), label = "Choose a keyword", 
-        choices = choices_keywords, selected = "", multiple = FALSE 
+      selectInput(ns("kwid2"), label = "Choose a keyword",
+        choices = choices_keywords, selected = "", multiple = FALSE
       ),
       fluidRow(
         column(3, wellPanel(
@@ -380,30 +383,30 @@ cybergeo_module_keyword_UI <- function(id, choices_communities, choices_keywords
 }
 
 #' @export
-cybergeo_module_keyword <- function( input, output, session, 
+cybergeo_module_keyword <- function( input, output, session,
   NETKW
 ){
-  
+
   # select community
   SelectComm <- reactive( extract_community_graph(NETKW, input$commid) )
-  
+
   # create semantic field
   SelectSemField <- reactive( SemanticField(NETKW, kw = input$kwid2) )
-  
+
   output$textfull <- renderText({
     describe_network( NETKW )
   })
-  
+
   output$contentsnodes <- renderDataTable(
     info_table_nodes( NETKW ),
     options = list( pageLength = 10 )
   )
-  
+
   output$contentsedges <- renderDataTable(
     info_table_edges( NETKW ),
     options = list( pageLength = 10 )
   )
-  
+
   output$plotcomm <- renderPlot({
     VisuComm( SelectComm(),
               vsize.prop = input$vsizecom, vsize.fac = input$vfacsizecom, vsize.default = 1,
@@ -411,12 +414,12 @@ cybergeo_module_keyword <- function( input, output, session,
               vertex.label.cex = input$tsizecom / 10
     )
   })
-  
+
   output$downcomm <- downloadHandler(
     filename = "Community.svg",
     content = function(file) {
       svg(file, width = 20 / 2.54, height = 20 / 2.54, pointsize = 8)
-      
+
       VisuComm( SelectComm(),
                 vsize.prop = input$vsizecom, vsize.fac = input$vfacsizecom, vsize.default = 30,
                 esize.prop = input$esizecom, esize.fac = input$efacsizecom,
@@ -425,11 +428,11 @@ cybergeo_module_keyword <- function( input, output, session,
       dev.off()
     }
   )
-  
+
   output$plotsem <- renderPlot({
     VisuSem(SelectSemField(), kw = input$kwid2, textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax)
   })
-  
+
   output$downsem <- downloadHandler(
     filename = "Semantic.svg",
     content = function(file) {
@@ -438,8 +441,6 @@ cybergeo_module_keyword <- function( input, output, session,
       dev.off()
     }
   )
-  
-  
+
+
 }
-
-
