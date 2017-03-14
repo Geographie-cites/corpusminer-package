@@ -4,11 +4,13 @@
 \alias{phrases}
 \title{Matched sentences list}
 \usage{
-phrases(patterns)
+phrases(patterns, sentences)
 }
 \arguments{
-\item{patterns:}{a string vector of regexp patterns to match
-Returns: a vector of sentences containing a matched term}
+\item{patterns}{a string vector of regexp patterns to match}
+}
+\value{
+a vector of sentences containing a matched term
 }
 \description{
 Compute a list of sentences containing a matched term

@@ -7,8 +7,7 @@
 terms_matched_cloud(patterns)
 }
 \arguments{
-\item{patterns:}{a string vector of regexp patterns to match
-Returns:}
+\item{patterns}{a string vector of regexp patterns to match}
 }
 \description{
 Compute the metadata of each terms in order to build a wordcloud

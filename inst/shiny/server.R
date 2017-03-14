@@ -9,7 +9,10 @@ shinyServer(function(input, output, session) {
   )
 
   callModule(cybergeo_module_semantic, "semantic",
-    pattern_list = pattern_list
+    pattern_list = pattern_list,
+    terms = terms,
+    articles = articles,
+    sentences = sentences
   )
 
   callModule(cybergeo_module_keyword, "keyword",

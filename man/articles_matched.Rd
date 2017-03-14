@@ -4,11 +4,15 @@
 \alias{articles_matched}
 \title{Metadata of each articles containing a matched term}
 \usage{
-articles_matched(patterns)
+articles_matched(patterns, articles)
 }
 \arguments{
-\item{patterns:}{a string vector of regexp patterns to match
-Returns: a dataframe of articles metadata}
+\item{patterns}{a string vector of regexp patterns to match}
+
+\item{articles}{articles data frame}
+}
+\value{
+a dataframe of articles metadata
 }
 \description{
 Compute the metadata of each articles containing a matched term

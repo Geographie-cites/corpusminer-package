@@ -7,8 +7,7 @@
 cloud(patterns)
 }
 \arguments{
-\item{patterns:}{a string vector of regexp patterns to match
-Returns: a graphic}
+\item{patterns}{a string vector of regexp patterns to match}
 }
 \description{
 Compute a word cloud of matched terms

@@ -11,7 +11,6 @@
 #'
 #' @importFrom graphics plot
 #' @export
-#'
 VisuComm <- function(g,
                      vsize.prop, vsize.fac = .5, vsize.default = 1,
                      esize.prop, esize.fac = .5,

@@ -68,7 +68,7 @@ citationVisuEgo <- function(edges){
 #'
 #' @importFrom graphics par
 #' @importFrom wordcloud wordcloud
-citationWordclouds<-function(id, keywords){
+citationWordclouds<-function(id, keywords, citationkwfreqs, citationkwthemdico){
   if(id != "0" && !is.null(keywords)){
     # at least kws for the paper, so no need to check emptyness
     par(mfrow=c(1,2), bg = "#4e5d6c")
@@ -145,7 +145,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
 
   citationdbcit <- dbConnect(SQLite(), system.file("sqlite", "CitationNetwork.sqlite3", package = "corpusminer"))
   citationdbkws <- dbConnect(SQLite(), system.file("sqlite", "CitationKeywords.sqlite3", package = "corpusminer"))
-
+  
   # global vars (needed e.g. to avoid numerous db request with reactive functions)
   citationGlobalVars <- reactiveValues(
     citationSelected = "0",

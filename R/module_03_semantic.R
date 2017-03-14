@@ -8,8 +8,8 @@
 #' @return a data frame of matched terms
 #'
 #' @importFrom tibble data_frame
+#' @export
 terms_matched <- function(patterns, terms) {
-
   datasets <- lapply(patterns, function(pattern){
     indices <- grep( pattern, x = terms$term, ignore.case = TRUE, perl = TRUE)
     data_frame( id = indices, pattern = pattern)
@@ -19,11 +19,13 @@ terms_matched <- function(patterns, terms) {
 }
 
 #' Matched articles list
+#'
+#' Compute a list of articles containing a matched term
 #' @name titles_matched
-#' @description Compute a list of articles containing a matched term
-#' @param patterns: a string vector of regexp patterns to match
-#' Returns: a string vector of articles containing a matched term
-titles_matched <- function(patterns) {
+#' @param patterns a string vector of regexp patterns to match
+#' @return a string vector of articles containing a matched term
+#' @export
+titles_matched <- function(patterns, terms, articles) {
   citations <- terms_matched(patterns) %>%
     select(article_id) %>%
     distinct() %>%
@@ -33,12 +35,15 @@ titles_matched <- function(patterns) {
   return(citations$citation)
 }
 
-#' @title Matched sentences list
+#' Matched sentences list
+#'
+#' Compute a list of sentences containing a matched term
 #' @name phrases
-#' @description Compute a list of sentences containing a matched term
-#' @param patterns: a string vector of regexp patterns to match
-#' Returns: a vector of sentences containing a matched term
-phrases <- function(patterns) {
+#' @param patterns a string vector of regexp patterns to match
+#' @return a vector of sentences containing a matched term
+#'
+#' @export
+phrases <- function(patterns, sentences) {
   data <- data_frame()
   for (pattern in patterns) {
     indices <- grep(pattern, sentences$sentence, ignore.case = TRUE, perl = TRUE)
@@ -46,69 +51,74 @@ phrases <- function(patterns) {
       bind_rows(data)
   }
   data <- data %>%
-    left_join(sentences, by = c("id")) %>%
-    select(sentence)
+    left_join(sentences, by = "id")
   return(data$sentence)
 }
 
-#' @title Metadata for each matched terms
+#' Metadata for each matched terms
+#'
+#' Compute the metadata of each terms in order to build a wordcloud
 #' @name terms_matched_cloud
-#' @description Compute the metadata of each terms in order to build a wordcloud
-#' @param patterns: a string vector of regexp patterns to match
-#' Returns:
+#' @param patterns a string vector of regexp patterns to match
+#' @export
 terms_matched_cloud <- function(patterns) {
   terms_matched(patterns) %>%
     group_by(term) %>%
     summarise(articles = sum(count))
 }
 
-#' @title Metadata of each articles containing a matched term
+#' Metadata of each articles containing a matched term
+#'
+#' Compute the metadata of each articles containing a matched term
 #' @name articles_matched
-#' @description Compute the metadata of each articles containing a matched term
-#' @param patterns: a string vector of regexp patterns to match
-#' Returns: a dataframe of articles metadata
-articles_matched <- function(patterns) {
+#' @param patterns a string vector of regexp patterns to match
+#' @param articles articles data frame
+#' @return a dataframe of articles metadata
+#' @export
+articles_matched <- function(patterns, articles) {
   terms_matched(patterns) %>%
-    dplyr::group_by(article_id, pattern) %>%
-    dplyr::summarise(count = sum(count)) %>%
-    dplyr::left_join(articles, by = c("article_id" = "id")) %>%
-    dplyr::mutate(ym = str_sub(date, 1, 4)) %>%
-    dplyr::group_by(ym, pattern) %>%
-    dplyr::summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(date = parse_date_time(ym, "%y")) %>%
-    dplyr::select(date, pattern, articles, terms)
+    group_by(article_id, pattern) %>%
+    summarise(count = sum(count)) %>%
+    left_join(articles, by = c("article_id" = "id")) %>%
+    mutate(ym = str_sub(date, 1, 4)) %>%
+    group_by(ym, pattern) %>%
+    summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
+    ungroup() %>%
+    mutate(date = parse_date_time(ym, "%y")) %>%
+    select(date, pattern, articles, terms)
 }
 
-#' @title Chronogramme
+#' Chronogramme
+#'
+#' Compute a chronogram graphic of articles
 #' @name chronogram
-#' @description Compute a chronogram graphic of articles
 #' @param patterns: a string vector of regexp patterns to match
-#' Returns: a graphic
-chronogram <- function(patterns) {
-  ggplot(articles_matched(patterns), aes(date, articles)) +
+#' @export
+chronogram <- function(patterns, articles) {
+  matched <- articles_matched(patterns, articles)
+  ggplot(matched, aes(date, articles)) +
     geom_bar(stat = "identity") +
     facet_grid(pattern ~ ., scales = "free_y", space = "free_y") +
     labs(title="Chronogramme des articles publiés dans Cybergéo", x = "Année de publication", y = "Nombre d'articles publiés")
 }
 
-#' @title Cloud of terms
+#' Cloud of terms
+#'
+#' Compute a word cloud of matched terms
 #' @name cloud
-#' @description Compute a word cloud of matched terms
-#' @param patterns: a string vector of regexp patterns to match
-#' Returns: a graphic
+#' @param patterns a string vector of regexp patterns to match
+#' @export
 cloud <- function(patterns) {
   words <- terms_matched_cloud(patterns)
-  wordcloud(
-    words$term,
-    words$articles,
-    scale = c(10,1),
-    rot.per = 0
-  )
+  wordcloud( words$term, words$articles, scale = c(10,1), rot.per = 0)
 }
 
 ### ------- module shiny
 
+#' shiny module for the semantic tab
+#'
+#' @param id see \code{\link[shiny]{callModule}}
+#' @param pattern_list pattern list
 #' @export
 cybergeo_module_semantic_UI <- function(id, pattern_list){
   ns <- NS(id)
@@ -148,8 +158,14 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
   )
 }
 
+#' Shiny module server function for the semantic tab
+#' @param input input
+#' @param output output
+#' @param session session
+#' @param pattern_list pattern list
+#'
 #' @export
-cybergeo_module_semantic <- function( input, output, session, pattern_list ){
+cybergeo_module_semantic <- function( input, output, session, pattern_list, terms, articles, sentences ){
 
   patterns <- reactive({
     switch( input$mode,
@@ -171,9 +187,9 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list ){
   })
 
   # Compute the Outputs
-  output$chronogram <- renderPlot(chronogram(patterns()))
+  output$chronogram <- renderPlot(chronogram(patterns(), articles))
   output$cloud <- renderPlot(cloud(patterns()))
-  output$citations <- renderPrint(titles_matched(patterns()))
-  output$phrases <- renderPrint(phrases(patterns()))
+  output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
+  output$phrases <- renderPrint(phrases(patterns(), sentences))
 
 }

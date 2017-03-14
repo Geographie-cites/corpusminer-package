@@ -4,11 +4,13 @@
 \alias{titles_matched}
 \title{Matched articles list}
 \usage{
-titles_matched(patterns)
+titles_matched(patterns, terms, articles)
 }
 \arguments{
-\item{patterns:}{a string vector of regexp patterns to match
-Returns: a string vector of articles containing a matched term}
+\item{patterns}{a string vector of regexp patterns to match}
+}
+\value{
+a string vector of articles containing a matched term
 }
 \description{
 Compute a list of articles containing a matched term

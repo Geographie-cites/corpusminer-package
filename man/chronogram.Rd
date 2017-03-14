@@ -4,11 +4,10 @@
 \alias{chronogram}
 \title{Chronogramme}
 \usage{
-chronogram(patterns)
+chronogram(patterns, articles)
 }
 \arguments{
-\item{patterns:}{a string vector of regexp patterns to match
-Returns: a graphic}
+\item{patterns:}{a string vector of regexp patterns to match}
 }
 \description{
 Compute a chronogram graphic of articles

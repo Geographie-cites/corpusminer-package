@@ -2,7 +2,7 @@ Package: corpusminer
 Type: Package
 Version: 0.0.9000
 Title: Corpus Miner
-Description: Mining scientific journals corpus: semantics, networks and maps
+Description: Mining scientific journals corpus: semantics, networks and maps.
 Authors@R: c(
     person( "Hadrien", "Commenges", role = c("aut", "cre"), email = "hcommenges@parisgeo.cnrs.fr"),
     person( "Pierre-Olivier", "Chasset", role = "aut" ),
@@ -20,21 +20,22 @@ Depends:
 LazyData: yes
 License: AGPL-3
 Imports:
-    RSQLite,
-    shiny,
-    sp,
-    svgPanZoom,
-    dplyr,
-    igraph,
-    utils,
-    methods,
-    ggplot2,
-    magrittr,
-    stringr,
-    reshape2,
-    assertthat,
-    tibble,
-    stats,
-    wordcloud
+  shiny,
+  ggplot2,
+  svgPanZoom,
+  RSQLite,
+  igraph,
+  dplyr,
+  utils,
+  stats,
+  graphics,
+  grDevices,
+  stringr,
+  tibble,
+  reshape2,
+  wordcloud,
+  methods,
+  sp,
+  lubridate
 RoxygenNote: 5.0.1
 Suggests: testthat
