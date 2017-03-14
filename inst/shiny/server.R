@@ -3,24 +3,22 @@ shinyServer(function(input, output, session) {
   callModule(cybergeo_module_overview, "overview",
     world = world, articles = ARTICLES
   )
-  
+
   callModule(cybergeo_module_citation, "citation",
-    citation_cybergeodata = citation_cybergeodata,
-    citationdbcit = citationdbcit,
-    citationdbkws = citationdbkws
+    citation_cybergeodata = citation_cybergeodata
   )
-  
-  callModule(cybergeo_module_semantic, "semantic", 
+
+  callModule(cybergeo_module_semantic, "semantic",
     pattern_list = pattern_list
-  ) 
-  
-  callModule(cybergeo_module_keyword, "keyword", 
+  )
+
+  callModule(cybergeo_module_keyword, "keyword",
     NETKW = NETKW
   )
-  
-  callModule(cybergeo_module_geosemantic, "geosemantic", 
-    geo_semantic_data = geo_semantic_data, 
+
+  callModule(cybergeo_module_geosemantic, "geosemantic",
+    geo_semantic_data = geo_semantic_data,
     world = world
   )
-  
+
 })
