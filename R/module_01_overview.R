@@ -28,28 +28,23 @@ overview_plot_col <- c(A = "orange", S = "#1C6F91", L = "#df691a")
 
 #' Overview map plot
 #'
-#' @param world
-#' @param articles
-#' @param years
-#' @param indicator
-#'
 #' @importFrom graphics par title
 #' @importMethodsFrom sp plot
 #' @export
 plot_overview_map <- function( world, articles, years, indicator = c("A", "S", "L") ){
-  
+
   indicator <- match.arg(indicator)
-  
+
   countries <- as.character( world@data$CNTR_ID )
   columns <- paste( indicator, countries, sep = "_")
-  
+
   # data for the chosen indicator
   counts <-  colSums( articles[, columns ] )
-  
+
   # title and colors
   plot_title <- paste( overview_plot_prefix[indicator], pretty_years_interval(years), sep = " | ")
   col  <- ifelse( counts > 0, overview_plot_col[indicator], "lightgrey")
-  
+
   # plot
   par( bg = "#2b3e50", mar = c(0,0,1,0) )
   plot( world, col = col, border = "white", lwd = 0.7)
@@ -64,21 +59,21 @@ overview_summary_country <- function(x){
 
 #' @importFrom tibble data_frame
 overview_stats <- function( data ){
-  
+
   nPapers <- nrow(data)
   nAuthors <- sum(data$nauthors)
-  
+
   authoring <- colSums( select(data, starts_with("A_")) )
   nAuthoringCountries <- sum( authoring > 0)
   AC5 <- overview_summary_country( authoring )
-  
+
   studied <- colSums( select(data, starts_with("S_")) )
   nStudiedCountries <- sum( studied > 0)
   SC5 <- overview_summary_country( studied )
-  
+
   citedby <- sum(data$citedby, na.rm = TRUE)
   citing <- sum(data$citing, na.rm = TRUE)
-  
+
   data_frame(
     Indicator = c("Number of scientific articles", "Number of authors", "Number of countries authoring",
                   "Top countries authoring", "Number of countries studied", "Top countries studied",
@@ -86,14 +81,14 @@ overview_stats <- function( data ){
     ),
     Value = c(nPapers, nAuthors, nAuthoringCountries, AC5, nStudiedCountries, SC5, citedby, citing)
   )
-  
+
 }
 
 #' @export
 cybergeo_module_overview_UI <- function(id){
   ns <- NS(id)
-  
-  tabPanel( "Overview", 
+
+  tabPanel( "Overview",
     fluidRow(
       column(6,
         sliderInput( ns("dateRange"), label = "Time Range",
@@ -109,10 +104,10 @@ cybergeo_module_overview_UI <- function(id){
       )
     ),
     plotOutput( ns("cybMap") ),
-    dataTableOutput( ns("statArticles") )  
+    dataTableOutput( ns("statArticles") )
   )
-  
-} 
+
+}
 
 #' @export
 cybergeo_module_overview <- function( input, output, session, world, articles ){
@@ -120,16 +115,16 @@ cybergeo_module_overview <- function( input, output, session, world, articles ){
   data_overview <- reactive({
     subset_articles( articles, input$dateRange )
   })
-  
+
   # summary table
   output$statArticles <- renderDataTable({
     overview_stats( data_overview() )
   })
-  
+
   # map plot
   output$cybMap = renderPlot({
     plot_overview_map( world, data_overview(), input$dateRange, input$whatMapped )
   })
-  
+
   data_overview
 }

@@ -8,16 +8,6 @@
 #' @param vsize.default default value for vertex size, e.g. 1 for direct plot or 30 for svg rendering
 #' @param esize.prop One of "nbl" or "rel" to control on what edges are proportional
 #' @param esize.fac Expansion factor for edge sizes
-#' @param vertex.label.cex
-#' @param edge.color
-#' @param edge.curved
-#' @param edge.arrow.mode
-#' @param edge.arrow.size
-#' @param vertex.color
-#' @param vertex.frame.color
-#' @param vertex.label.color
-#' @param vertex.label.family
-#' @param bg background
 #'
 #' @importFrom graphics plot
 #' @export
@@ -153,9 +143,8 @@ VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
 
 #' sample x values for polar coordinates for the semantic field visualization (VisuSem function)
 #'
-#' @param df
+#' @param df data frame
 #'
-#' @return
 #' @noRd
 GetXvalues <- function(df){
   initVal <- sample(x = 0:360, size = 1, replace = FALSE)
@@ -170,7 +159,6 @@ GetXvalues <- function(df){
 #' @param g igraph network
 #' @param kw scalar, character, selected keyword
 #'
-#' @return
 #' @noRd
 SemanticField <- function(g, kw){
   # list of neighbors
@@ -197,9 +185,8 @@ SemanticField <- function(g, kw){
 #' function to be lapplied to a list of vectors (each vector is the set of keywords for a given article).
 #' Clean the keywords list (no punctuation, no digits, trim white spaces)
 #'
-#' @param mystr
+#' @param mystr string to clean
 #'
-#' @return
 #' @noRd
 #' @importFrom stringr str_to_lower str_trim
 CleanCorpus <- function(mystr){
@@ -218,7 +205,6 @@ CleanCorpus <- function(mystr){
 #'
 #' @param x vector, character, keywords list for one article
 #'
-#' @return
 #' @noRd
 #' @importFrom utils combn
 MakeEdgesList <- function(x) {

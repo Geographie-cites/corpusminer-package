@@ -29,8 +29,6 @@ library(stringr)
 
 #### Geographical data
 
-world = readOGR(dsn="data/world_withZoom.shp", layer = "world_withZoom", encoding="utf8", verbose = F)
-
 countries = as.character(world@data$CNTR_ID)
 geo_semantic_data <- list(
   Keywords  = load_geo_semantic_data( "app_data/keyword_themes.csv", ARTICLES, countries ),

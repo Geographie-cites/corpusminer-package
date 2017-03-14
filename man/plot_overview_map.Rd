@@ -6,9 +6,6 @@
 \usage{
 plot_overview_map(world, articles, years, indicator = c("A", "S", "L"))
 }
-\arguments{
-\item{indicator}{}
-}
 \description{
 Overview map plot
 }
