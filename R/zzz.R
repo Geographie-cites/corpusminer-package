@@ -1,4 +1,3 @@
-#' @import assertthat
 #' @import shiny
 #' @import dplyr
 #' @import igraph
@@ -6,43 +5,8 @@
 #' @import svgPanZoom
 #' @import RSQLite
 #' @importFrom magrittr %>%
+#' @importFrom utils citation read.table
+#' @importFrom stats complete.cases
+#' @importFrom graphics axis barplot
+#' @importFrom grDevices dev.off svg
 NULL
-
-#' articles
-#'
-#' @export
-"ARTICLES"
-
-#' network of keywords
-#'
-#' @export
-"NETKW"
-
-#' world map with zoom on europe
-#'
-#' @export
-"world"
-
-#' @export
-"geo_semantic_data"
-
-#' @export
-"terms"
-
-#' @export
-"sentences"
-
-#' @export
-"cybergeo"
-
-#' @export
-"cybergeo"
-
-#' @export
-"citation_cybergeodata"
-
-#' @export
-"citationkwfreqs"
-
-#' @export
-"citationkwthemdico"

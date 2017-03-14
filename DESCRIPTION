@@ -1,5 +1,4 @@
 Package: corpusminer
-Encoding: utf-8
 Type: Package
 Version: 0.0.9000
 Title: Corpus Miner
@@ -12,7 +11,7 @@ Authors@R: c(
     person( "Romain", "Francois", email = "romain@thinkr.fr", role = "ctr"),
     person( "Vincent", "Guyader", email = "vincent@thinkr.fr", role = "ctr"),
     person( "Diane", "Beldame", email = "diane@thinkr.fr", role = "ctr"),
-    person( "UMR Géographie-cités", role = "cph")
+    person( "UMR Geographie-cites", role = "cph")
     )
 URL: https://github.com/Geographie-cites/corpusminer-package
 BugReports: https://github.com/Geographie-cites/corpusminer-package/issues
@@ -21,6 +20,10 @@ Depends:
 LazyData: yes
 License: AGPL-3
 Imports:
+    RSQLite,
+    shiny,
+    sp,
+    svgPanZoom,
     dplyr,
     igraph,
     utils,

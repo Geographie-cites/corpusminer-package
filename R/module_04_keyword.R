@@ -86,8 +86,6 @@ VisuComm <- function(g,
 #' @export
 VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
 
-  assert_that( is.string(kw), is.number(textsizemin), is.number(textsizemax) )
-
   # make theme empty
   theme_empty <- theme_bw() +
     theme(plot.background = element_rect(fill = "#4e5d6c"),
