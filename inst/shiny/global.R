@@ -24,28 +24,6 @@ library(scales)
 library(lubridate)
 library(stringr)
 
-
-######## PO :
-##   Regexp terms in full textes
-
-
-# Read the sentences dataframe
-
-# Read the metadata of articles
-articles <- read.table(
-  "data/cybergeo.csv",
-  sep = ",",
-  quote = "\"",
-  comment.char = "",
-  header = TRUE
-) %>%
-  tbl_df() %>%
-  dplyr::rename(titre = title_en, auteurs = authors) %>%
-  dplyr::mutate(citation = paste(sep = ". ", auteurs, substr(date,1,4), titre)) %>%
-  dplyr::select(id, date, citation, langue)
-
-
-
 ####################
 ### Juste ---
 #

@@ -29,3 +29,6 @@ NULL
 
 #' @export
 "sentences"
+
+#' @export
+"cybergeo"

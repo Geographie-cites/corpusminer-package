@@ -21,3 +21,12 @@ sentences <- read.table( "data-raw/sentences.csv",
     id = row_number()
   )
 save( sentences, file = "data/sentences.rda")
+
+cybergeo <- read.table(
+  "data-raw/cybergeo.csv",
+  sep = ",", quote = "\"", comment.char = "", header = TRUE ) %>%
+  tbl_df() %>%
+  rename(titre = title_en, auteurs = authors) %>%
+  mutate(citation = paste(sep = ". ", auteurs, substr(date,1,4), titre)) %>%
+  select(id, date, citation, langue)
+save( cybergeo, file = "data/cybergeo.rda" )
