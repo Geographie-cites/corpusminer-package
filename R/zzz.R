@@ -8,3 +8,6 @@ NULL
 
 #' @export
 "ARTICLES"
+
+#' @export
+"NETKW"
