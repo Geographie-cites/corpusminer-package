@@ -36,6 +36,7 @@ Imports:
   wordcloud,
   methods,
   sp,
-  lubridate
+  lubridate,
+    leaflet
 RoxygenNote: 5.0.1
 Suggests: testthat

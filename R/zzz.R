@@ -1,4 +1,5 @@
 #' @import shiny
+#' @import leaflet
 #' @import ggplot2
 #' @import svgPanZoom
 #' @import RSQLite

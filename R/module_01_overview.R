@@ -89,22 +89,26 @@ cybergeo_module_overview_UI <- function(id){
   ns <- NS(id)
 
   tabPanel( "Overview",
-    fluidRow(
-      column(6,
-        sliderInput( ns("dateRange"), label = "Time Range",
-          min = 1996, max = 2015, value = c(1996,2015),
-          step = 1, animate=TRUE
-        )
-      ),
-      column(6,
-        selectInput( ns("whatMapped"), label = "Indicator to map",
-          choices=c("Authoring countries" = "A", "Countries Studied"= "S", "Countries Studies by Locals"= "L"),
-          multiple=FALSE
-        )
-      )
-    ),
-    plotOutput( ns("cybMap") ),
-    dataTableOutput( ns("statArticles") )
+    # fluidRow(
+    #   column(6,
+    #     sliderInput( ns("dateRange"), label = "Time Range",
+    #       min = 1996, max = 2015, value = c(1996,2015),
+    #       step = 1, animate=TRUE
+    #     )
+    #   ),
+    #   column(6,
+    #     selectInput( ns("whatMapped"), label = "Indicator to map",
+    #       choices=c("Authoring countries" = "A", "Countries Studied"= "S", "Countries Studies by Locals"= "L"),
+    #       multiple=FALSE
+    #     )
+    #   )
+    # ),
+    # plotOutput( ns("cybMap") ),
+    # dataTableOutput( ns("statArticles") ),
+    div(class = "outer",
+      leafletOutput( ns("leaflet"), width="100%", height="100%" )
+    )
+
   )
 
 }
@@ -125,6 +129,14 @@ cybergeo_module_overview <- function( input, output, session, world, articles ){
   output$cybMap = renderPlot({
     plot_overview_map( world, data_overview(), input$dateRange, input$whatMapped )
   })
+
+  output$leaflet <- renderLeaflet({
+    leaflet(monde) %>%
+      addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
+      setView(lng = 0, lat= 20, zoom=3) %>%
+      addPolygons(color = "blue", weight = 1, fillOpacity = 0  )
+  })
+
 
   data_overview
 }

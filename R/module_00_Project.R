@@ -9,7 +9,7 @@ ga_tracker <- function(id = "UA-40299595-6"){
                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
                    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-                   
+
                    ga('create', '%s', 'auto');
                    ga('send', 'pageview');
                    ", id )
@@ -25,14 +25,15 @@ cybergeo_head <- function(){
   tags$head(
     favicon(),
     ga_tracker( id = "UA-40299595-6"),
-    google_font( family = "Orbitron|Cabin:400,700")
+    google_font( family = "Orbitron|Cabin:400,700"),
+    tags$link(rel="stylesheet", href="cybergeo.css")
   )
 }
 
 #' @export
 cybergeo_module_project_UI <- function(id){
-  
-  tabPanel( "The Project",  
+
+  tabPanel( "The Project",
     cybergeo_head(),
     fluidRow(
       column(9,
@@ -50,12 +51,12 @@ cybergeo_module_project_UI <- function(id){
               you can review twenty years of epistemological and thematic trends in a variety of fields of scientific interest.
               The networks tell who studies what, where and how. Data are regularly updated."
         ),
-        
+
         h3("About the app"),
         "All data, materials and source codes are freely available on this repository: ",
         a("github.com/Geographie-cites/cybergeo20",href="https://github.com/Geographie-cites/cybergeo20"),
         br(),
-        
+
         h3("The Team"),
         "Pierre-Olivier Chasset", a("(@chasset)",href="https://github.com/chasset"), br(),
         "Hadrien Commenges", a("(@hcommenges)",href="https://github.com/hcommenges"), br(),
@@ -65,9 +66,9 @@ cybergeo_module_project_UI <- function(id){
         "Denise Pumain", br(),
         "Juste Raimbault", a("(@JusteRaimbault)",href="https://github.com/JusteRaimbault")
       ) ,
-      column(3, 
+      column(3,
         img(src = "favicon.png",class="img-responsive"))
       )
     )
-  
+
 }
