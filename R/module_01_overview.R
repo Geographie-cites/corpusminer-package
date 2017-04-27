@@ -33,10 +33,50 @@ overview_summary_country <- function(x){
 }
 
 
+subset_map_data <- function( world, articles, indicator){
+  countries <- as.character( world@data$CNTR_ID )
+  columns <- paste( indicator, countries, sep = "_")
+  
+  counts <-  colSums( articles[, columns ] )
+  names(counts) <- gsub( "^.*_", "", names( counts) )
+  
+  counts <- counts[counts>0]
+  
+  keep <- match( names(counts), world@data$CNTR_ID )
+  w <- world[ keep, ]
+  w
+}
+
+leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), authoring, studied ){
+  indicator <- match.arg(indicator)
+  col  <- overview_plot_col[[indicator]]
+  w <- subset_map_data(world, articles, indicator)
+  
+  countries <- as.character(w@data$CNTR_ID)
+  nAuthoring <- authoring[countries]
+  nStudied <- studied[countries]
+  
+  labels <- sprintf( "<strong>%s</strong><br/> %d articles authored<br/>studied by %d articles", countries, nAuthoring, nStudied ) %>% lapply(HTML)
+  
+  leaflet(w) %>%
+    addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
+    setView(lng = 0, lat= 20, zoom=3) %>% 
+    addPolygons( color = "black", weight = 1, fillColor = col, fill = TRUE, 
+      highlight = highlightOptions(weight = 2, fillOpacity = 1,bringToFront = TRUE), 
+      label = labels, 
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+      )
+    )
+  
+}
+
 #' @export
 cybergeo_module_overview_UI <- function(id){
   ns <- NS(id)
-
+  
   tabPanel( "Overview",
     
     div( class = "outer", 
@@ -87,7 +127,7 @@ cybergeo_module_overview_UI <- function(id){
           textOutput( ns("nCitedBy"), inline = TRUE) ,
           " citations from other articles "
         ),
-
+        
         div(
           textOutput( ns("nCiting"), inline = TRUE) ,
           " citations of other articles "
@@ -102,46 +142,6 @@ cybergeo_module_overview_UI <- function(id){
       )
     )
   )
-
-}
-
-subset_map_data <- function( world, articles, indicator){
-  countries <- as.character( world@data$CNTR_ID )
-  columns <- paste( indicator, countries, sep = "_")
-  
-  counts <-  colSums( articles[, columns ] )
-  names(counts) <- gsub( "^.*_", "", names( counts) )
-  
-  counts <- counts[counts>0]
-  
-  keep <- match( names(counts), world@data$CNTR_ID )
-  w <- world[ keep, ]
-  w
-}
-
-leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), authoring, studied ){
-  indicator <- match.arg(indicator)
-  col  <- overview_plot_col[[indicator]]
-  w <- subset_map_data(world, articles, indicator)
-  
-  countries <- as.character(w@data$CNTR_ID)
-  nAuthoring <- authoring[countries]
-  nStudied <- studied[countries]
-  
-  labels <- sprintf( "<strong>%s</strong><br/> %d articles authored<br/>studied by %d articles", countries, nAuthoring, nStudied ) %>% lapply(HTML)
-  
-  leaflet(w) %>%
-    addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
-    setView(lng = 0, lat= 20, zoom=3) %>% 
-    addPolygons( color = "black", weight = 1, fillColor = col, fill = TRUE, 
-      highlight = highlightOptions(weight = 2, fillOpacity = 1,bringToFront = TRUE), 
-      label = labels, 
-      labelOptions = labelOptions(
-        style = list("font-weight" = "normal", padding = "3px 8px"),
-        textsize = "15px",
-        direction = "auto"
-      )
-    )
   
 }
 
