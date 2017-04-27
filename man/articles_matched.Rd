@@ -17,4 +17,3 @@ a dataframe of articles metadata
 \description{
 Compute the metadata of each articles containing a matched term
 }
-

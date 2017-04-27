@@ -15,4 +15,3 @@ a vector of sentences containing a matched term
 \description{
 Compute a list of sentences containing a matched term
 }
-

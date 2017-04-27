@@ -133,7 +133,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 
     # user guide
     tabPanel("User guide",
-      includeMarkdown("doc/CitationNetwork.md")
+      includeMarkdown( "doc/CitationNetwork.md")
     )
 
   )

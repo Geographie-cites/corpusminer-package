@@ -27,4 +27,3 @@ VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
 \description{
 plot the communities. result of any community detection algo, here Louvain method
 }
-

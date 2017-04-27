@@ -17,4 +17,3 @@ a data frame of matched terms
 \description{
 Compute a dataframe of matched terms
 }
-

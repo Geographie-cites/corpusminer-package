@@ -15,4 +15,3 @@ A data frame with columns code{KEYWORD1}, \code{KEYWORD2}, \code{OBSERVED_WEIGHT
 \description{
 create information table for edges
 }
-

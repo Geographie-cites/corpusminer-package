@@ -19,4 +19,3 @@ cybergeo_module_semantic(input, output, session, pattern_list, terms, articles,
 \description{
 Shiny module server function for the semantic tab
 }
-

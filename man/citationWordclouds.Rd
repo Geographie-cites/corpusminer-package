@@ -9,4 +9,3 @@ citationWordclouds(id, keywords, citationkwfreqs, citationkwthemdico)
 \description{
 plots word clouds, one for the keywords of the ref itself, the other for the provided keywords (neighborhood)
 }
-

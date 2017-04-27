@@ -12,4 +12,3 @@ describe_network(g)
 \description{
 Describe number of vertices and and edges
 }
-

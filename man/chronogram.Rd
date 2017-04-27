@@ -12,4 +12,3 @@ chronogram(patterns, articles)
 \description{
 Compute a chronogram graphic of articles
 }
-

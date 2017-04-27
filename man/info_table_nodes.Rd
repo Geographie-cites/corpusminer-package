@@ -15,4 +15,3 @@ A data frame with columns \code{KEYWORDS}, \code{NB_ARTICLES} and \code{DEGREE}
 \description{
 create information table for nodes
 }
-

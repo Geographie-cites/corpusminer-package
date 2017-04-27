@@ -26,117 +26,179 @@ overview_plot_prefix <- c(
 )
 overview_plot_col <- c(A = "orange", S = "#1C6F91", L = "#df691a")
 
-#' Overview map plot
-#'
-#' @importFrom graphics par title
-#' @importMethodsFrom sp plot
-#' @export
-plot_overview_map <- function( world, articles, years, indicator = c("A", "S", "L") ){
-
-  indicator <- match.arg(indicator)
-
-  countries <- as.character( world@data$CNTR_ID )
-  columns <- paste( indicator, countries, sep = "_")
-
-  # data for the chosen indicator
-  counts <-  colSums( articles[, columns ] )
-
-  # title and colors
-  plot_title <- paste( overview_plot_prefix[indicator], pretty_years_interval(years), sep = " | ")
-  col  <- ifelse( counts > 0, overview_plot_col[indicator], "lightgrey")
-
-  # plot
-  par( bg = "#2b3e50", mar = c(0,0,1,0) )
-  plot( world, col = col, border = "white", lwd = 0.7)
-  title( plot_title, col.main = "white")
-}
-
 #' @importFrom utils head
 overview_summary_country <- function(x){
   best <- head( sort(x, decreasing = TRUE), 5L)
-  paste( substr( names(best), 3, 5 ), " (", best, ")", collapse = ", ", sep = "")
+  paste( names(best), " (", best, ")", collapse = ", ", sep = "")
 }
 
-#' @importFrom tibble data_frame
-overview_stats <- function( data ){
-
-  nPapers <- nrow(data)
-  nAuthors <- sum(data$nauthors)
-
-  authoring <- colSums( select(data, starts_with("A_")) )
-  nAuthoringCountries <- sum( authoring > 0)
-  AC5 <- overview_summary_country( authoring )
-
-  studied <- colSums( select(data, starts_with("S_")) )
-  nStudiedCountries <- sum( studied > 0)
-  SC5 <- overview_summary_country( studied )
-
-  citedby <- sum(data$citedby, na.rm = TRUE)
-  citing <- sum(data$citing, na.rm = TRUE)
-
-  data_frame(
-    Indicator = c("Number of scientific articles", "Number of authors", "Number of countries authoring",
-                  "Top countries authoring", "Number of countries studied", "Top countries studied",
-                  "Number of citations from other articles", "Number of citations of other articles"
-    ),
-    Value = c(nPapers, nAuthors, nAuthoringCountries, AC5, nStudiedCountries, SC5, citedby, citing)
-  )
-
-}
 
 #' @export
 cybergeo_module_overview_UI <- function(id){
   ns <- NS(id)
 
   tabPanel( "Overview",
-    # fluidRow(
-    #   column(6,
-    #     sliderInput( ns("dateRange"), label = "Time Range",
-    #       min = 1996, max = 2015, value = c(1996,2015),
-    #       step = 1, animate=TRUE
-    #     )
-    #   ),
-    #   column(6,
-    #     selectInput( ns("whatMapped"), label = "Indicator to map",
-    #       choices=c("Authoring countries" = "A", "Countries Studied"= "S", "Countries Studies by Locals"= "L"),
-    #       multiple=FALSE
-    #     )
-    #   )
-    # ),
-    # plotOutput( ns("cybMap") ),
-    # dataTableOutput( ns("statArticles") ),
-    div(class = "outer",
+    
+    div( class = "outer", 
       leafletOutput( ns("leaflet"), width="100%", height="100%" )
-    )
+    ), 
+    absolutePanel( id = ns("controls"), class = "panel panel-default panel-side", 
+      fixed = TRUE, draggable = TRUE, 
+      top = 60, left = "auto", right = 20, bottom = "auto", 
+      width = 350, height= "auto", 
+      
+      div( class = "panel-side", 
+        h4( "Time range"), 
+        sliderInput( ns("dateRange"), label = NULL,
+          min = 1996, max = 2015, value = c(1996,2015),
+          step = 1, animate=TRUE
+        ), 
+        
+        div(
+          textOutput( ns("nArticles"), inline = TRUE) , 
+          " scientific articles from ", 
+          textOutput( ns("nAuthors"), inline = TRUE) , 
+          " authors"
+        ), 
+        br(), 
+        
+        div( 
+          textOutput( ns("nAuthoring"), inline = TRUE) , 
+          " authoring countries "
+        ),
+        
+        div( style = "font-size: smaller", 
+          "Top 5 : ", 
+          textOutput(ns("top5Authoring"), inline = TRUE )
+        ), 
+        br(), 
+        
+        div( 
+          textOutput( ns("nStudied"), inline = TRUE) , 
+          " studied countries "
+        ),
+        div( style = "font-size: smaller", 
+          "Top 5 : ", 
+          textOutput(ns("top5Studied"), inline = TRUE )
+        ), 
+        br(), 
+        
+        div(
+          textOutput( ns("nCitedBy"), inline = TRUE) ,
+          " citations from other articles "
+        ),
 
+        div(
+          textOutput( ns("nCiting"), inline = TRUE) ,
+          " citations of other articles "
+        ),
+        
+        h4( "Indicator to map"), 
+        selectInput( ns("whatMapped"), label = NULL,
+          choices=c("Authoring countries" = "A", "Countries Studied"= "S", "Countries Studies by Locals"= "L"),
+          multiple=FALSE
+        ), 
+        dataTableOutput( ns("statArticles") )
+      )
+    )
   )
 
 }
 
+subset_map_data <- function( world, articles, indicator){
+  countries <- as.character( world@data$CNTR_ID )
+  columns <- paste( indicator, countries, sep = "_")
+  
+  counts <-  colSums( articles[, columns ] )
+  names(counts) <- gsub( "^.*_", "", names( counts) )
+  
+  counts <- counts[counts>0]
+  
+  keep <- match( names(counts), world@data$CNTR_ID )
+  w <- world[ keep, ]
+  w
+}
+
+leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), authoring, studied ){
+  indicator <- match.arg(indicator)
+  col  <- overview_plot_col[[indicator]]
+  w <- subset_map_data(world, articles, indicator)
+  
+  countries <- as.character(w@data$CNTR_ID)
+  nAuthoring <- authoring[countries]
+  nStudied <- studied[countries]
+  
+  labels <- sprintf( "<strong>%s</strong><br/> %d articles authored<br/>studied by %d articles", countries, nAuthoring, nStudied ) %>% lapply(HTML)
+  
+  leaflet(w) %>%
+    addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
+    setView(lng = 0, lat= 20, zoom=3) %>% 
+    addPolygons( color = "black", weight = 1, fillColor = col, fill = TRUE, 
+      highlight = highlightOptions(weight = 2, fillOpacity = 1,bringToFront = TRUE), 
+      label = labels, 
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"
+      )
+    )
+  
+}
+
 #' @export
 cybergeo_module_overview <- function( input, output, session, world, articles ){
+  
   # subset of the data from ARTICLES in the date interval
   data_overview <- reactive({
     subset_articles( articles, input$dateRange )
   })
 
-  # summary table
-  output$statArticles <- renderDataTable({
-    overview_stats( data_overview() )
+  authoring <- reactive({
+    x <- colSums( select(data_overview(), starts_with("A_")) )
+    names(x) <- gsub( "^.*_", "", names(x))
+    x
   })
-
-  # map plot
-  output$cybMap = renderPlot({
-    plot_overview_map( world, data_overview(), input$dateRange, input$whatMapped )
+  nAuthoringCountries <- reactive({
+    sum( authoring() > 0)
   })
-
+  
+  studied <- reactive({
+    x <- colSums( select(data_overview(), starts_with("S_")) )
+    names(x) <- gsub( "^.*_", "", names(x))
+    x
+  })
+  
+  nStudiedCountries <- reactive({
+    sum( studied() > 0)
+  })
+  
+  citedby <- reactive({
+    sum(data_overview()$citedby, na.rm = TRUE)
+  })
+  
+  citing <- reactive({
+    sum(data_overview()$citing, na.rm = TRUE)
+  })
+  
+  # the main leaflet output
   output$leaflet <- renderLeaflet({
-    leaflet(monde) %>%
-      addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
-      setView(lng = 0, lat= 20, zoom=3) %>%
-      addPolygons(color = "blue", weight = 1, fillOpacity = 0  )
+    leaflet_overview(world, data_overview(), input$whatMapped, authoring = authoring(), studied = studied() )
   })
-
-
-  data_overview
+  
+  # various output in the absolute panel
+  output$nArticles <- renderText( nrow(data_overview()) )
+  output$nAuthors  <- renderText( sum(data_overview()$nauthors))
+  
+  output$nAuthoring <- renderText( nAuthoringCountries() )
+  output$nStudied   <- renderText( nStudiedCountries() )
+  
+  output$nCitedBy <- renderText( citedby() )
+  output$nCiting  <- renderText( citing() )
+  
+  output$top5Authoring <- renderText( overview_summary_country(authoring()) )
+  
+  output$top5Studied <- renderText( overview_summary_country(studied()) )
+  
+  # data_overview
+  NULL
 }

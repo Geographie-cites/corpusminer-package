@@ -14,4 +14,3 @@ cybergeo_module_semantic_UI(id, pattern_list)
 \description{
 shiny module for the semantic tab
 }
-

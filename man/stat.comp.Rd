@@ -19,4 +19,3 @@ a dataframe in which lines represent cah groups of country and columns represent
 \description{
 it is used in the legend of the cah map
 }
-

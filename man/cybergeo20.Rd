@@ -12,4 +12,3 @@ cybergeo20(...)
 \description{
 Launch cybergeo 20 app
 }
-

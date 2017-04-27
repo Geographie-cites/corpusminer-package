@@ -361,7 +361,7 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
         column(9, plotOutput(ns("plotsem"), width = "100%", height = "800px"))
       )
     ),
-    tabPanel("User guide", withMathJax(),includeMarkdown("doc/README_HC.md"))
+    tabPanel("User guide", withMathJax(),includeMarkdown( "doc/README_HC.md"))
   )
 }
 

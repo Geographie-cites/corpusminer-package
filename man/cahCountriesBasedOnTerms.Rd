@@ -21,4 +21,3 @@ This function produces a hierarchical clustering of countries with respect
 to their frequency of themes it is used in the geosemantic tab to display
 the groups of countries by themes and the corresponding average profiles of themes
 }
-

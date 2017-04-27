@@ -14,4 +14,3 @@ extract_community_graph(g, community)
 \description{
 extract subgraph for a given community
 }
-

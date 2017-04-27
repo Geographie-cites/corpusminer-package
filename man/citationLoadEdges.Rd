@@ -14,4 +14,3 @@ citationLoadEdges(con, id)
 \description{
 load citation edges given an reference id
 }
-

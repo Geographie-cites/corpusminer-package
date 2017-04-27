@@ -9,4 +9,3 @@ citationVisuEgo(edges)
 \description{
 visualize an ego network given edges
 }
-

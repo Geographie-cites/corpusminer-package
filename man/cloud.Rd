@@ -12,4 +12,3 @@ cloud(patterns)
 \description{
 Compute a word cloud of matched terms
 }
-

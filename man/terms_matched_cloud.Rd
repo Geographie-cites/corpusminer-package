@@ -12,4 +12,3 @@ terms_matched_cloud(patterns)
 \description{
 Compute the metadata of each terms in order to build a wordcloud
 }
-

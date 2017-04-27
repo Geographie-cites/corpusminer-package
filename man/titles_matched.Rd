@@ -15,4 +15,3 @@ a string vector of articles containing a matched term
 \description{
 Compute a list of articles containing a matched term
 }
-

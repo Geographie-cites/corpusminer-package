@@ -20,4 +20,3 @@ VisuSem(g, kw, chidist, textsizemin, textsizemax)
 \description{
 plot the semantic field of a selected keyword (inverse proportional distance to pseudo-chi2 distance)
 }
-
