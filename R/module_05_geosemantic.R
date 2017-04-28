@@ -118,11 +118,25 @@ cybergeo_module_geosemantic_UI <- function(id){
   
   navbarMenu("Geo-semantic Networks",
     tabPanel("Geo-semantic Networks",
-      fluidRow(
-        column(4, selectInput(ns("semanticMethod"), label = "Semantic Method", choices = c("Citations", "Keywords", "Semantic"), multiple = F)),
-        column(4, selectInput(ns("aggregationMethod"), label = "Set of Countries",choices = c("Authoring", "Studied"), selected = "Studied", multiple = F)),
-        column(4, sliderInput(ns("nClassifGroups"), label = "Number of Clusters", min = 1, max = 8, value = 4, step = 1), animate=T)
-      ),
+      
+      div( class = "outer", 
+        leafletOutput( ns("leaflet"), width="100%", height="100%" )
+      ), 
+      
+      absolutePanel( id = ns("controls"), class = "panel panel-default panel-side", 
+        fixed = TRUE, draggable = TRUE, 
+        top = 60, left = "20px", right = "20px", bottom = "auto", 
+        height = "auto", 
+        
+        div( class = "panel-side", 
+          fluidRow(
+            column(4, selectInput(ns("semanticMethod"), label = "Semantic Method", choices = c("Citations", "Keywords", "Semantic"), multiple = F)),
+            column(4, selectInput(ns("aggregationMethod"), label = "Set of Countries",choices = c("Authoring", "Studied"), selected = "Studied", multiple = F)),
+            column(4, sliderInput(ns("nClassifGroups"), label = "Number of Clusters", min = 1, max = 8, value = 4, step = 1), animate=T)
+          )  
+        )
+      ), 
+      
       plotOutput(ns("termsXCountriesMap")),
       plotOutput(ns("termsXCountriesLegend"))
     ),
@@ -132,6 +146,7 @@ cybergeo_module_geosemantic_UI <- function(id){
 }
 
 #' @export
+#' @importFrom sp plot
 cybergeo_module_geosemantic <- function( input, output, session, geo_semantic_data, world ){
   
   clusterCountries <- reactive({
