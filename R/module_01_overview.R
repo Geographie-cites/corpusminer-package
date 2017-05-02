@@ -42,7 +42,7 @@ subset_map_data <- function( world, articles, indicator){
   
   counts <- counts[counts>0]
   
-  keep <- match( names(counts), world@data$CNTR_ID )
+  keep <- match( names(counts), countries )
   w <- world[ keep, ]
   w
 }

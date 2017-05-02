@@ -21,7 +21,7 @@ shinyServer(function(input, output, session) {
 
   callModule(cybergeo_module_geosemantic, "geosemantic",
     geo_semantic_data = geo_semantic_data,
-    world = world
+    world = world_nozoom
   )
 
 })

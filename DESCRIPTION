@@ -37,6 +37,7 @@ Imports:
   methods,
   sp,
   lubridate,
-    leaflet
+    leaflet,
+    rgeos
 RoxygenNote: 6.0.1
 Suggests: testthat

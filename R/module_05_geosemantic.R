@@ -53,30 +53,7 @@ aggregateCountriesBasedOnTerms <- function(themesFile, themes, countries_to_aggr
   themes_By_country_bf
 }
 
-
-#' Computes the average frquencies of themes by cah group
-#'
-#' it is used in the legend of the cah map
-#'
-#' @param x a dataframe of theme frequency by country (themes_By_country_bf)
-#'          in which lines represent country codes and columns represent
-#'          the number of articles for each themes
-#' @param y a vector of group numbers the length of the dataframe rows
-#' @return a dataframe in which lines represent cah groups of country and columns represent the frequency of articles for each theme
 #' @export
-stat.comp <- function(x, y){
-  K <- length(unique(y))
-  n <- length(x)
-  m <- mean(x)
-  TSS <- sum((x-m)^2)
-  nk <- table(y)
-  mk <- tapply(x,y,mean)
-  BSS <- sum(nk* (mk-m)^2)
-  result <- c(mk,100.0*BSS/TSS)
-  names(result) <- c( paste("G",1:K),"% epl.")
-  return(result)
-}
-
 load_geo_semantic_data <- function(terms_file, articles, countries){
   
   terms <- read.table( terms_file, sep = ",", dec = ".")
@@ -116,31 +93,22 @@ load_geo_semantic_data <- function(terms_file, articles, countries){
 cybergeo_module_geosemantic_UI <- function(id){
   ns <- NS(id)
   
-  navbarMenu("Geo-semantic Networks",
-    tabPanel("Geo-semantic Networks",
+  tabPanel("Geo-semantic Networks",
+    div( class = "outer", 
+      leafletOutput( ns("leaflet"), width="100%", height="100%" )
+    ), 
+    
+    absolutePanel( id = ns("controls"), class = "panel panel-default panel-side", 
+      fixed = TRUE, draggable = TRUE, 
+      top = 60, left = "auto", right = 20, bottom = "auto", 
+      width = 350, height= "auto", 
       
-      div( class = "outer", 
-        leafletOutput( ns("leaflet"), width="100%", height="100%" )
-      ), 
-      
-      absolutePanel( id = ns("controls"), class = "panel panel-default panel-side", 
-        fixed = TRUE, draggable = TRUE, 
-        top = 60, left = "20px", right = "20px", bottom = "auto", 
-        height = "auto", 
-        
-        div( class = "panel-side", 
-          fluidRow(
-            column(4, selectInput(ns("semanticMethod"), label = "Semantic Method", choices = c("Citations", "Keywords", "Semantic"), multiple = F)),
-            column(4, selectInput(ns("aggregationMethod"), label = "Set of Countries",choices = c("Authoring", "Studied"), selected = "Studied", multiple = F)),
-            column(4, sliderInput(ns("nClassifGroups"), label = "Number of Clusters", min = 1, max = 8, value = 4, step = 1), animate=T)
-          )  
-        )
-      ), 
-      
-      plotOutput(ns("termsXCountriesMap")),
-      plotOutput(ns("termsXCountriesLegend"))
-    ),
-    tabPanel("User guide", includeMarkdown("doc/GeoSemanticNetworks.md") )
+      div( class = "panel-side", 
+        selectInput(ns("semanticMethod"), label = "Semantic Method", choices = c("Citations", "Keywords", "Semantic"), multiple = F),
+        selectInput(ns("aggregationMethod"), label = "Set of Countries",choices = c("Authoring", "Studied"), selected = "Studied", multiple = F),
+        sliderInput(ns("nClassifGroups"), label = "Number of Clusters", min = 1, max = 8, value = 4, step = 1)
+      )
+    )
   )
   
 }
@@ -161,48 +129,61 @@ cybergeo_module_geosemantic <- function( input, output, session, geo_semantic_da
     )
   })
   
-  output$termsXCountriesMap = renderPlot({
-    groupsOfCountries <- input$nClassifGroups
+  output$leaflet <- renderLeaflet({
+    countries <- as.character( world@data$CNTR_ID )
+    ngroups <- input$nClassifGroups
     
-    country_id <- world@data$CNTR_ID
-    
-    cahRes <- cahCountries()
-    groups <- cahRes$group[ match(country_id, cahRes$ID ) ]
-    col <- paletteCybergeo[ groups ]
-    
-    par(mfrow=c(1,1), mar = c(0,0,1,0), bg="#2b3e50")
-    plot(world, col=col, border="white", lwd=0.7)
-    title("Groups of countries based on semantic networks", col.main = "white")
-  })
-  
-  output$termsXCountriesLegend = renderPlot({
     clusters <- clusterCountries()
     
-    groups <- cahCountries()$group
+    cah  <- cahCountries()
+    groups <- cah$group
+    
+    # only keep part of the map we need
+    keep    <- match( cah$ID, countries )
+    w <- world[ keep, ]
     
     data <- mutate( clusters$data, group = groups ) %>%
-      group_by( group )
+      group_by( group ) %>%
+      mutate( numberArticlesInGroup = sum(n), group_size = n() )
     
-    nArticlesByGroup <- data %>%
-      summarise( n = sum(n, na.rm = TRUE) )
-    
+    # summarise themes per group
     leg <- data %>%
       summarise_at(vars(one_of(clusters$themes)), mean) %>%
       select(-group) %>%
       as.matrix
     
-    groupsOfCountries <- input$nClassifGroups
-    mfrow <- c( ceiling(groupsOfCountries/2), 2 )
+    # render the plot that is used in the label of countries of each group
+    plot_files <- lapply( 1:ngroups, function(i){
+      tf <- tempfile(fileext=".png") 
+      on.exit(unlink(tf))
+      png( tf, bg = "transparent" )
+      par( mar = c(4,10,1,1) )
+      barplot(leg[i,], col=paletteCybergeo[i], horiz=TRUE, cex.names=0.8, xlab= "Frequency of themes", las = 1)
+      axis(1)
+      dev.off()
+      
+      session$fileUrl( file = tf, contentType = "image/png")
+    })
     
-    par(mfrow=mfrow, las=2, mar = c(4,10,2,1), bg="#2b3e50")
-    for(i in 1:groupsOfCountries){
-      barplot(leg[i,], col=paletteCybergeo[i], horiz=TRUE, cex.names=0.8, xlab= "Frequency of themes", col.lab="white", col.axis="white")
-      axis(1, col = "white", col.axis = "white")
-      if(nArticlesByGroup[i, "n"] == 1)  title(paste0(nArticlesByGroup[i, "n"], " article"), col.main = "white")
-      if(nArticlesByGroup[i, "n"] > 1)  title(paste0(nArticlesByGroup[i, "n"], " articles"), col.main = "white")
-    }
+    # make label with information on each country and the group it belongs to
+    labels <- sprintf( "<strong>%s</strong> (%d articles) <br/> cluster %d (%d countries, %d articles)<br/> <img src='%s'>", 
+      w@data$CNTR_ID, data$n, groups, data$group_size, data$numberArticlesInGroup, plot_files[groups]) %>% lapply(HTML)
+    
+    # leaflet map
+    leaflet(w) %>%
+      addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
+      setView(lng = 0, lat= 20, zoom=3) %>% 
+      addPolygons( color = "black", weight = 1, fillColor = paletteCybergeo[groups], fill = TRUE, fillOpacity = .8, 
+        highlight = highlightOptions(weight = 2, fillOpacity = 1, bringToFront = TRUE),
+        label = labels,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto"
+        )
+      )
     
   })
-  
+    
   
 }
