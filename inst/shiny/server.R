@@ -1,7 +1,7 @@
 shinyServer(function(input, output, session) {
 
   callModule(cybergeo_module_overview, "overview",
-    world = world_nozoom, articles = ARTICLES
+    world = world, articles = ARTICLES
   )
 
   callModule(cybergeo_module_citation, "citation",
@@ -21,7 +21,7 @@ shinyServer(function(input, output, session) {
 
   callModule(cybergeo_module_geosemantic, "geosemantic",
     geo_semantic_data = geo_semantic_data,
-    world = world_nozoom
+    world = world
   )
 
 })
