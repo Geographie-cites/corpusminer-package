@@ -167,7 +167,7 @@ cybergeo_module_geosemantic <- function( input, output, session, geo_semantic_da
     
     # make label with information on each country and the group it belongs to
     labels <- sprintf( "<strong>%s</strong> (%d articles) <br/> cluster %d (%d countries, %d articles)<br/> <img src='%s'>", 
-      w@data$CNTR_ID, data$n, groups, data$group_size, data$numberArticlesInGroup, plot_files[groups]) %>% lapply(HTML)
+      w@data$NAME, data$n, groups, data$group_size, data$numberArticlesInGroup, plot_files[groups]) %>% lapply(HTML)
     
     # leaflet map
     leaflet(w) %>%

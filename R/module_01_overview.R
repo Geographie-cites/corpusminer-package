@@ -52,11 +52,12 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
   col  <- overview_plot_col[[indicator]]
   w <- subset_map_data(world, articles, indicator)
   
-  countries <- as.character(w@data$CNTR_ID)
+  countries <- w@data$CNTR_ID
+  country_names <- w@data$NAME
   nAuthoring <- authoring[countries]
   nStudied <- studied[countries]
   
-  labels <- sprintf( "<strong>%s</strong><br/> %d articles authored<br/>studied by %d articles", countries, nAuthoring, nStudied ) %>% lapply(HTML)
+  labels <- sprintf( "<strong>%s</strong><br/> %d articles authored<br/>studied by %d articles", country_names, nAuthoring, nStudied ) %>% lapply(HTML)
   
   leaflet(w) %>%
     addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
