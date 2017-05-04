@@ -99,7 +99,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
       fluidRow(
         h4("Data Selection"),
         tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-        dataTableOutput( ns("citationcybergeo") )
+        DT::dataTableOutput( ns("citationcybergeo") )
       ),
 
       # citation ego network
@@ -153,10 +153,11 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   )
 
   ## selection datatable
-  output$citationcybergeo <- renderDataTable({
-    citation_cybergeodata %>%
+  output$citationcybergeo <- DT::renderDataTable({
+    data <- citation_cybergeodata %>%
       filter(linknum > 0 | kwcount > 0) %>%
-      select(id, SCHID, title, authors)
+      select(id, SCHID, title, authors) %>%
+    DT::datatable( data, selection = "multiple" )  
   })
 
   citationSelectedCybergeoArticle <- reactive({
@@ -166,10 +167,12 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   # observer make data update requests
   observe({
     selected <- citationSelectedCybergeoArticle()
+
     selected_hand <- which(citation_cybergeodata$id == input$citationselected)
     if(length(selected_hand)>0){
       selected <- selected_hand
     }
+    print( selected )
     if(length(selected) == 1){
       if(selected != citationGlobalVars$citationSelected ){
         citationGlobalVars$citationSelected <- selected
@@ -177,32 +180,32 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
         selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
 
         # make request for edges in sqlitedb
-        citationGlobalVars$edges = citationLoadEdges(citationdbcit, selectedschid)
+        # citationGlobalVars$edges = citationLoadEdges(citationdbcit, selectedschid)
       }
     }
   })
 
 
   # similar observer for semantic plot
-  observe({
-    selected <- citationSelectedCybergeoArticle()
-    selected_hand <- which(citation_cybergeodata$id == input$citationsemanticselected)
-    if(length(selected_hand)>0){
-      selected <- selected_hand
-    }
-    if(length(selected)==1){
-      if(selected != citationGlobalVars$citationSemanticSelected){
-        citationGlobalVars$citationSemanticSelected <- selected
-        selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
-        citationGlobalVars$keywords <- citationLoadKeywords(citationdbcit, citationdbkws, selectedschid)
-      }
-    }
-  })
+  # observe({
+  #   selected <- citationSelectedCybergeoArticle()
+  #   selected_hand <- which(citation_cybergeodata$id == input$citationsemanticselected)
+  #   if(length(selected_hand)>0){
+  #     selected <- selected_hand
+  #   }
+  #   if(length(selected)==1){
+  #     if(selected != citationGlobalVars$citationSemanticSelected){
+  #       citationGlobalVars$citationSemanticSelected <- selected
+  #       selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
+  #       citationGlobalVars$keywords <- citationLoadKeywords(citationdbcit, citationdbkws, selectedschid)
+  #     }
+  #   }
+  # })
 
   # render citation graph around selected article
-  output$citationegoplot = renderPlot({
-    citationVisuEgo(citationGlobalVars$edges)
-  })
+  # output$citationegoplot = renderPlot({
+  #   citationVisuEgo(citationGlobalVars$edges)
+  # })
 
   # render wordclouds
   output$citationesemanticplot = renderPlot({

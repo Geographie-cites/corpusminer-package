@@ -413,7 +413,8 @@ cybergeo_module_keyword <- function( input, output, session,
   )
 
   output$plotsem <- renderPlot({
-    VisuSem(SelectSemField(), kw = input$kwid2, textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax)
+    VisuSem(SelectSemField(), kw = input$kwid2, 
+      chidist = "RESIDUALS", textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax)
   })
 
   output$downsem <- downloadHandler(

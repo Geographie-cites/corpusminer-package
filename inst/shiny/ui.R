@@ -18,7 +18,7 @@ names(semanticcolors)<-c("complex systems","health","crime",
   "spatial analysis","GIS","biogeography",
   "environnment/climate","economic geography","physical geography")
 
-shinyUI(navbarPage( "CybergeoNetworks", theme = "darkBlue.css", id = "tabs" , 
+shinyUI(navbarPage( "CybergeoNetworks", id = "tabs" , # theme = "darkBlue.css", 
   cybergeo_module_project_UI("project"),
   cybergeo_module_overview_UI("overview") ,
   cybergeo_module_citation_UI("citation", citation_cybergeodata = citation_cybergeodata) ,
