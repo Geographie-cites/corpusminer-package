@@ -26,7 +26,7 @@ terms_matched <- function(patterns, terms) {
 #' @return a string vector of articles containing a matched term
 #' @export
 titles_matched <- function(patterns, terms, articles) {
-  citations <- terms_matched(patterns) %>%
+  citations <- terms_matched(patterns, terms) %>%
     select(article_id) %>%
     distinct() %>%
     left_join(articles, by = c("article_id" = "id")) %>%
