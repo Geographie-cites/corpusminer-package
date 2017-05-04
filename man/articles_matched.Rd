@@ -4,7 +4,7 @@
 \alias{articles_matched}
 \title{Metadata of each articles containing a matched term}
 \usage{
-articles_matched(patterns, articles)
+articles_matched(patterns, articles, terms)
 }
 \arguments{
 \item{patterns}{a string vector of regexp patterns to match}

@@ -4,7 +4,7 @@
 \alias{chronogram}
 \title{Chronogramme}
 \usage{
-chronogram(patterns, articles)
+chronogram(patterns, articles, terms)
 }
 \arguments{
 \item{patterns:}{a string vector of regexp patterns to match}

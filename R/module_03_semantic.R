@@ -75,8 +75,8 @@ terms_matched_cloud <- function(patterns) {
 #' @param articles articles data frame
 #' @return a dataframe of articles metadata
 #' @export
-articles_matched <- function(patterns, articles) {
-  terms_matched(patterns) %>%
+articles_matched <- function(patterns, articles, terms) {
+  terms_matched(patterns, terms) %>%
     group_by(article_id, pattern) %>%
     summarise(count = sum(count)) %>%
     left_join(articles, by = c("article_id" = "id")) %>%
@@ -94,8 +94,8 @@ articles_matched <- function(patterns, articles) {
 #' @name chronogram
 #' @param patterns: a string vector of regexp patterns to match
 #' @export
-chronogram <- function(patterns, articles) {
-  matched <- articles_matched(patterns, articles)
+chronogram <- function(patterns, articles, terms) {
+  matched <- articles_matched(patterns, articles, terms)
   ggplot(matched, aes(date, articles)) +
     geom_bar(stat = "identity") +
     facet_grid(pattern ~ ., scales = "free_y", space = "free_y") +
@@ -187,7 +187,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   })
 
   # Compute the Outputs
-  output$chronogram <- renderPlot(chronogram(patterns(), articles))
+  output$chronogram <- renderPlot(chronogram(patterns(), articles, terms))
   output$cloud <- renderPlot(cloud(patterns()))
   output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
   output$phrases <- renderPrint(phrases(patterns(), sentences))
