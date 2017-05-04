@@ -78,7 +78,6 @@ terms_matched_cloud <- function(patterns, terms) {
 #' @return a dataframe of articles metadata
 #' @export
 articles_matched <- function(patterns, articles, terms) {
-  if( is.null(patterns)) patterns <- ""
   terms_matched(patterns, terms) %>%
     group_by(article_id, pattern) %>%
     summarise(count = sum(count)) %>%
@@ -171,10 +170,12 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
 cybergeo_module_semantic <- function( input, output, session, pattern_list, terms, articles, sentences ){
 
   patterns <- reactive({
-    switch( input$mode,
+    res <- switch( input$mode,
       one = input$pattern_input,
       multi = input$patterns_selection
     )
+    if( is.null(res)) res <- ""
+    res
   })
 
   # Ask for a new pattern to add in the list
@@ -192,7 +193,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   # Compute the Outputs
   output$chronogram <- renderPlot(chronogram(patterns(), articles, terms))
   output$cloud <- renderPlot(cloud(patterns(), terms))
-  output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
   output$phrases <- renderPrint(phrases(patterns(), sentences))
-
+  output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
+  
 }
