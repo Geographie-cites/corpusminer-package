@@ -172,7 +172,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     if(length(selected_hand)>0){
       selected <- selected_hand
     }
-    print( selected )
+    
     if(length(selected) == 1){
       if(selected != citationGlobalVars$citationSelected ){
         citationGlobalVars$citationSelected <- selected

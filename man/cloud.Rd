@@ -4,7 +4,7 @@
 \alias{cloud}
 \title{Cloud of terms}
 \usage{
-cloud(patterns)
+cloud(patterns, terms)
 }
 \arguments{
 \item{patterns}{a string vector of regexp patterns to match}

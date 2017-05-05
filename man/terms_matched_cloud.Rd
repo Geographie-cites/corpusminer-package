@@ -4,7 +4,7 @@
 \alias{terms_matched_cloud}
 \title{Metadata for each matched terms}
 \usage{
-terms_matched_cloud(patterns)
+terms_matched_cloud(patterns, terms)
 }
 \arguments{
 \item{patterns}{a string vector of regexp patterns to match}

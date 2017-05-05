@@ -39,6 +39,7 @@ Imports:
   lubridate,
     leaflet,
     rgeos,
-    DT
+    DT,
+    wordcloud2
 RoxygenNote: 6.0.1
 Suggests: testthat

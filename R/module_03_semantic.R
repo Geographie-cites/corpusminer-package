@@ -64,9 +64,10 @@ phrases <- function(patterns, sentences) {
 terms_matched_cloud <- function(patterns, terms) {
   terms_matched(patterns, terms) %>%
     group_by(term) %>%
-    summarise(articles = sum(count)) %>% 
-    arrange( desc(articles) ) %>% 
-    head( 500 )
+    summarise(freq = sum(count)) %>% 
+    arrange( desc(freq) ) %>% 
+    head( 500 ) %>% 
+    rename( word = term )
 }
 
 #' Metadata of each articles containing a matched term
@@ -112,13 +113,14 @@ chronogram <- function(patterns, articles, terms) {
 #' @export
 cloud <- function(patterns, terms) {
   words <- terms_matched_cloud(patterns, terms)
-  wordcloud( words$term, words$articles, scale = c(10,1), rot.per = 0)
+  wordcloud2( words , shape = "square") # , scale = c(10,1), rot.per = 0)
 }
 
 ### ------- module shiny
 
 #' shiny module for the semantic tab
-#'
+#' @import wordcloud2
+#' 
 #' @param id see \code{\link[shiny]{callModule}}
 #' @param pattern_list pattern list
 #' @export
@@ -148,7 +150,7 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
         tabPanel("Chronogram", plotOutput(ns("chronogram"), height = "700px") ),
 
         # show a wordcloud of the matched items
-        tabPanel( "Word Cloud", plotOutput(ns("cloud"), height = "700px") ),
+        tabPanel( "Word Cloud", wordcloud2Output(ns("cloud"), height = "700px") ),
 
         # show the sentences including a term that matches a pattern
         tabPanel("Sentences", verbatimTextOutput(ns("phrases"))),
@@ -192,7 +194,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
 
   # Compute the Outputs
   output$chronogram <- renderPlot(chronogram(patterns(), articles, terms))
-  output$cloud <- renderPlot(cloud(patterns(), terms))
+  output$cloud <- renderWordcloud2(cloud(patterns(), terms))
   output$phrases <- renderPrint(phrases(patterns(), sentences))
   output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
   
