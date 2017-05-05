@@ -7,15 +7,16 @@
 #'
 #' @return a data frame of matched terms
 #'
-#' @importFrom tibble data_frame
+#' @importFrom stringr str_detect
+#' @importFrom dplyr filter 
+#' 
 #' @export
 terms_matched <- function(patterns, terms) {
-  datasets <- lapply(patterns, function(pattern){
-    indices <- grep( pattern, x = terms$term, ignore.case = TRUE, perl = TRUE)
-    data_frame( id = indices, pattern = pattern)
-  })
-  bind_rows(datasets) %>%
-    left_join(terms, by = "id")
+  if( identical( patterns, "") ) {
+    terms
+  } else {
+    filter( terms, str_detect(term, patterns) )  
+  }
 }
 
 #' Matched articles list
@@ -195,6 +196,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   # Compute the Outputs
   output$chronogram <- renderPlot(chronogram(patterns(), articles, terms))
   output$cloud <- renderWordcloud2(cloud(patterns(), terms))
+  
   output$phrases <- renderPrint(phrases(patterns(), sentences))
   output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
   
