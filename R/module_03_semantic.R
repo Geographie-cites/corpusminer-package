@@ -1,123 +1,3 @@
-#' Matched terms list
-#'
-#' Compute a dataframe of matched terms
-#'
-#' @param patterns a string vector of regexp patterns to match
-#' @param terms terms dataset
-#'
-#' @return a data frame of matched terms
-#'
-#' @importFrom stringr str_detect
-#' @importFrom dplyr filter 
-#' 
-#' @export
-terms_matched <- function(patterns, terms) {
-  if( identical( patterns, "") ) {
-    terms
-  } else {
-    filter( terms, str_detect(term, patterns) )  
-  }
-}
-
-#' Matched articles list
-#'
-#' Compute a list of articles containing a matched term
-#' @name titles_matched
-#' @param patterns a string vector of regexp patterns to match
-#' @return a string vector of articles containing a matched term
-#' @export
-titles_matched <- function(patterns, terms, articles) {
-  citations <- terms_matched(patterns, terms) %>%
-    select(article_id) %>%
-    distinct() %>%
-    left_join(articles, by = c("article_id" = "id")) %>%
-    arrange(date) %>%
-    select(citation)
-  return(citations$citation)
-}
-
-#' Matched sentences list
-#'
-#' Compute a list of sentences containing a matched term
-#' @name phrases
-#' @param patterns a string vector of regexp patterns to match
-#' @return a vector of sentences containing a matched term
-#'
-#' @export
-phrases <- function(patterns, sentences) {
-  data <- data_frame()
-  for (pattern in patterns) {
-    indices <- grep(pattern, sentences$sentence, ignore.case = TRUE, perl = TRUE)
-    data <- data_frame(id = indices) %>%
-      bind_rows(data)
-  }
-  data <- data %>%
-    left_join(sentences, by = "id")
-  return(data$sentence)
-}
-
-#' Metadata for each matched terms
-#'
-#' Compute the metadata of each terms in order to build a wordcloud
-#' @name terms_matched_cloud
-#' @param patterns a string vector of regexp patterns to match
-#' @export
-terms_matched_cloud <- function(patterns, terms) {
-  terms_matched(patterns, terms) %>%
-    group_by(term) %>%
-    summarise(freq = sum(count)) %>% 
-    arrange( desc(freq) ) %>% 
-    head( 500 ) %>% 
-    rename( word = term )
-}
-
-#' Metadata of each articles containing a matched term
-#'
-#' Compute the metadata of each articles containing a matched term
-#' @name articles_matched
-#' @param patterns a string vector of regexp patterns to match
-#' @param articles articles data frame
-#' @return a dataframe of articles metadata
-#' @export
-articles_matched <- function(patterns, articles, terms) {
-  terms_matched(patterns, terms) %>%
-    group_by(article_id, pattern) %>%
-    summarise(count = sum(count)) %>%
-    left_join(articles, by = c("article_id" = "id")) %>%
-    mutate(ym = str_sub(date, 1, 4)) %>%
-    group_by(ym, pattern) %>%
-    summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
-    ungroup() %>%
-    mutate(date = parse_date_time(ym, "%y")) %>%
-    select(date, pattern, articles, terms)
-}
-
-#' Chronogramme
-#'
-#' Compute a chronogram graphic of articles
-#' @name chronogram
-#' @param patterns: a string vector of regexp patterns to match
-#' @export
-chronogram <- function(patterns, articles, terms) {
-  matched <- articles_matched(patterns, articles, terms)
-  ggplot(matched, aes(date, articles)) +
-    geom_bar(stat = "identity") +
-    facet_grid(pattern ~ ., scales = "free_y", space = "free_y") +
-    labs(title="Chronogramme des articles publiés dans Cybergéo", x = "Année de publication", y = "Nombre d'articles publiés")
-}
-
-#' Cloud of terms
-#'
-#' Compute a word cloud of matched terms
-#' @name cloud
-#' @param patterns a string vector of regexp patterns to match
-#' @export
-cloud <- function(patterns, terms) {
-  words <- terms_matched_cloud(patterns, terms)
-  wordcloud2( words , shape = "square") # , scale = c(10,1), rot.per = 0)
-}
-
-### ------- module shiny
 
 #' shiny module for the semantic tab
 #' @import wordcloud2
@@ -128,39 +8,36 @@ cloud <- function(patterns, terms) {
 cybergeo_module_semantic_UI <- function(id, pattern_list){
   ns <- NS(id)
 
-  modes <- c( "Single Pattern Analysis" = "one", "Multiple Pattern Analysis" = "multi" )
-  condition <- sprintf( "input['%s'] == 'multi'", ns("mode") )
   tabPanel("Full-text Semantic network",
-    column( 3,
-       # Select an option in order to compute the interface
-       # (one or more patterns) and the outputs
-       selectInput(ns("mode"), "Mode", modes),
-
-       textInput( ns("pattern_input") , "Pattern"),
-
-       conditionalPanel( condition,
-         actionButton( ns("add_pattern"), "Add to Selection"),
-         checkboxGroupInput( ns("patterns_selection"), "Pattern Selection", pattern_list)
-       )
-
-
-    ),
-    column( 9,
-      tabsetPanel(
-        # show a chronogram of the number of match per year
-        tabPanel("Chronogram", plotOutput(ns("chronogram"), height = "700px") ),
-
-        # show a wordcloud of the matched items
-        tabPanel( "Word Cloud", wordcloud2Output(ns("cloud"), height = "700px") ),
-
-        # show the sentences including a term that matches a pattern
-        tabPanel("Sentences", verbatimTextOutput(ns("phrases"))),
-
-        # show the articles including a term that matches a pattern
-        tabPanel("Citations", verbatimTextOutput(ns("citations")))
-       )
+    fluidRow(
+      column(2, 
+        "Enter comma separated patterns to filter terms from the text of the articles", 
+        
+        fluidRow(
+          column(10, textInput( ns("patterns_input"), label = NULL , width = "100%" ) ), 
+          column(2, actionButton( ns("patterns_button"), label = " ", width = "100%", icon = icon("filter") ))
+        ), 
+        
+        "Example patterns: ", 
+        tags$p( 
+          paste( pattern_list, collapse = ", " ), 
+          
+          style  = "font-size: smaller; color: gray"
+        )
+      ), 
+      column(5, plotOutput(ns("chronogram"), height = "400px")), 
+      column(5, wordcloud2Output(ns("cloud"), height = "400px"))
+    ), 
+    fluidRow( 
+      column(6, DT::dataTableOutput(ns("phrases"))), 
+      column(6, DT::dataTableOutput(ns("citations")))
     )
+    
   )
+}
+
+step <- function(.){
+  incProgress(1)
 }
 
 #' Shiny module server function for the semantic tab
@@ -168,36 +45,120 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
 #' @param output output
 #' @param session session
 #' @param pattern_list pattern list
-#'
+#' @import DT
 #' @export
 cybergeo_module_semantic <- function( input, output, session, pattern_list, terms, articles, sentences ){
 
   patterns <- reactive({
-    res <- switch( input$mode,
-      one = input$pattern_input,
-      multi = input$patterns_selection
-    )
-    if( is.null(res)) res <- ""
-    res
+    input$patterns_button
+    
+    txt <- isolate(input$patterns_input)
+    str_trim( str_split( txt, "," )[[1]] )
   })
-
-  # Ask for a new pattern to add in the list
-  observeEvent( input$add_pattern, {
-    new_pattern <- input$pattern_input
-    pattern_list <<- c(new_pattern, pattern_list)
-    updateTextInput(session, "pattern_input", value = "")
-
-    updateCheckboxGroupInput(session, "patterns_selection",
-      choices = pattern_list,
-      selected = c(new_pattern, input$patterns_selection)
-    )
-  })
-
-  # Compute the Outputs
-  output$chronogram <- renderPlot(chronogram(patterns(), articles, terms))
-  output$cloud <- renderWordcloud2(cloud(patterns(), terms))
   
-  output$phrases <- renderPrint(phrases(patterns(), sentences))
-  output$citations <- renderPrint(titles_matched(patterns(), terms, articles))
+  terms_matched <- reactive({
+    patterns <- patterns()
+    
+    withProgress({
+      bind_rows(lapply(patterns, function(pattern){
+        res <- filter( terms, str_detect(term, pattern) ) %>%
+          mutate( pattern = pattern )
+        incProgress(1)
+        res
+      }))  
+    }, min = 0, max = length(patterns), value = 0, message = "extracting terms")
+    
+  })
+  
+  titles_matched <- reactive({
+    withProgress({
+      
+      citations <- terms_matched()  %>%
+        select(article_id) %>%
+        distinct() %>%
+        left_join(articles, by = c("article_id" = "id")) %>%
+        arrange(date) %>%
+        select(citation)
+      
+      incProgress(1)
+      
+      datatable(citations, options = list(pageLength = 5) )
+      
+    }, min = 0, max = 1, value = 0)
+  })
+  
+  articles_matched <- reactive({ 
+    withProgress({
+    
+      terms_matched() %>%
+        group_by(article_id, pattern) %>%
+        summarise(count = sum(count)) %>%
+        left_join(articles, by = c("article_id" = "id")) %>%
+        mutate(ym = str_sub(date, 1, 4)) %>%
+        group_by(ym, pattern) %>%
+        summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
+        ungroup() %>%
+        mutate(date = parse_date_time(ym, "%y")) %>%
+        select(date, pattern, articles, terms)
+    
+    }, min = 0, max = 1 , value = 0, message = "retrieve matching article" )
+  })
+  
+  phrases <- reactive({
+    patterns <- patterns()
+   
+    withProgress(min=0, max=length(patterns), value=0, message = "filtering sentences",  {
+      data <- if( identical( patterns, "" ) ){
+        select( sentences, -id )
+      } else {
+        datasets <- lapply( patterns , function( pattern ){
+          res <- sentences %>% 
+            select(sentence, article_id) %>% 
+            filter(grepl(pattern, sentence, ignore.case = TRUE, perl = TRUE) ) %>% 
+            mutate(sentence = gsub( sprintf( "(%s)", pattern), "<strong>\\1</strong>", sentence, ignore.case = TRUE ) )
+          
+          incProgress(1)
+          res
+      })
+      bind_rows(datasets)   
+    }
+    datatable( data, escape = FALSE, options = list(pageLength = 5) )
+
+  })
+})
+  
+  chronogram <- reactive({
+    matched <- articles_matched()
+    ggplot(matched, aes(date, articles)) +
+      geom_bar(stat = "identity") +
+      facet_grid(pattern ~ ., scales = "free_y", space = "free_y") +
+      labs(title="Chronogramme des articles publiés dans Cybergéo", x = "Année de publication", y = "Nombre d'articles publiés")
+  })
+  
+  cloud <- reactive({
+    withProgress(min = 0, max = 6, value = 0, message = "generating data for word cloud", {
+      
+      x <- terms_matched(); incProgress(1)
+      x <- group_by( x, term ); incProgress(1)
+      x <- summarise(x, freq = sum(count)); incProgress(1)
+      x <- arrange( x, desc(freq) ) ; incProgress(1)
+      x <- head( x, 500); incProgress(1)
+      x <- rename( x, world = term)
+
+      wordcloud2( x , shape = "square")  
+      
+    })
+  })
+  
+  
+  
+  # Compute the Outputs
+  output$chronogram <- renderPlot(chronogram())
+  output$cloud <- renderWordcloud2(cloud())
+
+  output$phrases <- DT::renderDataTable( phrases() )
+  output$citations <- DT::renderDataTable( titles_matched() )
+
+  outputOptions(output, "cloud", priority = -1 )
   
 }
