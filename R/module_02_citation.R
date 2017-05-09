@@ -140,6 +140,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 
 }
 
+#' @importFrom DT renderDataTable datatable
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
 
@@ -153,11 +154,11 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   )
 
   ## selection datatable
-  output$citationcybergeo <- DT::renderDataTable({
+  output$citationcybergeo <- renderDataTable({
     data <- citation_cybergeodata %>%
       filter(linknum > 0 | kwcount > 0) %>%
       select(id, SCHID, title, authors) %>%
-    DT::datatable( data, selection = "multiple" )  
+    datatable( data, selection = "multiple" )  
   })
 
   citationSelectedCybergeoArticle <- reactive({

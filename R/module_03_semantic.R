@@ -11,11 +11,9 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
   tabPanel("Full-text Semantic network",
     fluidRow(
       column(2, 
-        "Enter comma separated patterns to filter terms from the text of the articles", 
-        
-        fluidRow(
-          column(10, textInput( ns("patterns_input"), label = NULL , width = "100%" ) ), 
-          column(2, actionButton( ns("patterns_button"), label = " ", width = "100%", icon = icon("filter") ))
+        selectizeInput( ns("patterns"), label = "Patterns", 
+          multiple = TRUE, choices = c("geo" = "geo"), selected = "geo", 
+          options = list( "plugins" = list( "remove_button"), "create" = TRUE, persist = FALSE)
         ), 
         
         "Example patterns: ", 
@@ -45,27 +43,31 @@ step <- function(.){
 #' @param output output
 #' @param session session
 #' @param pattern_list pattern list
-#' @import DT
+#' @importFrom DT renderDataTable datatable
+#' @importFrom stringr str_detect
 #' @export
 cybergeo_module_semantic <- function( input, output, session, pattern_list, terms, articles, sentences ){
 
   patterns <- reactive({
-    input$patterns_button
-    
-    txt <- isolate(input$patterns_input)
-    str_trim( str_split( txt, "," )[[1]] )
+    input$patterns
   })
   
   terms_matched <- reactive({
     patterns <- patterns()
-    
+      
     withProgress({
-      bind_rows(lapply(patterns, function(pattern){
-        res <- filter( terms, str_detect(term, pattern) ) %>%
-          mutate( pattern = pattern )
+      if( is.null(patterns) ){
+        res <- mutate( terms, pattern = "" )
         incProgress(1)
         res
-      }))  
+      } else {
+        bind_rows(lapply(patterns, function(pattern){
+          res <- filter( terms, str_detect(term, pattern) ) %>%
+            mutate( pattern = pattern )
+          incProgress(1)
+          res
+        }))    
+      }
     }, min = 0, max = length(patterns), value = 0, message = "extracting terms")
     
   })
@@ -108,7 +110,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
     patterns <- patterns()
    
     withProgress(min=0, max=length(patterns), value=0, message = "filtering sentences",  {
-      data <- if( identical( patterns, "" ) ){
+      data <- if( is.null( patterns ) ){
         select( sentences, -id )
       } else {
         datasets <- lapply( patterns , function( pattern ){
@@ -137,7 +139,6 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   
   cloud <- reactive({
     withProgress(min = 0, max = 6, value = 0, message = "generating data for word cloud", {
-      
       x <- terms_matched(); incProgress(1)
       x <- group_by( x, term ); incProgress(1)
       x <- summarise(x, freq = sum(count)); incProgress(1)

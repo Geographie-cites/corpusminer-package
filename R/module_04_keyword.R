@@ -365,6 +365,7 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
   )
 }
 
+#' @importFrom DT renderDataTable
 #' @export
 cybergeo_module_keyword <- function( input, output, session,
   NETKW
