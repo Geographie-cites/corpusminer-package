@@ -296,6 +296,8 @@ extract_community_graph <- function( g, community ){
 
 #### ------------ module shiny
 
+#' @importFrom dplyr mutate_at
+#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_keyword_UI <- function(id, NETKW ){
   ns <- NS(id)
@@ -308,17 +310,20 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
     tabPanel("Data summary",
       htmlOutput( ns("textfull") ),
       tags$hr(),
-      dataTableOutput( ns("contentsnodes")),
-      dataTableOutput( ns("contentsedges"))
+      
+      fluidRow(
+        column(6, dataTableOutput( ns("contentsnodes") ) ), 
+        column(6, dataTableOutput( ns("contentsedges") ) )
+      )
     ),
 
     tabPanel("Communities",
-      selectInput(ns("commid"), label = "Choose a community",
-        choices = choices_communities, selected = "", multiple = FALSE
-      ),
       fluidRow(
         column(3,
           wellPanel(
+            selectInput(ns("commid"), label = "Choose a community",
+              choices = choices_communities, selected = "", multiple = FALSE
+            ), 
             tags$strong("Graphic options"),
             radioButtons(ns("vsizecom"), "Nodes proportional to:",
               list("Uniforme" = "uni", "Number of articles" = "poi","Nodes degree" = "deg")
@@ -337,9 +342,12 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
             )
           )
         ),
-        column(9,
-          plotOutput(ns("plotcomm"), width = "100%", height = "800px"),
+        column(5,
+          plotOutput(ns("plotcomm"), width = "100%", height = 600),
           downloadButton(ns("downcomm"), "Download plot")
+        ), 
+        column(4, 
+          dataTableOutput(ns("tablecomm") )
         )
       )
     ),
@@ -365,7 +373,7 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
   )
 }
 
-#' @importFrom DT renderDataTable
+#' @importFrom DT renderDataTable datatable
 #' @export
 cybergeo_module_keyword <- function( input, output, session,
   NETKW
@@ -381,22 +389,30 @@ cybergeo_module_keyword <- function( input, output, session,
     describe_network( NETKW )
   })
 
+  nodes <- info_table_nodes( NETKW )
+  edges <- info_table_edges( NETKW )
+  
   output$contentsnodes <- renderDataTable(
-    info_table_nodes( NETKW ),
-    options = list( pageLength = 10 )
+    datatable( nodes, selection = "none" )
   )
 
   output$contentsedges <- renderDataTable(
-    info_table_edges( NETKW ),
-    options = list( pageLength = 10 )
+    datatable( edges, selection = "none")
   )
 
   output$plotcomm <- renderPlot({
     VisuComm( SelectComm(),
-              vsize.prop = input$vsizecom, vsize.fac = input$vfacsizecom, vsize.default = 1,
-              esize.prop = input$esizecom, esize.fac = input$efacsizecom,
-              vertex.label.cex = input$tsizecom / 10
+      vsize.prop = input$vsizecom, vsize.fac = input$vfacsizecom, vsize.default = 1,
+      esize.prop = input$esizecom, esize.fac = input$efacsizecom,
+      vertex.label.cex = input$tsizecom / 10
     )
+  })
+  
+  output$tablecomm <- renderDataTable({
+    data <- get.data.frame(SelectComm()) %>% 
+      mutate_at( vars(theofreq, relresid), funs(round(., 2)) )
+    
+    datatable( data  )
   })
 
   output$downcomm <- downloadHandler(

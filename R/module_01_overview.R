@@ -74,6 +74,7 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
   
 }
 
+#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_overview_UI <- function(id){
   ns <- NS(id)
@@ -138,8 +139,7 @@ cybergeo_module_overview_UI <- function(id){
         selectInput( ns("whatMapped"), label = NULL,
           choices=c("Authoring countries" = "A", "Countries Studied"= "S", "Countries Studies by Locals"= "L"),
           multiple=FALSE
-        ), 
-        dataTableOutput( ns("statArticles") )
+        )
       )
     )
   )

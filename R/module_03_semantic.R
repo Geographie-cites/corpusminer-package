@@ -5,6 +5,7 @@
 #' @param id see \code{\link[shiny]{callModule}}
 #' @param pattern_list pattern list
 #' @importFrom purrr map
+#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_semantic_UI <- function(id, pattern_list){
   ns <- NS(id)
@@ -21,8 +22,8 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
       column(6, wordcloud2Output(ns("cloud"), height = "400px"))
     ), 
     fluidRow( 
-      column(6, DT::dataTableOutput(ns("citations"))), 
-      column(6, DT::dataTableOutput(ns("phrases")))
+      column(6, dataTableOutput(ns("citations"))), 
+      column(6, dataTableOutput(ns("phrases")))
     )
     
   )
