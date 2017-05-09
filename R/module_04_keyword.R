@@ -431,14 +431,17 @@ cybergeo_module_keyword <- function( input, output, session,
 
   output$plotsem <- renderPlot({
     VisuSem(SelectSemField(), kw = input$kwid2, 
-      chidist = "RESIDUALS", textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax)
+      chidist = "relresid", 
+      textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax
+    )
   })
 
   output$downsem <- downloadHandler(
     filename = "Semantic.svg",
     content = function(file) {
       svg(file, width = 20 / 2.54, height = 20 / 2.54, pointsize = 8)
-      VisuSem(SelectSemField(), kw = input$kwid2, textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax)
+      VisuSem(SelectSemField(), kw = input$kwid2, 
+        chidist = "relresid", textsizemin = input$tsizesemmin, textsizemax = input$tsizesemmax)
       dev.off()
     }
   )
