@@ -41,6 +41,7 @@ Imports:
     rgeos,
     DT,
     wordcloud2,
-    purrr
+    purrr,
+    tidyr
 RoxygenNote: 6.0.1
 Suggests: testthat

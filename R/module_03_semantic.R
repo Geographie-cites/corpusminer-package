@@ -21,8 +21,8 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
       column(6, wordcloud2Output(ns("cloud"), height = "400px"))
     ), 
     fluidRow( 
-      column(6, DT::dataTableOutput(ns("phrases"))), 
-      column(6, DT::dataTableOutput(ns("citations")))
+      column(6, DT::dataTableOutput(ns("citations"))), 
+      column(6, DT::dataTableOutput(ns("phrases")))
     )
     
   )
@@ -38,7 +38,8 @@ step <- function(.){
 #' @param session session
 #' @param pattern_list pattern list
 #' @importFrom DT renderDataTable datatable
-#' @importFrom stringr str_detect
+#' @importFrom stringr str_detect str_replace
+#' @importFrom tidyr separate
 #' @export
 cybergeo_module_semantic <- function( input, output, session, pattern_list, terms, articles, sentences ){
 
@@ -51,7 +52,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
       
     withProgress({
       if( is.null(patterns) ){
-        res <- mutate( terms, pattern = "" )
+      res <- mutate( terms, pattern = "" )
         incProgress(1)
         res
       } else {
@@ -67,37 +68,27 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   })
   
   titles_matched <- reactive({
-    withProgress({
-      
-      citations <- terms_matched()  %>%
-        select(article_id) %>%
-        distinct() %>%
-        left_join(articles, by = c("article_id" = "id")) %>%
-        arrange(date) %>%
-        select(citation)
-      
-      incProgress(1)
-      
-      datatable(citations, options = list(pageLength = 5) )
-      
-    }, min = 0, max = 1, value = 0)
+    citations <- terms_matched()  %>%
+      select(article_id) %>%
+      distinct() %>%
+      left_join(articles, by = c("article_id" = "id")) %>%
+      arrange(date) %>%
+      select( article_id, authors, title, title_en )
+    
+    datatable(citations, options = list(pageLength = 5), rownames = FALSE )
   })
   
   articles_matched <- reactive({ 
-    withProgress({
-    
-      terms_matched() %>%
-        group_by(article_id, pattern) %>%
-        summarise(count = sum(count)) %>%
-        left_join(articles, by = c("article_id" = "id")) %>%
-        mutate(ym = str_sub(date, 1, 4)) %>%
-        group_by(ym, pattern) %>%
-        summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
-        ungroup() %>%
-        mutate(date = parse_date_time(ym, "%y")) %>%
+    terms_matched() %>%
+      group_by(article_id, pattern) %>%
+      summarise(count = sum(count)) %>%
+      left_join(articles, by = c("article_id" = "id")) %>%
+      mutate(ym = str_sub(date, 1, 4)) %>%
+      group_by(ym, pattern) %>%
+      summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
+      ungroup() %>%
+      mutate(date = parse_date_time(ym, "%y")) %>%
         select(date, pattern, articles, terms)
-    
-    }, min = 0, max = 1 , value = 0, message = "retrieve matching article" )
   })
   
   phrases <- reactive({
@@ -118,7 +109,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
       })
       bind_rows(datasets)   
     }
-    datatable( data, escape = FALSE, options = list(pageLength = 5) )
+    datatable( data, escape = FALSE, options = list(pageLength = 5), rownames = FALSE  )
 
   })
 })
@@ -141,7 +132,6 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
       x <- rename( x, world = term)
 
       wordcloud2( x , shape = "square")  
-      
     })
   })
   
@@ -151,9 +141,9 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   output$chronogram <- renderPlot(chronogram())
   output$cloud <- renderWordcloud2(cloud())
 
-  output$phrases <- DT::renderDataTable( phrases() )
-  output$citations <- DT::renderDataTable( titles_matched() )
+  output$phrases <- renderDataTable( phrases() )
+  output$citations <- renderDataTable( titles_matched() )
 
-  outputOptions(output, "cloud", priority = -1 )
+  outputOptions(output, "cloud" )
   
 }
