@@ -87,23 +87,23 @@ VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
 
   # make theme empty
   theme_empty <- theme_bw() +
-    theme(plot.background = element_rect(fill = "#4e5d6c"),
+    theme( # plot.background = element_rect(fill = "#4e5d6c"),
           axis.line = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           panel.border = element_blank(),
-          panel.background = element_rect(fill = "#4e5d6c"),
+          # panel.background = element_rect(fill = "#4e5d6c"),
           axis.title = element_blank(),
           axis.text = element_blank(),
           axis.ticks = element_blank(),
-          legend.position = "none",
-          legend.background = element_rect(fill = "#4e5d6c"))
+          legend.position = "none"
+      )
 
   # graph layout
   tabPoints <- get.data.frame(x = g, what = "vertices")
   tabLinks <- get.data.frame(x = g, what = "edges")
   tabLinks$NODES <- ifelse(tabLinks$from == kw, tabLinks$to, tabLinks$from)
-  tabPoints <- tabPoints %>% left_join(x = ., y = tabLinks, by = c("name" = "NODES"))
+  tabPoints <- tabPoints %>% left_join(tabLinks, by = c("name" = "NODES"))
 
   # compute distance from ego
   tabPoints$DIST <- 1 / tabPoints[[chidist]]
@@ -123,7 +123,8 @@ VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
   circVis <- ggplot() +
     geom_line(data = tabCircle, aes(x = XVAL, y = DIST), color = "#df691a") +
     geom_text(data = tabPoints, aes(x = XVAL, y = DIST, label = name, fontface = IDEGO, color = factor(IDEGO), size = nbauth)) +
-    scale_colour_manual("Type", values = c("#ebebeb", "#df691a")) +
+    # scale_colour_manual("Type", values = c("#ebebeb", "#df691a")) +
+    scale_colour_manual("Type", values = c("grey90", "#df691a")) +
     scale_size_continuous("Number of articles", range = c(textsizemin, textsizemax)) +
     coord_polar(theta = "x") +
     theme_empty
