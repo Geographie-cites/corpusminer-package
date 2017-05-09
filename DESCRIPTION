@@ -40,6 +40,7 @@ Imports:
     leaflet,
     rgeos,
     DT,
-    wordcloud2
+    wordcloud2,
+    purrr
 RoxygenNote: 6.0.1
 Suggests: testthat

@@ -4,27 +4,21 @@
 #' 
 #' @param id see \code{\link[shiny]{callModule}}
 #' @param pattern_list pattern list
+#' @importFrom purrr map
 #' @export
 cybergeo_module_semantic_UI <- function(id, pattern_list){
   ns <- NS(id)
 
   tabPanel("Full-text Semantic network",
+    absolutePanel(id = ns("controls"), fixed= TRUE, top = 10 , right = 20, style = "z-index:1000", 
+      selectizeInput( ns("patterns"), label = NULL, 
+        multiple = TRUE, choices = c("geo", pattern_list), selected = "geo", 
+        options = list( "plugins" = list( "remove_button"), "create" = TRUE, persist = TRUE)
+      )
+    ),
     fluidRow(
-      column(2, 
-        selectizeInput( ns("patterns"), label = "Patterns", 
-          multiple = TRUE, choices = c("geo" = "geo"), selected = "geo", 
-          options = list( "plugins" = list( "remove_button"), "create" = TRUE, persist = FALSE)
-        ), 
-        
-        "Example patterns: ", 
-        tags$p( 
-          paste( pattern_list, collapse = ", " ), 
-          
-          style  = "font-size: smaller; color: gray"
-        )
-      ), 
-      column(5, plotOutput(ns("chronogram"), height = "400px")), 
-      column(5, wordcloud2Output(ns("cloud"), height = "400px"))
+      column(6, plotOutput(ns("chronogram"), height = "400px")), 
+      column(6, wordcloud2Output(ns("cloud"), height = "400px"))
     ), 
     fluidRow( 
       column(6, DT::dataTableOutput(ns("phrases"))), 

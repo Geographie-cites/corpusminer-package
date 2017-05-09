@@ -24,3 +24,6 @@ globalVariables( c("linknum", "kwcount", "id", "SCHID", "group") )
 globalVariables( c("from", "to", "obsfreq", "theofreq", "relresid", "EXPECTED_WEIGHT") )
 globalVariables( c("RESIDUALS", "firstauthor", "year") )
 globalVariables( c("authors", "citedby", "citing", "ym", "sentence", "term") )
+
+#' @export
+"pattern_list"
