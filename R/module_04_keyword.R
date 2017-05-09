@@ -15,15 +15,15 @@ VisuComm <- function(g,
                      vsize.prop, vsize.fac = .5, vsize.default = 1,
                      esize.prop, esize.fac = .5,
                      vertex.label.cex,
-                     edge.color = "#df691a",
+                     edge.color = "gray90", # "#df691a",
                      edge.curved = FALSE,
                      edge.arrow.mode = "-",
                      edge.arrow.size = 0.01,
-                     vertex.color = "#2b3e50",
+                     vertex.color = "gray70",
                      vertex.frame.color = "#df691a",
-                     vertex.label.color = "#ebebeb",
+                     vertex.label.color = "black",
                      vertex.label.family = "sans-serif",
-                     bg = "#4e5d6c"
+                     bg = "white" # "#4e5d6c"
 ){
 
   # sample layout
@@ -52,7 +52,7 @@ VisuComm <- function(g,
     edgesize <- edges$obsfreq
   }
 
-  par(bg = bg)
+  par(bg = bg, mar = c(0.5,0.5,0.5,0.5) )
 
   plot(g,
        edge.color          = edge.color,
@@ -64,7 +64,6 @@ VisuComm <- function(g,
        vertex.frame.color  = vertex.frame.color,
        vertex.label        = V(g)$name,
        vertex.label.color  = vertex.label.color,
-       # vertex.label.family = vertex.label.family,
        vertex.label.cex    = vertex.label.cex,
        vertex.size         = vertsize * vsize.fac,
        layout              = corrCoords
