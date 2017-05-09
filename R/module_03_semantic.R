@@ -95,24 +95,21 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
     patterns <- patterns()
    
     withProgress(min=0, max=length(patterns), value=0, message = "filtering sentences",  {
-      data <- if( is.null( patterns ) ){
-        select( sentences, -id )
-      } else {
+      if( !is.null( patterns ) ){
         datasets <- lapply( patterns , function( pattern ){
           res <- sentences %>% 
-            select(sentence, article_id) %>% 
             filter(grepl(pattern, sentence, ignore.case = TRUE, perl = TRUE) ) %>% 
             mutate(sentence = gsub( sprintf( "(%s)", pattern), "<strong>\\1</strong>", sentence, ignore.case = TRUE ) )
           
           incProgress(1)
           res
-      })
-      bind_rows(datasets)   
-    }
-    datatable( data, escape = FALSE, options = list(pageLength = 5), rownames = FALSE  )
+        })
+        sentences <- bind_rows(datasets)   
+      }
+    })
+    datatable( sentences, escape = FALSE, options = list(pageLength = 5), rownames = FALSE  )
 
   })
-})
   
   chronogram <- reactive({
     matched <- articles_matched()
