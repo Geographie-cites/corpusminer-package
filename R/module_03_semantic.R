@@ -1,12 +1,13 @@
 
 #' shiny module for the semantic tab
+#' 
 #' @importFrom wordcloud2 wordcloud2Output
 #' 
 #' @param id see \code{\link[shiny]{callModule}}
-#' @param pattern_list pattern list
+#' 
 #' @importFrom purrr map
 #' @export
-cybergeo_module_semantic_UI <- function(id, pattern_list){
+cybergeo_module_semantic_UI <- function(id){
   ns <- NS(id)
 
   tabPanel("Full-text Semantic network",
@@ -27,15 +28,14 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
   )
 }
 
-step <- function(.){
-  incProgress(1)
-}
-
 #' Shiny module server function for the semantic tab
+#' 
 #' @param input input
 #' @param output output
 #' @param session session
-#' @param pattern_list pattern list
+#' @param terms 
+#' @param articles 
+#' @param sentences 
 #' 
 #' @importFrom dplyr desc
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
@@ -43,14 +43,10 @@ step <- function(.){
 #' @importFrom stringr str_detect str_replace
 #' @importFrom tidyr separate
 #' @export
-cybergeo_module_semantic <- function( input, output, session, pattern_list, terms, articles, sentences ){
+cybergeo_module_semantic <- function( input, output, session, terms, articles, sentences ){
 
-  patterns <- reactive({
-    input$patterns
-  })
-  
   terms_matched <- reactive({
-    patterns <- patterns()
+    patterns <- input$patterns
       
     withProgress({
       if( is.null(patterns) ){
@@ -94,7 +90,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   })
   
   phrases <- reactive({
-    patterns <- patterns()
+    patterns <- input$patterns
    
     withProgress(min=0, max=length(patterns), value=0, message = "filtering sentences",  {
       if( !is.null( patterns ) ){

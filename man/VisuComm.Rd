@@ -23,6 +23,26 @@ VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
 \item{esize.prop}{One of "nbl" or "rel" to control on what edges are proportional}
 
 \item{esize.fac}{Expansion factor for edge sizes}
+
+\item{vertex.label.cex}{}
+
+\item{edge.color}{}
+
+\item{edge.curved}{}
+
+\item{edge.arrow.mode}{}
+
+\item{edge.arrow.size}{}
+
+\item{vertex.color}{}
+
+\item{vertex.frame.color}{}
+
+\item{vertex.label.color}{}
+
+\item{vertex.label.family}{}
+
+\item{bg}{}
 }
 \description{
 plot the communities. result of any community detection algo, here Louvain method

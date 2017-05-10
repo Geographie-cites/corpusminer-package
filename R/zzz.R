@@ -28,3 +28,23 @@ globalVariables( c("title", "title_en", "freq") )
 
 #' @export
 "pattern_list"
+
+
+#' network of keywords
+"NETKW"
+
+#' articles
+#' 
+#' @format data frame with columns
+#' - id: article id
+#' - date: date
+#' - title: article title
+#' - title_en: english title
+#' - authors: authors
+#' - langue: language
+"articles"
+
+
+
+
+

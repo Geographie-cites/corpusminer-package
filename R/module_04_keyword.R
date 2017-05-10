@@ -8,6 +8,16 @@
 #' @param vsize.default default value for vertex size, e.g. 1 for direct plot or 30 for svg rendering
 #' @param esize.prop One of "nbl" or "rel" to control on what edges are proportional
 #' @param esize.fac Expansion factor for edge sizes
+#' @param vertex.label.cex 
+#' @param edge.color 
+#' @param edge.curved 
+#' @param edge.arrow.mode 
+#' @param edge.arrow.size 
+#' @param vertex.color 
+#' @param vertex.frame.color 
+#' @param vertex.label.color 
+#' @param vertex.label.family 
+#' @param bg 
 #'
 #' @importFrom graphics plot par
 #' @export
@@ -28,8 +38,7 @@ VisuComm <- function(g,
 
   # sample layout
   corrCoords <- layout_in_circle(g)
-  # corrCoords <- corrCoords[ sample(nrow(corrCoords)), ]
-
+  
   # calculate edgesize and vertsize depending on
   edges <- E(g)
   vertices <- V(g)

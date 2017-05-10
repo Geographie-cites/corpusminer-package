@@ -4,8 +4,7 @@
 \alias{cybergeo_module_semantic}
 \title{Shiny module server function for the semantic tab}
 \usage{
-cybergeo_module_semantic(input, output, session, pattern_list, terms, articles,
-  sentences)
+cybergeo_module_semantic(input, output, session, terms, articles, sentences)
 }
 \arguments{
 \item{input}{input}
@@ -14,7 +13,11 @@ cybergeo_module_semantic(input, output, session, pattern_list, terms, articles,
 
 \item{session}{session}
 
-\item{pattern_list}{pattern list}
+\item{terms}{}
+
+\item{articles}{}
+
+\item{sentences}{}
 }
 \description{
 Shiny module server function for the semantic tab

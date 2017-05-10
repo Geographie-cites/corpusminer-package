@@ -36,6 +36,8 @@ citationLoadKeywords <- function(con_citation, con_keywords, id){
 
 #' visualize an ego network given edges
 #' 
+#' @param edges edges
+#'
 #' @importFrom graphics par
 #' @export
 citationVisuEgo <- function(edges){
@@ -66,10 +68,14 @@ citationVisuEgo <- function(edges){
   }
 }
 
+#' ui component for citation module
+#' 
+#' @param id module id
 #' @importFrom svgPanZoom svgPanZoomOutput
 #' @importFrom wordcloud2 wordcloud2Output
+#' @rdname cybergeo_module_citation
 #' @export
-cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
+cybergeo_module_citation_UI <- function(id){
   ns <- NS(id)
 
   navbarMenu("Citation network",
@@ -118,6 +124,8 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 }
 
 
+#' citation shiny module 
+#' 
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT datatable
@@ -185,7 +193,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   
   output$citationsemanticnw <- renderSvgPanZoom({
     svgPanZoom(
-      system.file( 'shiny', 'data-raw', 'semantic.svg', package = "corpusminer" ),
+      system.file( 'data-raw', 'semantic.svg', package = "corpusminer" ),
       zoomScaleSensitivity=1, minZoom=2, maxZoom=20, contain=TRUE
     )
   })

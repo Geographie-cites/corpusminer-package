@@ -4,12 +4,10 @@
 \alias{cybergeo_module_semantic_UI}
 \title{shiny module for the semantic tab}
 \usage{
-cybergeo_module_semantic_UI(id, pattern_list)
+cybergeo_module_semantic_UI(id)
 }
 \arguments{
 \item{id}{see \code{\link[shiny]{callModule}}}
-
-\item{pattern_list}{pattern list}
 }
 \description{
 shiny module for the semantic tab

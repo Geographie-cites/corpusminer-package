@@ -88,8 +88,8 @@ load_geo_semantic_data <- function(terms_file, articles, countries){
 
 countries = as.character(world@data$CNTR_ID)
 geo_semantic_data <- list(
-  Keywords  = load_geo_semantic_data( "data-raw/themes_keyword.csv", overview_ARTICLES, countries ),
-  Citations = load_geo_semantic_data( "data-raw/themes_citation.csv", overview_ARTICLES, countries ),
-  Semantic  = load_geo_semantic_data( "data-raw/themes_semantic.csv", overview_ARTICLES, countries )
+  Keywords  = load_geo_semantic_data( system.file("data-raw/themes_keyword.csv",  package = "corpusminer"), overview_ARTICLES, countries ),
+  Citations = load_geo_semantic_data( system.file("data-raw/themes_citation.csv", package = "corpusminer"), overview_ARTICLES, countries ),
+  Semantic  = load_geo_semantic_data( system.file("data-raw/themes_semantic.csv", package = "corpusminer"), overview_ARTICLES, countries )
 )
 use_data( geo_semantic_data, overwrite = TRUE )

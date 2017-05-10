@@ -6,6 +6,9 @@
 \usage{
 citationVisuEgo(edges)
 }
+\arguments{
+\item{edges}{edges}
+}
 \description{
 visualize an ego network given edges
 }

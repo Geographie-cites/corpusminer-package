@@ -147,8 +147,6 @@ Ce fichier n'est apparemment chargé explicitement que pour l'application `Full 
 
 # 20themes20words.csv
 
-# articles_Contingency.csv
-
 # df_countryAuthoringToCountryStudied.csv
 
 # docprobasJuste.csv
