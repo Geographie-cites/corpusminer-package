@@ -27,8 +27,11 @@ cybergeo_module_geosemantic_UI <- function(id){
   
 }
 
-#' @export
+#' @importFrom graphics par
+#' @importFrom grDevices png
+#' @importFrom stats cutree
 #' @importFrom sp plot
+#' @export
 cybergeo_module_geosemantic <- function( input, output, session, geo_semantic_data, world ){
   
   clusterCountries <- reactive({
@@ -88,7 +91,7 @@ cybergeo_module_geosemantic <- function( input, output, session, geo_semantic_da
       addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
       setView(lng = 0, lat= 20, zoom=3) %>% 
       addPolygons( color = "black", weight = 1, fillColor = paletteCybergeo[groups], fill = TRUE, fillOpacity = .8, 
-        highlight = highlightOptions(weight = 2, fillOpacity = 1, bringToFront = TRUE),
+        highlightOptions = highlightOptions(weight = 2, fillOpacity = 1, bringToFront = TRUE),
         label = labels,
         labelOptions = labelOptions(
           style = list("font-weight" = "normal", padding = "3px 8px"),

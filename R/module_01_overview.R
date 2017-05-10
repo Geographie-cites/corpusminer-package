@@ -64,7 +64,7 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
     addTiles( urlTemplate = 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' ) %>%
     setView(lng = 0, lat= 20, zoom=3) %>% 
     addPolygons( color = "black", weight = 1, fillColor = col, fill = TRUE, fillOpacity = 0.6,
-      highlight = highlightOptions(weight = 2, fillOpacity = 1,bringToFront = TRUE), 
+      highlightOptions = highlightOptions(weight = 2, fillOpacity = 1,bringToFront = TRUE), 
       label = labels, 
       labelOptions = labelOptions(
         style = list("font-weight" = "normal", padding = "3px 8px"),
@@ -76,7 +76,6 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
 }
 
 #' @importFrom leaflet leafletOutput
-#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_overview_UI <- function(id){
   ns <- NS(id)

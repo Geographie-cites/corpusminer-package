@@ -1,5 +1,6 @@
 #' @import ggplot2
 #' @import RSQLite
+#' @import shiny
 #' @importFrom igraph V V<- degree neighborhood simplify layout_in_circle
 #' @importFrom igraph get.data.frame graph_from_data_frame get.edge.ids
 #' @importFrom igraph E subgraph.edges head_of tail_of layout_as_tree
@@ -22,6 +23,8 @@ globalVariables( c("linknum", "kwcount", "id", "SCHID", "group") )
 globalVariables( c("from", "to", "obsfreq", "theofreq", "relresid", "EXPECTED_WEIGHT") )
 globalVariables( c("RESIDUALS", "firstauthor", "year") )
 globalVariables( c("authors", "citedby", "citing", "ym", "sentence", "term") )
+globalVariables( c("title", "title_en", "freq") )
+
 
 #' @export
 "pattern_list"

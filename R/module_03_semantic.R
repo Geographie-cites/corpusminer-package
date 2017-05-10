@@ -5,7 +5,6 @@
 #' @param id see \code{\link[shiny]{callModule}}
 #' @param pattern_list pattern list
 #' @importFrom purrr map
-#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_semantic_UI <- function(id, pattern_list){
   ns <- NS(id)
@@ -22,8 +21,8 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
       wordcloud2Output(ns("cloud"), height = "400px")
     ), 
     splitLayout(
-      dataTableOutput(ns("citations")), 
-      dataTableOutput(ns("phrases"))
+      DT::dataTableOutput(ns("citations")), 
+      DT::dataTableOutput(ns("phrases"))
     )
   )
 }
@@ -38,8 +37,9 @@ step <- function(.){
 #' @param session session
 #' @param pattern_list pattern list
 #' 
+#' @importFrom dplyr desc
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
-#' @importFrom DT renderDataTable datatable
+#' @importFrom DT datatable
 #' @importFrom stringr str_detect str_replace
 #' @importFrom tidyr separate
 #' @export
@@ -139,8 +139,8 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
   output$chronogram <- renderPlot(chronogram())
   output$cloud <- renderWordcloud2(cloud())
 
-  output$phrases <- renderDataTable( phrases() )
-  output$citations <- renderDataTable( titles_matched() )
+  output$phrases <- DT::renderDataTable( phrases() )
+  output$citations <- DT::renderDataTable( titles_matched() )
 
   outputOptions(output, "cloud" )
   

@@ -35,6 +35,8 @@ citationLoadKeywords <- function(con_citation, con_keywords, id){
 }
 
 #' visualize an ego network given edges
+#' 
+#' @importFrom graphics par
 #' @export
 citationVisuEgo <- function(edges){
   if(!is.null(edges)){
@@ -66,7 +68,6 @@ citationVisuEgo <- function(edges){
 
 #' @importFrom svgPanZoom svgPanZoomOutput
 #' @importFrom wordcloud2 wordcloud2Output
-#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
   ns <- NS(id)
@@ -79,7 +80,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
         column(4, 
           h4("Data Selection"),
           tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-          dataTableOutput( ns("citationcybergeo") )
+          DT::dataTableOutput( ns("citationcybergeo") )
         ), 
         column(8, 
           # citation ego network
@@ -117,9 +118,9 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 }
 
 
-#' @importFrom svgPanZoom renderSvgPanZoom
+#' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
-#' @importFrom DT renderDataTable datatable
+#' @importFrom DT datatable
 #' 
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
@@ -132,7 +133,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     select(id, title, authors)
   
   ## selection datatable
-  output$citationcybergeo <- renderDataTable({
+  output$citationcybergeo <- DT::renderDataTable({
     datatable( filtered_data, selection = "single", rownames = FALSE )  
   })
   

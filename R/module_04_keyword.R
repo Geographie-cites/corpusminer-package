@@ -9,7 +9,7 @@
 #' @param esize.prop One of "nbl" or "rel" to control on what edges are proportional
 #' @param esize.fac Expansion factor for edge sizes
 #'
-#' @importFrom graphics plot
+#' @importFrom graphics plot par
 #' @export
 VisuComm <- function(g,
                      vsize.prop, vsize.fac = .5, vsize.default = 1,
@@ -297,7 +297,6 @@ extract_community_graph <- function( g, community ){
 #### ------------ module shiny
 
 #' @importFrom dplyr mutate_at
-#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_keyword_UI <- function(id, NETKW ){
   ns <- NS(id)
@@ -311,9 +310,9 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
       htmlOutput( ns("textfull") ),
       tags$hr(),
       
-      fluidRow(
-        column(6, dataTableOutput( ns("contentsnodes") ) ), 
-        column(6, dataTableOutput( ns("contentsedges") ) )
+      splitLayout(
+        DT::dataTableOutput( ns("contentsnodes") ), 
+        DT::dataTableOutput( ns("contentsedges") )
       )
     ),
 
@@ -347,7 +346,7 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
           downloadButton(ns("downcomm"), "Download plot")
         ), 
         column(4, 
-          dataTableOutput(ns("tablecomm") )
+          DT::dataTableOutput(ns("tablecomm") )
         )
       )
     ),
@@ -373,7 +372,7 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
   )
 }
 
-#' @importFrom DT renderDataTable datatable
+#' @importFrom DT datatable
 #' @export
 cybergeo_module_keyword <- function( input, output, session,
   NETKW
@@ -392,11 +391,11 @@ cybergeo_module_keyword <- function( input, output, session,
   nodes <- info_table_nodes( NETKW )
   edges <- info_table_edges( NETKW )
   
-  output$contentsnodes <- renderDataTable(
+  output$contentsnodes <- DT::renderDataTable(
     datatable( nodes, selection = "none" )
   )
 
-  output$contentsedges <- renderDataTable(
+  output$contentsedges <- DT::renderDataTable(
     datatable( edges, selection = "none")
   )
 
@@ -408,7 +407,7 @@ cybergeo_module_keyword <- function( input, output, session,
     )
   })
   
-  output$tablecomm <- renderDataTable({
+  output$tablecomm <- DT::renderDataTable({
     data <- get.data.frame(SelectComm()) %>% 
       mutate_at( vars(theofreq, relresid), funs(round(., 2)) )
     
