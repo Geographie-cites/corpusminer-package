@@ -38,7 +38,7 @@ step <- function(.){
 #' @param session session
 #' @param pattern_list pattern list
 #' 
-#' @importFrom wordcloud2 wordcloud renderWordcloud2
+#' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT renderDataTable datatable
 #' @importFrom stringr str_detect str_replace
 #' @importFrom tidyr separate

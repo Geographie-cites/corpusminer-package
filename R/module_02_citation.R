@@ -117,7 +117,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 }
 
 
-
+#' @importFrom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT renderDataTable datatable
 #' 

@@ -148,6 +148,7 @@ cybergeo_module_overview_UI <- function(id){
   
 }
 
+#' @importFrom leaflet renderLeaflet
 #' @export
 cybergeo_module_overview <- function( input, output, session, world, articles ){
   
@@ -201,7 +202,5 @@ cybergeo_module_overview <- function( input, output, session, world, articles ){
   output$top5Authoring <- renderText( overview_summary_country(authoring()) )
   
   output$top5Studied <- renderText( overview_summary_country(studied()) )
-  
-  # data_overview
-  NULL
+
 }
