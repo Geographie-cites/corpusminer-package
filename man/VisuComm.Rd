@@ -5,11 +5,11 @@
 \title{plot the communities}
 \usage{
 VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
-  esize.fac = 0.5, vertex.label.cex, edge.color = "#df691a",
+  esize.fac = 0.5, vertex.label.cex, edge.color = "gray90",
   edge.curved = FALSE, edge.arrow.mode = "-", edge.arrow.size = 0.01,
-  vertex.color = "#2b3e50", vertex.frame.color = "#df691a",
-  vertex.label.color = "#ebebeb", vertex.label.family = "sans-serif",
-  bg = "#4e5d6c")
+  vertex.color = "gray70", vertex.frame.color = "#df691a",
+  vertex.label.color = "black", vertex.label.family = "sans-serif",
+  bg = "white")
 }
 \arguments{
 \item{g}{igraph network}

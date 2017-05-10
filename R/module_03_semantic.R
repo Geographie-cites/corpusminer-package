@@ -128,7 +128,7 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
       x <- arrange( x, desc(freq) ) ; incProgress(1)
       x <- head( x, 500); incProgress(1)
       x <- rename( x, world = term)
-
+      browser()
       wordcloud2( x , shape = "square")  
     })
   })

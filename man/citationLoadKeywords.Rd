@@ -2,7 +2,15 @@
 % Please edit documentation in R/module_02_citation.R
 \name{citationLoadKeywords}
 \alias{citationLoadKeywords}
-\title{load neighbors keywords given an id}
+\title{#' load citation edges given an reference id
+#'
+#' @param con database connection
+#' @param id edge id
+citationLoadEdges <- function(con, id){
+  query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
+  dbGetQuery(con,query)
+}
+load neighbors keywords given an id}
 \usage{
 citationLoadKeywords(con_citation, con_keywords, id)
 }
@@ -17,5 +25,13 @@ citationLoadKeywords(con_citation, con_keywords, id)
 keywords
 }
 \description{
+#' load citation edges given an reference id
+#'
+#' @param con database connection
+#' @param id edge id
+citationLoadEdges <- function(con, id){
+  query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
+  dbGetQuery(con,query)
+}
 load neighbors keywords given an id
 }

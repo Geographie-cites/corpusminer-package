@@ -1,11 +1,11 @@
-#' load citation edges given an reference id
-#'
-#' @param con database connection
-#' @param id edge id
-citationLoadEdges <- function(con, id){
-  query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
-  dbGetQuery(con,query)
-}
+#' #' load citation edges given an reference id
+#' #'
+#' #' @param con database connection
+#' #' @param id edge id
+#' citationLoadEdges <- function(con, id){
+#'   query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
+#'   dbGetQuery(con,query)
+#' }
 
 #' load neighbors keywords given an id
 #'
@@ -64,30 +64,9 @@ citationVisuEgo <- function(edges){
   }
 }
 
-#' plots word clouds, one for the keywords of the ref itself, the other for the provided keywords (neighborhood)
-#'
-#' @importFrom graphics par
-#' @importFrom wordcloud wordcloud
-citationWordclouds<-function(id, keywords, citationkwfreqs, citationkwthemdico){
-  if(id != "0" && !is.null(keywords)){
-    # at least kws for the paper, so no need to check emptyness
-    par(mfrow=c(1,2), bg = "#4e5d6c")
-    wordcloud(words=keywords[[id]],
-              freq=citationkwfreqs[keywords[[id]]],
-              colors=unlist(semanticcolors[citationkwthemdico[keywords[[id]]]]),
-              ordered.colors = TRUE
-    )
-
-    allkws=unlist(keywords)
-    wordcloud(words=allkws,
-              freq=citationkwfreqs[allkws],
-              colors=unlist(semanticcolors[citationkwthemdico[allkws]]),
-              ordered.colors = TRUE
-    )
-  }
-}
-
-
+#' @importFrom svgPanZoom svgPanZoomOutput
+#' @importFrom wordcloud2 wordcloud2Output
+#' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
   ns <- NS(id)
@@ -97,31 +76,28 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
     tabPanel("Citation Network",
       # select article to visualize
       fluidRow(
-        h4("Data Selection"),
-        tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-        DT::dataTableOutput( ns("citationcybergeo") )
-      ),
-
-      # citation ego network
-      fluidRow(
-        h4("Citation network neighborhood"),
-        tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
-        selectInput( ns("citationselected"), label = "Select a publication by id",
-          choices = c("",sort(citation_cybergeodata$id[citation_cybergeodata$linknum>0],decreasing = TRUE)),
-          selected = "", multiple = FALSE
-        ),
-        plotOutput( ns("citationegoplot"), width = "100%", height = "800px")
-      ),
-
-      # word clouds of semantic content
-      fluidRow(
-        h4("Semantic content"),
-        tags$p(class="text-justify","This graph shows the semantic content (color legend in user guide) of the paper (left) and its neighborhood (right)."),
-        selectInput( ns("citationsemanticselected"), label = "Select a publication by id",
-          choices = c("",sort(citation_cybergeodata$id[citation_cybergeodata$kwcount>0],decreasing = TRUE)),
-          selected = "", multiple = FALSE
-        ),
-        plotOutput( ns("citationesemanticplot"), width = "100%", height = "800px")
+        column(4, 
+          h4("Data Selection"),
+          tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
+          dataTableOutput( ns("citationcybergeo") )
+        ), 
+        column(8, 
+          # citation ego network
+          h4("Citation network neighborhood"),
+          # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
+          plotOutput( ns("citationegoplot"), width = "100%" ), 
+          
+          # word clouds of semantic content
+          h4("Semantic content"),
+          # tags$p(class="text-justify","This graph shows the semantic content (color legend in user guide) of the paper (left) and its neighborhood (right)."),
+          
+          splitLayout( 
+            wordcloud2Output( ns("cloud_ref_keywords"), height = "400px" ), 
+            wordcloud2Output( ns("cloud_provided_keywords"), height = "400px" )
+          )
+          
+        )
+        
       )
     ),
 
@@ -140,6 +116,9 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 
 }
 
+
+
+#' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT renderDataTable datatable
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
@@ -147,79 +126,143 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   citationdbcit <- dbConnect(SQLite(), system.file("sqlite", "CitationNetwork.sqlite3", package = "corpusminer"))
   citationdbkws <- dbConnect(SQLite(), system.file("sqlite", "CitationKeywords.sqlite3", package = "corpusminer"))
   
-  # global vars (needed e.g. to avoid numerous db request with reactive functions)
-  citationGlobalVars <- reactiveValues(
-    citationSelected = "0",
-    citationSemanticSelected = "0"
-  )
-
+  filtered_data <- citation_cybergeodata %>%
+    filter(linknum > 0 | kwcount > 0) %>%
+    select(id, title, authors)
+  
   ## selection datatable
   output$citationcybergeo <- renderDataTable({
-    data <- citation_cybergeodata %>%
-      filter(linknum > 0 | kwcount > 0) %>%
-      select(id, SCHID, title, authors) %>%
-    datatable( data, selection = "multiple" )  
+    datatable( filtered_data, selection = "single", rownames = FALSE )  
+  })
+  
+  id <- reactive({
+    filtered_data$id[ input$citationcybergeo_rows_selected ]
+  })
+  
+  schid <- reactive({
+    filtered_data$SCHID[ input$citationcybergeo_rows_selected ]
+  })
+  
+  keywords <- reactive({
+    citationLoadKeywords(citationdbcit, citationdbkws, schid())
+  })
+  
+  edges <- reactive({
+    query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
+    dbGetQuery(citationdbcit,query)
   })
 
-  citationSelectedCybergeoArticle <- reactive({
-    input$citationcybergeo_rows_selected
+  
+  #' #' plots word clouds, one for the keywords of the ref itself, the other for the provided keywords (neighborhood)
+  #' #'
+  #' #' @importFrom graphics par
+  #' #' @importFrom wordcloud wordcloud
+  #' citationWordclouds <- function(id, keywords, citationkwfreqs, citationkwthemdico){
+  #'   if(id != "0" && !is.null(keywords)){
+  #'     # at least kws for the paper, so no need to check emptyness
+  #'     par(mfrow=c(1,2), bg = "#4e5d6c")
+  #'     wordcloud(
+  #'       words=keywords[[id]],
+  #'       freq=citationkwfreqs[keywords[[id]]],
+  #'       colors=unlist(semanticcolors[citationkwthemdico[keywords[[id]]]]),
+  #'       ordered.colors = TRUE
+  #'     )
+  #'     
+  #'     allkws=unlist(keywords)
+  #'     wordcloud(
+  #'       words=allkws,
+  #'       freq=citationkwfreqs[allkws],
+  #'       colors=unlist(semanticcolors[citationkwthemdico[allkws]]),
+  #'       ordered.colors = TRUE
+  #'     )
+  #'   }
+  #' }
+  
+  output$cloud_ref_keywords <- renderWordcloud2({
+    data <- data_frame( word = letters, freq = rep(1, 26))
+    wordcloud2(data)
   })
 
-  # observer make data update requests
-  observe({
-    selected <- citationSelectedCybergeoArticle()
-
-    selected_hand <- which(citation_cybergeodata$id == input$citationselected)
-    if(length(selected_hand)>0){
-      selected <- selected_hand
-    }
-    
-    if(length(selected) == 1){
-      if(selected != citationGlobalVars$citationSelected ){
-        citationGlobalVars$citationSelected <- selected
-
-        selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
-
-        # make request for edges in sqlitedb
-        # citationGlobalVars$edges = citationLoadEdges(citationdbcit, selectedschid)
-      }
-    }
+  output$cloud_provided_keywords <- renderWordcloud2({
+    data <- data_frame( word = letters, freq = rep(1, 26))
+    wordcloud2(data)
   })
-
-
-  # similar observer for semantic plot
-  # observe({
-  #   selected <- citationSelectedCybergeoArticle()
-  #   selected_hand <- which(citation_cybergeodata$id == input$citationsemanticselected)
-  #   if(length(selected_hand)>0){
-  #     selected <- selected_hand
-  #   }
-  #   if(length(selected)==1){
-  #     if(selected != citationGlobalVars$citationSemanticSelected){
-  #       citationGlobalVars$citationSemanticSelected <- selected
-  #       selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
-  #       citationGlobalVars$keywords <- citationLoadKeywords(citationdbcit, citationdbkws, selectedschid)
-  #     }
-  #   }
-  # })
-
+  
   # render citation graph around selected article
   # output$citationegoplot = renderPlot({
-  #   citationVisuEgo(citationGlobalVars$edges)
+  #   citationVisuEgo( edges() )
   # })
-
-  # render wordclouds
-  output$citationesemanticplot = renderPlot({
-    schid <- citation_cybergeodata$SCHID[citationGlobalVars$citationSemanticSelected]
-    citationWordclouds(schid,citationGlobalVars$keywords)
-  })
-
-  output$citationsemanticnw<-renderSvgPanZoom({
+  
+  output$citationsemanticnw <- renderSvgPanZoom({
     svgPanZoom(
-      'data/semantic.svg',
+      system.file( 'shiny', 'data-raw', 'semantic.svg', package = "corpusminer" ),
       zoomScaleSensitivity=1, minZoom=2, maxZoom=20, contain=TRUE
     )
   })
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+# render wordclouds
+# output$citationesemanticplot = renderPlot({
+#   schid <- citation_cybergeodata$SCHID[citationGlobalVars$citationSemanticSelected]
+#   citationWordclouds(schid,citationGlobalVars$keywords)
+# })
+
+
+
+# global vars (needed e.g. to avoid numerous db request with reactive functions)
+# citationGlobalVars <- reactiveValues(
+#   citationSelected = "0",
+#   citationSemanticSelected = "0"
+# )
+
+
+# # observer make data update requests
+# observe({
+#   selected <- citationSelectedCybergeoArticle()
+# 
+#   selected_hand <- which(citation_cybergeodata$id == input$citationselected)
+#   if(length(selected_hand)>0){
+#     selected <- selected_hand
+#   }
+#   
+#   if(length(selected) == 1){
+#     if(selected != citationGlobalVars$citationSelected ){
+#       citationGlobalVars$citationSelected <- selected
+# 
+#       selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
+# 
+#       # make request for edges in sqlitedb
+#       # citationGlobalVars$edges = citationLoadEdges(citationdbcit, selectedschid)
+#     }
+#   }
+# })
+
+
+# similar observer for semantic plot
+# observe({
+#   selected <- citationSelectedCybergeoArticle()
+#   selected_hand <- which(citation_cybergeodata$id == input$citationsemanticselected)
+#   if(length(selected_hand)>0){
+#     selected <- selected_hand
+#   }
+#   if(length(selected)==1){
+#     if(selected != citationGlobalVars$citationSemanticSelected){
+#       citationGlobalVars$citationSemanticSelected <- selected
+#       selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
+#       citationGlobalVars$keywords <- citationLoadKeywords(citationdbcit, citationdbkws, selectedschid)
+#     }
+#   }
+# })
