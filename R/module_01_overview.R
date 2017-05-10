@@ -47,6 +47,7 @@ subset_map_data <- function( world, articles, indicator){
   w
 }
 
+#' @importFrom leaflet leaflet addTiles setView addPolygons labelOptions highlightOptions
 leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), authoring, studied ){
   indicator <- match.arg(indicator)
   col  <- overview_plot_col[[indicator]]
@@ -74,6 +75,7 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
   
 }
 
+#' @importFrom leaflet leafletOutput
 #' @importFrom DT dataTableOutput
 #' @export
 cybergeo_module_overview_UI <- function(id){

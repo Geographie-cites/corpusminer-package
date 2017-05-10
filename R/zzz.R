@@ -1,4 +1,3 @@
-#' @import leaflet
 #' @import ggplot2
 #' @import RSQLite
 #' @importFrom igraph V V<- degree neighborhood simplify layout_in_circle

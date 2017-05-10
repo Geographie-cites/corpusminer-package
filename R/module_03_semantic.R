@@ -1,6 +1,6 @@
 
 #' shiny module for the semantic tab
-#' @import wordcloud2
+#' @importFrom wordcloud2 wordcloud2Output
 #' 
 #' @param id see \code{\link[shiny]{callModule}}
 #' @param pattern_list pattern list
@@ -17,15 +17,14 @@ cybergeo_module_semantic_UI <- function(id, pattern_list){
         options = list( "plugins" = list( "remove_button"), "create" = TRUE, persist = TRUE)
       )
     ),
-    fluidRow(
-      column(6, plotOutput(ns("chronogram"), height = "400px")), 
-      column(6, wordcloud2Output(ns("cloud"), height = "400px"))
+    splitLayout(
+      plotOutput(ns("chronogram"), height = "400px"), 
+      wordcloud2Output(ns("cloud"), height = "400px")
     ), 
-    fluidRow( 
-      column(6, dataTableOutput(ns("citations"))), 
-      column(6, dataTableOutput(ns("phrases")))
+    splitLayout(
+      dataTableOutput(ns("citations")), 
+      dataTableOutput(ns("phrases"))
     )
-    
   )
 }
 
@@ -38,6 +37,8 @@ step <- function(.){
 #' @param output output
 #' @param session session
 #' @param pattern_list pattern list
+#' 
+#' @importFrom wordcloud2 wordcloud renderWordcloud2
 #' @importFrom DT renderDataTable datatable
 #' @importFrom stringr str_detect str_replace
 #' @importFrom tidyr separate
@@ -128,7 +129,6 @@ cybergeo_module_semantic <- function( input, output, session, pattern_list, term
       x <- arrange( x, desc(freq) ) ; incProgress(1)
       x <- head( x, 500); incProgress(1)
       x <- rename( x, world = term)
-      browser()
       wordcloud2( x , shape = "square")  
     })
   })

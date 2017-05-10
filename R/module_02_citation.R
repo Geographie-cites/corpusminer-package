@@ -120,6 +120,7 @@ cybergeo_module_citation_UI <- function(id, citation_cybergeodata ){
 
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT renderDataTable datatable
+#' 
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
 
@@ -153,36 +154,24 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
 
   
-  #' #' plots word clouds, one for the keywords of the ref itself, the other for the provided keywords (neighborhood)
-  #' #'
-  #' #' @importFrom graphics par
-  #' #' @importFrom wordcloud wordcloud
-  #' citationWordclouds <- function(id, keywords, citationkwfreqs, citationkwthemdico){
-  #'   if(id != "0" && !is.null(keywords)){
-  #'     # at least kws for the paper, so no need to check emptyness
-  #'     par(mfrow=c(1,2), bg = "#4e5d6c")
-  #'     wordcloud(
-  #'       words=keywords[[id]],
-  #'       freq=citationkwfreqs[keywords[[id]]],
-  #'       colors=unlist(semanticcolors[citationkwthemdico[keywords[[id]]]]),
-  #'       ordered.colors = TRUE
-  #'     )
-  #'     
-  #'     allkws=unlist(keywords)
-  #'     wordcloud(
-  #'       words=allkws,
-  #'       freq=citationkwfreqs[allkws],
-  #'       colors=unlist(semanticcolors[citationkwthemdico[allkws]]),
-  #'       ordered.colors = TRUE
-  #'     )
-  #'   }
-  #' }
-  
+  #     wordcloud(
+  #       words=keywords[[id]],
+  #       freq=citationkwfreqs[keywords[[id]]],
+  #       colors=unlist(semanticcolors[citationkwthemdico[keywords[[id]]]]),
+  #       ordered.colors = TRUE
+  #     )
   output$cloud_ref_keywords <- renderWordcloud2({
     data <- data_frame( word = letters, freq = rep(1, 26))
     wordcloud2(data)
   })
 
+  #     allkws=unlist(keywords)
+  #     wordcloud(
+  #       words=allkws,
+  #       freq=citationkwfreqs[allkws],
+  #       colors=unlist(semanticcolors[citationkwthemdico[allkws]]),
+  #       ordered.colors = TRUE
+  #     )
   output$cloud_provided_keywords <- renderWordcloud2({
     data <- data_frame( word = letters, freq = rep(1, 26))
     wordcloud2(data)
@@ -204,65 +193,3 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
 }
 
 
-
-
-
-
-
-
-
-
-
-
-# render wordclouds
-# output$citationesemanticplot = renderPlot({
-#   schid <- citation_cybergeodata$SCHID[citationGlobalVars$citationSemanticSelected]
-#   citationWordclouds(schid,citationGlobalVars$keywords)
-# })
-
-
-
-# global vars (needed e.g. to avoid numerous db request with reactive functions)
-# citationGlobalVars <- reactiveValues(
-#   citationSelected = "0",
-#   citationSemanticSelected = "0"
-# )
-
-
-# # observer make data update requests
-# observe({
-#   selected <- citationSelectedCybergeoArticle()
-# 
-#   selected_hand <- which(citation_cybergeodata$id == input$citationselected)
-#   if(length(selected_hand)>0){
-#     selected <- selected_hand
-#   }
-#   
-#   if(length(selected) == 1){
-#     if(selected != citationGlobalVars$citationSelected ){
-#       citationGlobalVars$citationSelected <- selected
-# 
-#       selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
-# 
-#       # make request for edges in sqlitedb
-#       # citationGlobalVars$edges = citationLoadEdges(citationdbcit, selectedschid)
-#     }
-#   }
-# })
-
-
-# similar observer for semantic plot
-# observe({
-#   selected <- citationSelectedCybergeoArticle()
-#   selected_hand <- which(citation_cybergeodata$id == input$citationsemanticselected)
-#   if(length(selected_hand)>0){
-#     selected <- selected_hand
-#   }
-#   if(length(selected)==1){
-#     if(selected != citationGlobalVars$citationSemanticSelected){
-#       citationGlobalVars$citationSemanticSelected <- selected
-#       selectedschid <- citation_cybergeodata$SCHID[as.numeric(selected)]
-#       citationGlobalVars$keywords <- citationLoadKeywords(citationdbcit, citationdbkws, selectedschid)
-#     }
-#   }
-# })
