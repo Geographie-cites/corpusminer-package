@@ -1,8 +1,3 @@
-
-
-
-#### ------------ module shiny
-
 #' @export
 cybergeo_module_geosemantic_UI <- function(id){
   ns <- NS(id)
