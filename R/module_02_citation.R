@@ -165,8 +165,8 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   
   #     wordcloud(
   #       words=keywords[[id]],
-  #       freq=citationkwfreqs[keywords[[id]]],
-  #       colors=unlist(semanticcolors[citationkwthemdico[keywords[[id]]]]),
+  #       freq=citation_data$freq[keywords[[id]]],
+  #       colors=unlist(semanticcolors[citation_data$group[keywords[[id]]]]),
   #       ordered.colors = TRUE
   #     )
   output$cloud_ref_keywords <- renderWordcloud2({
@@ -177,8 +177,8 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   #     allkws=unlist(keywords)
   #     wordcloud(
   #       words=allkws,
-  #       freq=citationkwfreqs[allkws],
-  #       colors=unlist(semanticcolors[citationkwthemdico[allkws]]),
+  #       freq=citation_data$freq[allkws],
+  #       colors=unlist(semanticcolors[citation_data$group[allkws]]),
   #       ordered.colors = TRUE
   #     )
   output$cloud_provided_keywords <- renderWordcloud2({
