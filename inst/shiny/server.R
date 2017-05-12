@@ -5,7 +5,10 @@ shinyServer(function(input, output, session) {
   )
 
   callModule(cybergeo_module_citation, "citation",
-    citation_cybergeodata = citation_cybergeodata
+    citation_cybergeodata = citation_cybergeodata, 
+    citation_edges = citation_edges, 
+    citation_data = citation_data, 
+    citation_keyword_data = citation_keyword_data
   )
 
   callModule(cybergeo_module_semantic, "semantic",

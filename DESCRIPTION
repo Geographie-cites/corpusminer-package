@@ -23,7 +23,6 @@ Imports:
   shiny,
   ggplot2,
   svgPanZoom,
-  RSQLite,
   igraph,
   dplyr,
   utils,

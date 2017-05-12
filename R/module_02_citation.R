@@ -13,25 +13,34 @@
 #' @param con_keywords connection to the keywords db
 #' @param id article id
 #'
+#' @importFrom purrr map_lgl
+#' @importFrom tidyr unnest
 #' @return keywords
-citationLoadKeywords <- function(con_citation, con_keywords, id){
-  # load edges
-  to_query   <- sprintf( "SELECT `to` FROM edges WHERE `from`='%s' ;", id )
-  to_id      <- dbGetQuery(con_citation,to_query)[,1]
+citationLoadKeywords <- function( schid, edges, data ){
+  
+  # collect the id of the article that
+  # - cite the one identified by schid
+  # - are cited by schid
+  # - are schid
+  id_tab <- bind_rows(
+    edges %>% filter( from == schid ) %>% select(to) %>% rename(id=to), 
+    edges %>% filter( to == schid ) %>% select(from) %>% rename(id=from), 
+    data_frame( id = schid )
+  ) %>% distinct(id)
+  
+  # extract keywords for these articles
+  get <- function(id_tab){
+    res <- data %>% 
+      select(id, keyword ) %>% 
+      right_join(id_tab, by = "id") %>% 
+      filter( map_lgl(keyword, ~!is.null(.)) )
+    
+    if( nrow(res)) unnest(res) else data_frame( id = numeric(0), keyword = character(0))
 
-  from_query <- sprintf( "SELECT `from` FROM edges WHERE `to`='%s' ;", id )
-  from_id    <- dbGetQuery(con_citation,from_query)[,1]
-
-  ids <- c(id, to_id, from_id)
-
-  query <- paste(
-    "SELECT * FROM keywords WHERE ",
-    paste( "`id`='", ids, "'", sep = "", collapse = " OR " )
-  )
-  res <- dbGetQuery(con_keywords, query)
-  keywords <- strsplit( res$keywords, ";")
-  names(keywords) <- res$id
-  keywords
+  }
+  
+  list( all = get(id_tab), id = get(data_frame(id=schid)) )
+  
 }
 
 #' visualize an ego network given edges
@@ -90,9 +99,9 @@ cybergeo_module_citation_UI <- function(id){
         ), 
         column(8, 
           # citation ego network
-          h4("Citation network neighborhood"),
-          # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
-          plotOutput( ns("citationegoplot"), width = "100%" ), 
+            # h4("Citation network neighborhood"),
+            # # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
+            # plotOutput( ns("citationegoplot"), width = "100%" ), 
           
           # word clouds of semantic content
           h4("Semantic content"),
@@ -131,31 +140,37 @@ cybergeo_module_citation_UI <- function(id){
 #' @importFrom DT datatable
 #' 
 #' @export
-cybergeo_module_citation <- function( input, output, session, citation_cybergeodata){
+cybergeo_module_citation <- function( input, output, session, citation_cybergeodata, citation_keyword_data, citation_edges, citation_data ){
 
-  citationdbcit <- dbConnect(SQLite(), system.file("sqlite", "CitationNetwork.sqlite3", package = "corpusminer"))
-  citationdbkws <- dbConnect(SQLite(), system.file("sqlite", "CitationKeywords.sqlite3", package = "corpusminer"))
-  
   filtered_data <- citation_cybergeodata %>%
     filter(linknum > 0 | kwcount > 0) %>%
-    select(id, title, authors)
+    select(id, SCHID, title, authors)
   
   ## selection datatable
   output$citationcybergeo <- DT::renderDataTable({
-    datatable( filtered_data, selection = "single", rownames = FALSE )  
+    datatable( select(filtered_data, title, authors), selection = "single", rownames = FALSE )  
   })
   
-  id <- reactive({
-    filtered_data$id[ input$citationcybergeo_rows_selected ]
-  })
+  # id <- eventReactive(input$citationcybergeo_rows_selected, {
+  #   filtered_data$id[ input$citationcybergeo_rows_selected ]
+  # })
   
-  schid <- reactive({
+  schid <- eventReactive(input$citationcybergeo_rows_selected, {
     filtered_data$SCHID[ input$citationcybergeo_rows_selected ]
   })
   
   keywords <- reactive({
-    citationLoadKeywords(citationdbcit, citationdbkws, schid())
+    citationLoadKeywords( schid(), citation_edges, citation_data )
   })
+  
+  keywords_id <- reactive({
+    keywords()$id
+  })
+  
+  keywords_all <- reactive({
+    keywords()$all
+  })
+  
   
   edges <- reactive({
     query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
@@ -170,8 +185,13 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   #       ordered.colors = TRUE
   #     )
   output$cloud_ref_keywords <- renderWordcloud2({
-    data <- data_frame( word = letters, freq = rep(1, 26))
-    wordcloud2(data)
+    kw <- keywords_id() %>% 
+      rename(word=keyword) %>% 
+      left_join( citation_keyword_data, by = "word") 
+    
+    col <- unname(semanticcolors[ kw$group ])
+    data <- select(kw, word, freq) %>% as.data.frame()
+    wordcloud2(data, color = col)
   })
 
   #     allkws=unlist(keywords)
@@ -182,8 +202,15 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   #       ordered.colors = TRUE
   #     )
   output$cloud_provided_keywords <- renderWordcloud2({
-    data <- data_frame( word = letters, freq = rep(1, 26))
-    wordcloud2(data)
+    kw <- keywords_all() %>% 
+      rename(word=keyword) %>% 
+      distinct(word) %>% 
+      left_join( citation_keyword_data, by = "word")
+    
+    col <- unname(semanticcolors[ kw$group ])
+    
+    data <- select(kw, word, freq) %>% as.data.frame()
+    wordcloud2(data, color = col)
   })
   
   # render citation graph around selected article

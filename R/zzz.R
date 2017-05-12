@@ -1,5 +1,4 @@
 #' @import ggplot2
-#' @import RSQLite
 #' @import shiny
 #' @importFrom igraph V V<- degree neighborhood simplify layout_in_circle
 #' @importFrom igraph get.data.frame graph_from_data_frame get.edge.ids

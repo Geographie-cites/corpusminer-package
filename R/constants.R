@@ -8,7 +8,7 @@ pattern_list <- c("espace", "territoire", "environnement", "société", "réseau
                   "représentation", "migration", "quantitatif", "qualitatif", "post-moderne")
 
 #' @export
-semanticcolors <- list(
+semanticcolors <- c(
   "complex systems" = rgb(204,0,255,maxColorValue=255),
   "health" =   rgb(255,102,0,maxColorValue=255), 
   "crime" =  rgb(255,102,0,maxColorValue=255),

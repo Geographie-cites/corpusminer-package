@@ -28,9 +28,3 @@ constructCitationNetwork <- function(edgefile,nodefile,outputfile){
   save(gcitation,cybnames,file=outputfile)
   
 }
-
-
-
-
-
-
