@@ -1,0 +1,4 @@
+inst/sqlite/CitationKeywords.sqlite3 filter=lfs diff=lfs merge=lfs -text
+inst/sqlite/CitationNetwork.sqlite3 filter=lfs diff=lfs merge=lfs -text
+data/citation_data.rda filter=lfs diff=lfs merge=lfs -text
+data/citation_edges.rda filter=lfs diff=lfs merge=lfs -text
