@@ -16,7 +16,8 @@
 #' @importFrom purrr map_lgl
 #' @importFrom tidyr unnest
 #' @return keywords
-citationLoadKeywords <- function( schid, edges, data ){
+citationLoadKeywords <- function( schid, edges, data, citation_keyword_data ){
+  schid <- as.numeric(schid)
   
   # collect the id of the article that
   # - cite the one identified by schid
@@ -29,18 +30,28 @@ citationLoadKeywords <- function( schid, edges, data ){
   ) %>% distinct(id)
   
   # extract keywords for these articles
-  get <- function(id_tab){
+  get <- function(tab){
     res <- data %>% 
       select(id, keyword ) %>% 
-      right_join(id_tab, by = "id") %>% 
-      filter( map_lgl(keyword, ~!is.null(.)) )
+      rename( word = keyword ) %>% 
+      right_join(tab, by = "id") %>% 
+      select( word ) %>% 
+      filter( map_lgl(word, ~!is.null(.)) )
+      
     
-    if( nrow(res)) unnest(res) else data_frame( id = numeric(0), keyword = character(0))
+    if( nrow(res)) {
+      res %>% 
+        unnest() %>% 
+        distinct() %>% 
+        left_join( citation_keyword_data, by = "word") %>% 
+        filter( !is.na(freq) )
+    } else {
+      data_frame( word = character(0), freq = integer(0), group = character(0))
+    }
 
   }
   
   list( all = get(id_tab), id = get(data_frame(id=schid)) )
-  
 }
 
 #' visualize an ego network given edges
@@ -92,24 +103,30 @@ cybergeo_module_citation_UI <- function(id){
     tabPanel("Citation Network",
       # select article to visualize
       fluidRow(
-        column(4, 
+        column(3, 
           h4("Data Selection"),
           tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
           DT::dataTableOutput( ns("citationcybergeo") )
         ), 
-        column(8, 
+        column(9, 
           # citation ego network
-            # h4("Citation network neighborhood"),
-            # # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
-            # plotOutput( ns("citationegoplot"), width = "100%" ), 
+          h4("Citation network neighborhood"),
+          # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
+          plotOutput( ns("citationegoplot"), width = "100%" ),
           
           # word clouds of semantic content
           h4("Semantic content"),
-          # tags$p(class="text-justify","This graph shows the semantic content (color legend in user guide) of the paper (left) and its neighborhood (right)."),
           
           splitLayout( 
-            wordcloud2Output( ns("cloud_ref_keywords"), height = "400px" ), 
-            wordcloud2Output( ns("cloud_provided_keywords"), height = "400px" )
+            div(
+              htmlOutput(ns("desc_ref_keywords")),
+              wordcloud2Output( ns("cloud_ref_keywords"), height = "400px" )
+            ), 
+            div(
+              htmlOutput(ns("desc_provided_keywords")),
+              wordcloud2Output( ns("cloud_provided_keywords"), height = "400px" )  
+            )
+            
           )
           
         )
@@ -151,16 +168,12 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     datatable( select(filtered_data, title, authors), selection = "single", rownames = FALSE )  
   })
   
-  # id <- eventReactive(input$citationcybergeo_rows_selected, {
-  #   filtered_data$id[ input$citationcybergeo_rows_selected ]
-  # })
-  
   schid <- eventReactive(input$citationcybergeo_rows_selected, {
     filtered_data$SCHID[ input$citationcybergeo_rows_selected ]
   })
   
   keywords <- reactive({
-    citationLoadKeywords( schid(), citation_edges, citation_data )
+    citationLoadKeywords( schid(), citation_edges, citation_data, citation_keyword_data )
   })
   
   keywords_id <- reactive({
@@ -172,36 +185,56 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
   
   
-  edges <- reactive({
-    query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
-    dbGetQuery(citationdbcit,query)
-  })
+  # edges <- reactive({
+  #   filter( citation_edges, from == schid() | to == schid() )
+  # })
 
-  
+
+  output$desc_ref_keywords <- renderUI({
+    kw <- keywords_id() 
+    nk <- length(unique(kw$word))
+    ng <- length(unique(kw$group))
+    
+    div(
+      "Keywords in the selected article" , 
+      br(),
+      span( sprintf("%d keywords in %d semantic groups", nk, ng) , style = "font-size: smaller; color: gray" )
+    )
+    
+  })  
   output$cloud_ref_keywords <- renderWordcloud2({
-    kw <- keywords_id() %>% 
-      rename(word=keyword) %>% 
-      left_join( citation_keyword_data, by = "word") 
-    
+    kw <- keywords_id() 
     col <- unname(semanticcolors[ kw$group ])
     data <- select(kw, word, freq) %>% as.data.frame()
-    wordcloud2(data, color = col)
+    
+    wordcloud2(data, size = .4) # color = col)
   })
 
- output$cloud_provided_keywords <- renderWordcloud2({
-    kw <- keywords_all() %>% 
-      rename(word=keyword) %>% 
-      distinct(word) %>% 
-      left_join( citation_keyword_data, by = "word")
+  output$desc_provided_keywords <- renderUI({
+    kw <- keywords_all() 
+    nk <- length(unique(kw$word))
+    ng <- length(unique(kw$group))
     
+    div(
+      "Keywords in the neighborhood", 
+      br(),
+      span( sprintf("%d keywords in %d semantic groups", nk, ng), style = "font-size: smaller; color: gray" )
+    )
+    
+  })  
+  
+  output$cloud_provided_keywords <- renderWordcloud2({
+    kw <- keywords_all() 
     col <- unname(semanticcolors[ kw$group ])
     
     data <- select(kw, word, freq) %>% as.data.frame()
-    wordcloud2(data, color = col)
+    print(kw)
+    
+    wordcloud2(data, size = .4) # , color = col)
   })
   
   # render citation graph around selected article
-  # output$citationegoplot = renderPlot({
+  # output$citationegoplot <- renderPlot({
   #   citationVisuEgo( edges() )
   # })
   
