@@ -12,7 +12,7 @@ citationLoadEdges <- function(con, id){
 }
 load neighbors keywords given an id}
 \usage{
-citationLoadKeywords(con_citation, con_keywords, id)
+citationLoadKeywords(schid, edges, data, citation_keyword_data)
 }
 \arguments{
 \item{con_citation}{connection to the citation db}

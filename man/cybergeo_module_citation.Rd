@@ -7,7 +7,8 @@
 \usage{
 cybergeo_module_citation_UI(id)
 
-cybergeo_module_citation(input, output, session, citation_cybergeodata)
+cybergeo_module_citation(input, output, session, citation_cybergeodata,
+  citation_keyword_data, citation_edges, citation_data)
 }
 \arguments{
 \item{id}{module id}

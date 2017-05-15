@@ -1,11 +1,3 @@
-#' #' load citation edges given an reference id
-#' #'
-#' #' @param con database connection
-#' #' @param id edge id
-#' citationLoadEdges <- function(con, id){
-#'   query <- sprintf( "SELECT * FROM edges WHERE `from`='%s' OR `to`='%s' ;", id, id )
-#'   dbGetQuery(con,query)
-#' }
 
 #' load neighbors keywords given an id
 #'
@@ -13,6 +5,7 @@
 #' @param con_keywords connection to the keywords db
 #' @param id article id
 #'
+#' @importFrom dplyr right_join
 #' @importFrom purrr map_lgl
 #' @importFrom tidyr unnest
 #' @return keywords
@@ -127,7 +120,9 @@ cybergeo_module_citation_UI <- function(id){
               wordcloud2Output( ns("cloud_provided_keywords"), height = "400px" )  
             )
             
-          )
+          ), 
+          
+          sliderInput(ns("wordcloud_size"), label  = "size", min = 0, max = 2, step = .1, value = .3)
           
         )
         
@@ -207,7 +202,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     col <- unname(semanticcolors[ kw$group ])
     data <- select(kw, word, freq) %>% as.data.frame()
     
-    wordcloud2(data, size = .4) # color = col)
+    wordcloud2(data, size = input$wordcloud_size , color = col, shuffle = FALSE)
   })
 
   output$desc_provided_keywords <- renderUI({
@@ -228,9 +223,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     col <- unname(semanticcolors[ kw$group ])
     
     data <- select(kw, word, freq) %>% as.data.frame()
-    print(kw)
-    
-    wordcloud2(data, size = .4) # , color = col)
+    wordcloud2(data, size =  input$wordcloud_size, color = col, shuffle = FALSE )
   })
   
   # render citation graph around selected article
