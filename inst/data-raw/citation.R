@@ -36,7 +36,7 @@ get_data <- function(tb_cit, tb_kws) {
   data <- bind_rows(from, to) %>% 
     distinct( id, .keep_all = TRUE) %>%
     mutate( cyb = cyb == 1, id = as.numeric(id) ) %>% 
-    right_join(keywords, by = "id") 
+    full_join(keywords, by = "id") 
 
   data
 }

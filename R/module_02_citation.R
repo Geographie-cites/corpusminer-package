@@ -10,8 +10,6 @@
 #' @importFrom tidyr unnest
 #' @return keywords
 citationLoadKeywords <- function( schid, edges, data, citation_keyword_data ){
-  schid <- as.numeric(schid)
-  
   # collect the id of the article that
   # - cite the one identified by schid
   # - are cited by schid
@@ -105,7 +103,14 @@ cybergeo_module_citation_UI <- function(id){
           # citation ego network
           h4("Citation network neighborhood"),
           # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
-          plotOutput( ns("citationegoplot"), width = "100%" ),
+          
+          splitLayout(
+            plotOutput( ns("citationegoplot"), width = "100%" ), 
+            tabsetPanel(
+              tabPanel( "cited" , DT::dataTableOutput(ns("citation_cited")) ), 
+              tabPanel( "citing", DT::dataTableOutput(ns("citation_citing")) )
+            )
+          ),
           
           # word clouds of semantic content
           h4("Semantic content"),
@@ -147,6 +152,7 @@ cybergeo_module_citation_UI <- function(id){
 
 #' citation shiny module 
 #' 
+#' @importFrom dplyr bind_cols everything
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT datatable
@@ -164,7 +170,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
   
   schid <- eventReactive(input$citationcybergeo_rows_selected, {
-    filtered_data$SCHID[ input$citationcybergeo_rows_selected ]
+    as.numeric(filtered_data$SCHID[ input$citationcybergeo_rows_selected ])
   })
   
   keywords <- reactive({
@@ -180,11 +186,56 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
   
   
-  # edges <- reactive({
-  #   filter( citation_edges, from == schid() | to == schid() )
-  # })
+  edges <- reactive({
+    id <- schid()
+    
+    data <- filter( citation_edges, from == id | to == id )
+    
+    from <- citation_data %>% 
+      select(id, cyb, title) %>% 
+      right_join( select(data, from), by = c("id" = "from")) %>% 
+      rename( fromcyb = cyb, fromtitle = title, from = id)
+      
+      
+    to <- citation_data %>% 
+      select(id, cyb, title) %>% 
+      right_join( select(data, to), by = c("id" = "to")) %>% 
+      rename( tocyb = cyb, totitle = title, to = id) 
+    
+    res <- bind_cols( from, to) %>% 
+      select(from,to, everything())
+    
+    
+  })
 
-
+  # render citation graph around selected article
+  output$citationegoplot <- renderPlot({
+    data <- edges()
+    citationVisuEgo( data )
+  })
+  
+  output$citation_cited <- DT::renderDataTable({
+    req(schid())
+    
+    data <- filter( citation_edges, from == schid() ) %>% 
+      select(to) %>% 
+      left_join( citation_data, by = c("to" = "id")) %>% 
+      select(title)
+    
+    DT::datatable(data)
+  })
+  
+  output$citation_citing <- DT::renderDataTable({
+    req(schid())
+    data <- filter( citation_edges, to == schid() ) %>% 
+      select(from) %>% 
+      left_join( citation_data, by = c("from" = "id")) %>% 
+      select(title)
+    
+    DT::datatable(data)
+  })
+  
+  
   output$desc_ref_keywords <- renderUI({
     kw <- keywords_id() 
     nk <- length(unique(kw$word))
@@ -226,10 +277,6 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     wordcloud2(data, size =  input$wordcloud_size, color = col, shuffle = FALSE )
   })
   
-  # render citation graph around selected article
-  # output$citationegoplot <- renderPlot({
-  #   citationVisuEgo( edges() )
-  # })
   
   output$citationsemanticnw <- renderSvgPanZoom({
     svgPanZoom(
