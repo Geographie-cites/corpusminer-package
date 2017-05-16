@@ -45,40 +45,6 @@ citationLoadKeywords <- function( schid, edges, data, citation_keyword_data ){
   list( all = get(id_tab), id = get(data_frame(id=schid)) )
 }
 
-#' visualize an ego network given edges
-#' 
-#' @param edges edges
-#'
-#' @importFrom graphics par
-#' @export
-citationVisuEgo <- function(edges){
-  if(!is.null(edges)){
-    if(nrow(edges)>0){
-      citsubgraph <- graph_from_data_frame(edges,directed=TRUE)
-      V(citsubgraph)[head_of(citsubgraph,E(citsubgraph))$name]$cyb   <- E(citsubgraph)$fromcyb
-      V(citsubgraph)[tail_of(citsubgraph,E(citsubgraph))$name]$cyb   <- E(citsubgraph)$tocyb
-      V(citsubgraph)[head_of(citsubgraph,E(citsubgraph))$name]$title <- E(citsubgraph)$fromtitle
-      V(citsubgraph)[tail_of(citsubgraph,E(citsubgraph))$name]$title <- E(citsubgraph)$totitle
-      lay <- layout_as_tree(citsubgraph,circular=FALSE)
-      lay[lay[,2]==0,2]  <- -sample.int(length(which(lay[,2]==0)),replace=FALSE)-2
-      #lay[lay[,2]==2,1] <-  sample.int(10,size=length(which(lay[,2]==2)))-5#((-length(which(lay[,2]==2))/2):(length(which(lay[,2]==2))/2))*5/length(which(lay[,2]==2))
-      lay[lay[,2]==2,1]  <-  sample.int(length(which(lay[,2]==2)))-5
-      lay[lay[,2]==2,2]  <- 4+sample.int(length(which(lay[,2]==2)),replace=FALSE)
-      palette <- c("#df691a","#1C6F91")
-      par(bg = "#4e5d6c")
-      plot(citsubgraph,
-           edge.color="#df691a",
-           edge.arrow.size = 1,
-           vertex.label=V(citsubgraph)$title,
-           vertex.color=palette[V(citsubgraph)$cyb+1],
-           vertex.frame.color="#1C6F91",
-           vertex.label.color = "#ebebeb",
-           layout=lay
-      )
-    }
-  }
-}
-
 #' ui component for citation module
 #' 
 #' @param id module id
@@ -102,13 +68,15 @@ cybergeo_module_citation_UI <- function(id){
         column(9, 
           # citation ego network
           h4("Citation network neighborhood"),
-          # tags$p(class="text-justify","This graph shows the citation neighborhood of the selected paper"),
           
           splitLayout(
-            plotOutput( ns("citationegoplot"), width = "100%" ), 
-            tabsetPanel(
-              tabPanel( "cited" , DT::dataTableOutput(ns("citation_cited")) ), 
-              tabPanel( "citing", DT::dataTableOutput(ns("citation_citing")) )
+            div(
+              textOutput(ns("text_citing")),
+              DT::dataTableOutput(ns("citation_citing"))  
+            ), 
+            div(
+              textOutput(ns("text_cited")), 
+              DT::dataTableOutput(ns("citation_cited"))  
             )
           ),
           
@@ -155,7 +123,7 @@ cybergeo_module_citation_UI <- function(id){
 #' @importFrom dplyr bind_cols everything
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
-#' @importFrom DT datatable
+#' @importFrom DT datatable formatStyle styleEqual JS
 #' 
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata, citation_keyword_data, citation_edges, citation_data ){
@@ -185,54 +153,53 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     keywords()$all
   })
   
-  
-  edges <- reactive({
-    id <- schid()
+  cited_by <- reactive({
+    id <- req(schid())
     
-    data <- filter( citation_edges, from == id | to == id )
-    
-    from <- citation_data %>% 
-      select(id, cyb, title) %>% 
-      right_join( select(data, from), by = c("id" = "from")) %>% 
-      rename( fromcyb = cyb, fromtitle = title, from = id)
-      
-      
-    to <- citation_data %>% 
-      select(id, cyb, title) %>% 
-      right_join( select(data, to), by = c("id" = "to")) %>% 
-      rename( tocyb = cyb, totitle = title, to = id) 
-    
-    res <- bind_cols( from, to) %>% 
-      select(from,to, everything())
-    
+    filter( citation_edges, from == id ) %>% 
+      select(to) %>% 
+      left_join( citation_data, by = c("to" = "id")) %>% 
+      select(cyb, title)
     
   })
-
-  # render citation graph around selected article
-  output$citationegoplot <- renderPlot({
-    data <- edges()
-    citationVisuEgo( data )
+  
+  citing <- reactive({
+    id <- req(schid())
+    filter( citation_edges, to == id ) %>% 
+      select(from) %>% 
+      left_join( citation_data, by = c("from" = "id")) %>% 
+      select(cyb, title)
   })
   
   output$citation_cited <- DT::renderDataTable({
-    req(schid())
-    
-    data <- filter( citation_edges, from == schid() ) %>% 
-      select(to) %>% 
-      left_join( citation_data, by = c("to" = "id")) %>% 
-      select(title)
-    
-    DT::datatable(data)
+    DT::datatable(cited_by(), selection = "none", options = list(pageLength = 5) ) %>% 
+      formatStyle( "cyb", target = "row", backgroundColor = JS("value ? 'gray' : 'white' ") )
   })
   
-  output$citation_citing <- DT::renderDataTable({
-    req(schid())
-    data <- filter( citation_edges, to == schid() ) %>% 
-      select(from) %>% 
-      left_join( citation_data, by = c("from" = "id")) %>% 
-      select(title)
+  output$text_cited <- renderText({
+    data <- cited_by() %>% 
+      group_by(cyb) %>% 
+      summarise( n = n() )
+    n_all <- sum(data$n)
+    n_cyb <- sum(data$n[data$cyb])
     
-    DT::datatable(data)
+    sprintf( "Article citing %d articles (%d from cybergeo)", n_all, n_cyb)
+  })
+  
+  
+  output$citation_citing <- DT::renderDataTable({
+    DT::datatable(citing(), selection = "none", options = list(pageLength = 5)) %>% 
+      formatStyle( "cyb", target = "row", backgroundColor = JS("value ? 'gray' : 'white' ") )
+  })
+  
+  output$text_citing <- renderText({
+    data <- citing() %>% 
+      group_by(cyb) %>% 
+      summarise( n = n() )
+    n_all <- sum(data$n)
+    n_cyb <- sum(data$n[data$cyb])
+    
+    sprintf( "Article cited by %d articles (%d from cybergeo)", n_all, n_cyb)
   })
   
   
