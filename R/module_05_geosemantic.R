@@ -1,3 +1,5 @@
+#' @param id module id
+#' @rdname cybergeo_module_geosemantic
 #' @importFrom leaflet leafletOutput
 #' @importFrom shiny HTML NS tabPanel absolutePanel div selectInput sliderInput
 #' @export
@@ -24,6 +26,14 @@ cybergeo_module_geosemantic_UI <- function(id){
   
 }
 
+#' geo semantic module 
+#' 
+#' @param input input
+#' @param output output
+#' @param session session
+#' @param geo_semantic_data geo semantic data
+#' @param world map data
+#'
 #' @importFrom graphics par
 #' @importFrom grDevices png
 #' @importFrom stats cutree

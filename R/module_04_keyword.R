@@ -305,6 +305,9 @@ extract_community_graph <- function( g, community ){
 
 #### ------------ module shiny
 
+#' @param id module id
+#' @param NETKW keyword graph
+#' @rdname cybergeo_module_keyword
 #' @importFrom shiny navbarMenu tabPanel htmlOutput tags splitLayout fluidRow wellPanel radioButtons sliderInput column plotOutput selectInput downloadButton withMathJax includeMarkdown 
 #' @importFrom dplyr mutate_at
 #' @export
@@ -382,12 +385,17 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
   )
 }
 
+#' keyword module
+#' 
+#' @param input input
+#' @param output output
+#' @param session session
+#' @param NETKW keyword graph
+#'
 #' @importFrom shiny renderPlot reactive renderText downloadHandler
 #' @importFrom DT datatable
 #' @export
-cybergeo_module_keyword <- function( input, output, session,
-  NETKW
-){
+cybergeo_module_keyword <- function( input, output, session, NETKW ){
 
   # select community
   SelectComm <- reactive( extract_community_graph(NETKW, input$commid) )

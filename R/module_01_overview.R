@@ -1,14 +1,3 @@
-# functions used in Overview app
-
-#' @importFrom tibble data_frame
-#' @importFrom stringr str_count
-#' @export
-subset_articles <- function( articles, year_range ){
-  articles %>%
-    select( id, year, authors, citedby, citing, matches( "^._" ) ) %>%
-    filter( between( year, year_range[1], year_range[2]) ) %>%
-    mutate( nauthors = 1 + str_count(authors, "," ) )
-}
 
 pretty_years_interval <- function( years ){
   if( years[1] == years[2] ){
@@ -47,8 +36,17 @@ subset_map_data <- function( world, articles, indicator){
   w
 }
 
+#' leaflet map used in the overview app
+#' 
+#' @param world map data
+#' @param articles articles data
+#' @param indicator indicator to map (A, S or L)
+#' @param authoring authoring data
+#' @param studied studied data
+#'
 #' @importFrom shiny HTML
 #' @importFrom leaflet leaflet addTiles setView addPolygons labelOptions highlightOptions
+#' @noRd
 leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), authoring, studied ){
   indicator <- match.arg(indicator)
   col  <- overview_plot_col[[indicator]]
@@ -76,6 +74,8 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
   
 }
 
+#' @rdname cybergeo_module_overview
+#' @param id module id
 #' @importFrom shiny absolutePanel br selectInput
 #' @importFrom leaflet leafletOutput
 #' @export
@@ -149,13 +149,26 @@ cybergeo_module_overview_UI <- function(id){
   
 }
 
+#' overview module
+#' 
+#' @param input input
+#' @param output output
+#' @param session session
+#' @param world map data
+#' @param articles articles data
+#'
 #' @importFrom leaflet renderLeaflet
 #' @export
 cybergeo_module_overview <- function( input, output, session, world, articles ){
   
   # subset of the data from ARTICLES in the date interval
   data_overview <- reactive({
-    subset_articles( articles, input$dateRange )
+    year_range <- input$dateRange
+    
+    articles %>%
+      select( id, year, authors, citedby, citing, matches( "^._" ) ) %>%
+      filter( between( year, year_range[1], year_range[2]) ) %>%
+      mutate( nauthors = 1 + str_count(authors, "," ) )
   })
 
   authoring <- reactive({

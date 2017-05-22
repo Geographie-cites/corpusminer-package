@@ -9,8 +9,6 @@
 #' @importFrom dplyr select vars one_of rename mutate_each funs starts_with
 #' @importFrom dplyr matches between distinct ungroup
 #' 
-#' @importFrom tibble print.tbl_df
-#' 
 #' @importFrom utils citation read.table read.csv
 #' 
 #' @importFrom stats complete.cases
@@ -112,4 +110,45 @@ globalVariables( c("cyb"))
 #'- group semantic group
 "citation_keyword_data"
 
+
+#' geo semantic data
+#'
+#' used in the geo semantic module 
+#'  
+#' @format list with components "Keywords", "Citations" and "Semantic". 
+#' Each of these is a list with components "Authoring" and "Studied". 
+#' Each is a list with
+#' - data. a data frame summarising keyword groups for each country
+#' - dist. a distance matrix between countries
+#' - hc. result of hclust 
+#' - themes. List of themes
+"geo_semantic_data"
+
+
+#' data about articles used in the overview app
+"overview_ARTICLES"
+
+#' sentences data
+#' 
+#' @format data frame with columns:
+#' - article_id: id of the article
+#' - sentence: sentence
+#' - id: id of the sentence within the article
+"sentences"
+
+
+#' terms data
+#' 
+#' @format data frame with columns
+#' - id id of the term
+#' - article_id cybergeo id of the article
+#' - term word
+#' - count number of time the term occurs in the article
+"terms"
+
+
+#' world map data
+#' 
+#' @format SpatialPolygonsDataFrame object
+"world"
 

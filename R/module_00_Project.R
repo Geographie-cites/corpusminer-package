@@ -35,6 +35,9 @@ cybergeo_head <- function(){
   )
 }
 
+#' project module ui
+#' @param id module id
+#'
 #' @importFrom shiny h1 a h3 img tabPanel fluidRow column tags 
 #' @export
 cybergeo_module_project_UI <- function(id){
