@@ -32,9 +32,6 @@ globalVariables( c("authors", "citedby", "citing", "ym", "sentence", "term") )
 globalVariables( c("title", "title_en", "freq", "keyword", "word") )
 globalVariables( c("cyb"))
 
-#' @export
-"pattern_list"
-
 
 #' network of keywords
 "NETKW"

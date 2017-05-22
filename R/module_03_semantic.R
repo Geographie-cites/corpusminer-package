@@ -29,14 +29,14 @@ cybergeo_module_semantic_UI <- function(id){
   )
 }
 
-#' Shiny module server function for the semantic tab
+#' semantic module
 #' 
 #' @param input input
 #' @param output output
 #' @param session session
-#' @param terms 
-#' @param articles 
-#' @param sentences 
+#' @param terms terms data set
+#' @param articles articles data set
+#' @param sentences sentences data set 
 #' 
 #' @importFrom dplyr desc
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
@@ -68,14 +68,12 @@ cybergeo_module_semantic <- function( input, output, session, terms, articles, s
   })
   
   titles_matched <- reactive({
-    citations <- terms_matched()  %>%
+    terms_matched()  %>%
       select(article_id) %>%
       distinct() %>%
       left_join(articles, by = c("article_id" = "id")) %>%
-      arrange(date) %>%
+      arrange(article_id) %>%
       select( article_id, authors, title, title_en )
-    
-    datatable(citations, options = list(pageLength = 5), rownames = FALSE )
   })
   
   articles_matched <- reactive({ 
@@ -88,12 +86,12 @@ cybergeo_module_semantic <- function( input, output, session, terms, articles, s
       summarise(articles=n_distinct(article_id), terms=sum(count)) %>%
       ungroup() %>%
       mutate(date = parse_date_time(ym, "%y")) %>%
-        select(date, pattern, articles, terms)
+      select(date, pattern, articles, terms)
   })
   
-  phrases <- reactive({
+  all_phrases <- reactive({
     patterns <- input$patterns
-   
+    
     withProgress(min=0, max=length(patterns), value=0, message = "filtering sentences",  {
       if( !is.null( patterns ) ){
         datasets <- lapply( patterns , function( pattern ){
@@ -104,11 +102,23 @@ cybergeo_module_semantic <- function( input, output, session, terms, articles, s
           incProgress(1)
           res
         })
-        sentences <- bind_rows(datasets)   
+        sentences <- bind_rows(datasets)  %>% 
+          arrange( article_id )
       }
     })
-    datatable( sentences, escape = FALSE, options = list(pageLength = 5), rownames = FALSE  )
-
+    sentences
+  })
+  
+  phrases <- reactive({
+    sentences <- all_phrases()
+    
+    selected_title <- input$citations_rows_selected
+    if( !is.null(selected_title) ){
+      selected_id <- titles_matched()$article_id[ selected_title ]
+      sentences <- filter( sentences, article_id == selected_id)
+    }
+    
+    sentences
   })
   
   chronogram <- reactive({
@@ -137,9 +147,11 @@ cybergeo_module_semantic <- function( input, output, session, terms, articles, s
   output$chronogram <- renderPlot(chronogram())
   output$cloud <- renderWordcloud2(cloud())
 
-  output$phrases <- DT::renderDataTable( phrases() )
-  output$citations <- DT::renderDataTable( titles_matched() )
-
-  outputOptions(output, "cloud" )
+  output$citations <- DT::renderDataTable( {
+    datatable( titles_matched() , options = list(pageLength = 5), rownames = FALSE, selection = "single" ) 
+  })
+  output$phrases <- DT::renderDataTable( {
+    datatable( phrases(), escape = FALSE, options = list(pageLength = 5), rownames = FALSE  )  
+  })
   
 }

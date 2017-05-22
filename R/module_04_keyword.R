@@ -8,16 +8,16 @@
 #' @param vsize.default default value for vertex size, e.g. 1 for direct plot or 30 for svg rendering
 #' @param esize.prop One of "nbl" or "rel" to control on what edges are proportional
 #' @param esize.fac Expansion factor for edge sizes
-#' @param vertex.label.cex 
-#' @param edge.color 
-#' @param edge.curved 
-#' @param edge.arrow.mode 
-#' @param edge.arrow.size 
-#' @param vertex.color 
-#' @param vertex.frame.color 
-#' @param vertex.label.color 
-#' @param vertex.label.family 
-#' @param bg 
+#' @param vertex.label.cex see \code{\link[igraph]{igraph.plotting}}
+#' @param edge.color see \code{\link[igraph]{igraph.plotting}}
+#' @param edge.curved see \code{\link[igraph]{igraph.plotting}}
+#' @param edge.arrow.mode see \code{\link[igraph]{igraph.plotting}}
+#' @param edge.arrow.size see \code{\link[igraph]{igraph.plotting}}
+#' @param vertex.color see \code{\link[igraph]{igraph.plotting}}
+#' @param vertex.frame.color see \code{\link[igraph]{igraph.plotting}}
+#' @param vertex.label.color see \code{\link[igraph]{igraph.plotting}}
+#' @param vertex.label.family see \code{\link[igraph]{igraph.plotting}}
+#' @param bg see \code{\link[igraph]{igraph.plotting}}
 #'
 #' @importFrom graphics plot par
 #' @export
@@ -306,7 +306,6 @@ extract_community_graph <- function( g, community ){
 #### ------------ module shiny
 
 #' @param id module id
-#' @param NETKW keyword graph
 #' @rdname cybergeo_module_keyword
 #' @importFrom shiny navbarMenu tabPanel htmlOutput tags splitLayout fluidRow wellPanel radioButtons sliderInput column plotOutput selectInput downloadButton withMathJax includeMarkdown 
 #' @importFrom dplyr mutate_at
@@ -411,12 +410,25 @@ cybergeo_module_keyword <- function( input, output, session, NETKW ){
   edges <- info_table_edges( NETKW )
   
   output$contentsnodes <- DT::renderDataTable(
-    datatable( nodes, selection = "none" )
+    datatable( nodes )
   )
 
-  output$contentsedges <- DT::renderDataTable(
+  selected_keywords <- reactive({
+    idx <- input$contentsnodes_rows_selected
+    if( !is.null(idx) ){
+      nodes$KEYWORDS[idx]
+    }
+  })
+  
+  
+  output$contentsedges <- DT::renderDataTable({
+    kw <- selected_keywords()
+    if( !is.null(kw) ){
+      edges <- filter( edges, KEYWORD1 %in% kw | KEYWORD2 %in% kw )
+    }
+    
     datatable( edges, selection = "none")
-  )
+  })
 
   output$plotcomm <- renderPlot({
     VisuComm( SelectComm(),

@@ -19,8 +19,6 @@ cybergeo_module_keyword(input, output, session, NETKW)
 \item{output}{output}
 
 \item{session}{session}
-
-\item{NETKW}{keyword graph}
 }
 \description{
 keyword module

@@ -2,7 +2,7 @@
 % Please edit documentation in R/module_03_semantic.R
 \name{cybergeo_module_semantic}
 \alias{cybergeo_module_semantic}
-\title{Shiny module server function for the semantic tab}
+\title{semantic module}
 \usage{
 cybergeo_module_semantic(input, output, session, terms, articles, sentences)
 }
@@ -13,12 +13,12 @@ cybergeo_module_semantic(input, output, session, terms, articles, sentences)
 
 \item{session}{session}
 
-\item{terms}{}
+\item{terms}{terms data set}
 
-\item{articles}{}
+\item{articles}{articles data set}
 
-\item{sentences}{}
+\item{sentences}{sentences data set}
 }
 \description{
-Shiny module server function for the semantic tab
+semantic module
 }

@@ -24,25 +24,25 @@ VisuComm(g, vsize.prop, vsize.fac = 0.5, vsize.default = 1, esize.prop,
 
 \item{esize.fac}{Expansion factor for edge sizes}
 
-\item{vertex.label.cex}{}
+\item{vertex.label.cex}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{edge.color}{}
+\item{edge.color}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{edge.curved}{}
+\item{edge.curved}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{edge.arrow.mode}{}
+\item{edge.arrow.mode}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{edge.arrow.size}{}
+\item{edge.arrow.size}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{vertex.color}{}
+\item{vertex.color}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{vertex.frame.color}{}
+\item{vertex.frame.color}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{vertex.label.color}{}
+\item{vertex.label.color}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{vertex.label.family}{}
+\item{vertex.label.family}{see \code{\link[igraph]{igraph.plotting}}}
 
-\item{bg}{}
+\item{bg}{see \code{\link[igraph]{igraph.plotting}}}
 }
 \description{
 plot the communities. result of any community detection algo, here Louvain method

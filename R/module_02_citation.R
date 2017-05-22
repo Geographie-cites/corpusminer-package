@@ -52,7 +52,6 @@ citationLoadKeywords <- function( schid, edges, citation_data, citation_keyword_
 
 #' @param id module id
 #' 
-#' @importFrom svgPanZoom svgPanZoomOutput
 #' @importFrom wordcloud2 wordcloud2Output
 #' 
 #' @importFrom shiny NS navbarMenu tabPanel fluidRow column h4 tags splitLayout div textOutput htmlOutput sliderInput includeMarkdown
@@ -70,7 +69,11 @@ cybergeo_module_citation_UI <- function(id){
         column(3, 
           h4("Data Selection"),
           tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-          DT::dataTableOutput( ns("citationcybergeo") )
+          DT::dataTableOutput( ns("citationcybergeo") ), 
+          hr(), 
+          sliderInput(ns("wordcloud_size"), 
+            label  = "size", min = 0, max = 2, step = .1, value = .3
+          )
         ), 
         column(9, 
           # citation ego network
@@ -100,9 +103,7 @@ cybergeo_module_citation_UI <- function(id){
               wordcloud2Output( ns("cloud_provided_keywords"), height = "400px" )  
             )
             
-          ), 
-          
-          sliderInput(ns("wordcloud_size"), label  = "size", min = 0, max = 2, step = .1, value = .3)
+          )
           
         )
         
@@ -110,10 +111,10 @@ cybergeo_module_citation_UI <- function(id){
     ),
 
     # svg viusalization of the full semantic network
-    tabPanel("Semantic Network",
-      h4("Full Semantic Network"),
-      svgPanZoomOutput(ns("citationsemanticnw"), width = "100%", height = "100%")
-    ),
+    # tabPanel("Semantic Network",
+    #   h4("Full Semantic Network"),
+    #   svgPanZoomOutput(ns("citationsemanticnw"), width = "100%", height = "100%")
+    # ),
 
     # user guide
     tabPanel("User guide",
@@ -136,7 +137,6 @@ cybergeo_module_citation_UI <- function(id){
 #' @param citation_data meta data about neighborhood of cybergeo articles
 #'
 #' @importFrom dplyr bind_cols everything filter select left_join group_by summarise
-#' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
 #' @importFrom DT datatable formatStyle styleEqual JS renderDataTable
 #' @importFrom shiny eventReactive reactive req renderText  renderUI br span
@@ -150,7 +150,8 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   
   ## selection datatable
   output$citationcybergeo <- DT::renderDataTable({
-    datatable( select(filtered_data, title, authors), selection = "single", rownames = FALSE )  
+    select(filtered_data, title, authors) %>% 
+      datatable(selection = "single", rownames = FALSE, options = list(pageLength = 5) )  
   })
   
   schid <- eventReactive(input$citationcybergeo_rows_selected, {
@@ -261,12 +262,12 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
   
   
-  output$citationsemanticnw <- renderSvgPanZoom({
-    svgPanZoom(
-      system.file( 'data-raw', 'semantic.svg', package = "corpusminer" ),
-      zoomScaleSensitivity=1, minZoom=2, maxZoom=20, contain=TRUE
-    )
-  })
+  # output$citationsemanticnw <- renderSvgPanZoom({
+  #   svgPanZoom(
+  #     system.file( 'data-raw', 'semantic.svg', package = "corpusminer" ),
+  #     zoomScaleSensitivity=1, minZoom=2, maxZoom=20, contain=TRUE
+  #   )
+  # })
 
 
 }

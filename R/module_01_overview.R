@@ -158,6 +158,7 @@ cybergeo_module_overview_UI <- function(id){
 #' @param articles articles data
 #'
 #' @importFrom leaflet renderLeaflet
+#' @importFrom stringr str_count
 #' @export
 cybergeo_module_overview <- function( input, output, session, world, articles ){
   

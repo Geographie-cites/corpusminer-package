@@ -20,7 +20,6 @@ License: AGPL-3
 Imports:
   shiny,
   ggplot2,
-  svgPanZoom,
   igraph,
   dplyr,
   utils,
