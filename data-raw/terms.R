@@ -10,7 +10,7 @@ blacklist <- tolower(unique( c(
   "al", "el", "los", "pro", "del", "con", "est-à-dire", "una"
 )))
 
-terms <- read_csv2( system.file( "data-raw/terms.csv", package = "corpusminer"), col_types = "ici" ) %>% 
+terms <- read_csv2( "data-raw/terms.csv", col_types = "ici" ) %>% 
   rename(article_id = id ) %>% 
   mutate( id = row_number() ) %>% 
   select(id, article_id, term, count) %>% 
