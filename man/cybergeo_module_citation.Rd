@@ -3,7 +3,7 @@
 \name{cybergeo_module_citation_UI}
 \alias{cybergeo_module_citation_UI}
 \alias{cybergeo_module_citation}
-\title{ui component for citation module}
+\title{citation shiny module}
 \usage{
 cybergeo_module_citation_UI(id)
 
@@ -12,9 +12,21 @@ cybergeo_module_citation(input, output, session, citation_cybergeodata,
 }
 \arguments{
 \item{id}{module id}
+
+\item{input}{input}
+
+\item{output}{output}
+
+\item{session}{session}
+
+\item{citation_cybergeodata}{information about cybergeo articles}
+
+\item{citation_keyword_data}{meta data about keywords}
+
+\item{citation_edges}{edges}
+
+\item{citation_data}{meta data about neighborhood of cybergeo articles}
 }
 \description{
-ui component for citation module
-
 citation shiny module
 }

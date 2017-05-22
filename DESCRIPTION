@@ -41,6 +41,7 @@ Imports:
     DT,
     wordcloud2,
     purrr,
-    tidyr
+    tidyr,
+    magrittr
 RoxygenNote: 6.0.1
 Suggests: testthat

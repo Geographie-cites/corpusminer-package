@@ -1,8 +1,10 @@
 
+#' @importFrom shiny tags
 favicon <- function(){
   tags$link(rel="shortcut icon", href="favicon.png")
 }
 
+#' @importFrom shiny tags HTML
 ga_tracker <- function(id = "UA-40299595-6"){
   code <- sprintf( "
                    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -16,11 +18,14 @@ ga_tracker <- function(id = "UA-40299595-6"){
   tags$script(HTML(code))
 }
 
+
+#' @importFrom shiny tags HTML
 google_font <- function(family = "Orbitron|Cabin:400,700"){
   txt <- sprintf( "@import url('//fonts.googleapis.com/css?family=%s');", family )
   tags$style(HTML(txt))
 }
 
+#' @importFrom shiny tags
 cybergeo_head <- function(){
   tags$head(
     favicon(),
@@ -30,6 +35,7 @@ cybergeo_head <- function(){
   )
 }
 
+#' @importFrom shiny h1 a h3 img tabPanel fluidRow column tags 
 #' @export
 cybergeo_module_project_UI <- function(id){
 

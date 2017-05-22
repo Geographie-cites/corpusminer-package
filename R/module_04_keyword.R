@@ -305,6 +305,7 @@ extract_community_graph <- function( g, community ){
 
 #### ------------ module shiny
 
+#' @importFrom shiny navbarMenu tabPanel htmlOutput tags splitLayout fluidRow wellPanel radioButtons sliderInput column plotOutput selectInput downloadButton withMathJax includeMarkdown 
 #' @importFrom dplyr mutate_at
 #' @export
 cybergeo_module_keyword_UI <- function(id, NETKW ){
@@ -381,6 +382,7 @@ cybergeo_module_keyword_UI <- function(id, NETKW ){
   )
 }
 
+#' @importFrom shiny renderPlot reactive renderText downloadHandler
 #' @importFrom DT datatable
 #' @export
 cybergeo_module_keyword <- function( input, output, session,

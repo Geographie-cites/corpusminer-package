@@ -1,3 +1,5 @@
+#' @importFrom leaflet leafletOutput
+#' @importFrom shiny HTML NS tabPanel absolutePanel div selectInput sliderInput
 #' @export
 cybergeo_module_geosemantic_UI <- function(id){
   ns <- NS(id)
@@ -26,6 +28,10 @@ cybergeo_module_geosemantic_UI <- function(id){
 #' @importFrom grDevices png
 #' @importFrom stats cutree
 #' @importFrom sp plot
+#' @importFrom shiny reactive HTML
+#' @importFrom leaflet renderLeaflet leaflet addTiles setView addPolygons highlightOptions labelOptions
+#' @importFrom tibble data_frame
+#' @importFrom dplyr mutate group_by summarise_at n select one_of 
 #' @export
 cybergeo_module_geosemantic <- function( input, output, session, geo_semantic_data, world ){
   

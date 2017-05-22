@@ -1,7 +1,8 @@
 shinyServer(function(input, output, session) {
 
   callModule(cybergeo_module_overview, "overview",
-    world = world, articles = overview_ARTICLES
+    world = world, 
+    articles = overview_ARTICLES
   )
 
   callModule(cybergeo_module_citation, "citation",

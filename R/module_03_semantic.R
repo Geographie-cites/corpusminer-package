@@ -5,6 +5,7 @@
 #' 
 #' @param id see \code{\link[shiny]{callModule}}
 #' 
+#' @importFrom shiny NS tabPanel absolutePanel selectizeInput splitLayout plotOutput 
 #' @importFrom purrr map
 #' @export
 cybergeo_module_semantic_UI <- function(id){
@@ -42,6 +43,7 @@ cybergeo_module_semantic_UI <- function(id){
 #' @importFrom DT datatable
 #' @importFrom stringr str_detect str_replace
 #' @importFrom tidyr separate
+#' @importFrom shiny withProgress incProgress renderPlot outputOptions
 #' @export
 cybergeo_module_semantic <- function( input, output, session, terms, articles, sentences ){
 

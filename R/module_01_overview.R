@@ -47,6 +47,7 @@ subset_map_data <- function( world, articles, indicator){
   w
 }
 
+#' @importFrom shiny HTML
 #' @importFrom leaflet leaflet addTiles setView addPolygons labelOptions highlightOptions
 leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), authoring, studied ){
   indicator <- match.arg(indicator)
@@ -75,6 +76,7 @@ leaflet_overview <- function(world, articles, indicator = c("A", "S", "L"), auth
   
 }
 
+#' @importFrom shiny absolutePanel br selectInput
 #' @importFrom leaflet leafletOutput
 #' @export
 cybergeo_module_overview_UI <- function(id){

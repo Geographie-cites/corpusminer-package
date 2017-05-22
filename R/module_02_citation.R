@@ -1,15 +1,20 @@
 
 #' load neighbors keywords given an id
 #'
-#' @param con_citation connection to the citation db
-#' @param con_keywords connection to the keywords db
-#' @param id article id
+#' @param schid id
+#' @param edges edges data frame
+#' @param citation_data citation data frame. Information (id, title, year, cyb and keywords) for all articles in the neighborhood of cybergeo articles
+#' @param citation_keyword_data keywords metadata. 
 #'
-#' @importFrom dplyr right_join
+#' @importFrom tibble data_frame
+#' @importFrom magrittr %>%
+#' @importFrom dplyr right_join filter select rename left_join
 #' @importFrom purrr map_lgl
 #' @importFrom tidyr unnest
-#' @return keywords
-citationLoadKeywords <- function( schid, edges, data, citation_keyword_data ){
+#' 
+#' @return A data frame with columns word, count and group
+#' @noRd
+citationLoadKeywords <- function( schid, edges, citation_data, citation_keyword_data ){
   # collect the id of the article that
   # - cite the one identified by schid
   # - are cited by schid
@@ -22,7 +27,7 @@ citationLoadKeywords <- function( schid, edges, data, citation_keyword_data ){
   
   # extract keywords for these articles
   get <- function(tab){
-    res <- data %>% 
+    res <- citation_data %>% 
       select(id, keyword ) %>% 
       rename( word = keyword ) %>% 
       right_join(tab, by = "id") %>% 
@@ -45,11 +50,13 @@ citationLoadKeywords <- function( schid, edges, data, citation_keyword_data ){
   list( all = get(id_tab), id = get(data_frame(id=schid)) )
 }
 
-#' ui component for citation module
-#' 
 #' @param id module id
+#' 
 #' @importFrom svgPanZoom svgPanZoomOutput
 #' @importFrom wordcloud2 wordcloud2Output
+#' 
+#' @importFrom shiny NS navbarMenu tabPanel fluidRow column h4 tags splitLayout div textOutput htmlOutput sliderInput includeMarkdown
+#' 
 #' @rdname cybergeo_module_citation
 #' @export
 cybergeo_module_citation_UI <- function(id){
@@ -120,10 +127,19 @@ cybergeo_module_citation_UI <- function(id){
 
 #' citation shiny module 
 #' 
-#' @importFrom dplyr bind_cols everything
+#' @param input input
+#' @param output output
+#' @param session session
+#' @param citation_cybergeodata information about cybergeo articles
+#' @param citation_keyword_data meta data about keywords
+#' @param citation_edges edges
+#' @param citation_data meta data about neighborhood of cybergeo articles
+#'
+#' @importFrom dplyr bind_cols everything filter select left_join group_by summarise
 #' @importFrom svgPanZoom svgPanZoom renderSvgPanZoom
 #' @importFrom wordcloud2 wordcloud2 renderWordcloud2
-#' @importFrom DT datatable formatStyle styleEqual JS
+#' @importFrom DT datatable formatStyle styleEqual JS renderDataTable
+#' @importFrom shiny eventReactive reactive req renderText  renderUI br span
 #' 
 #' @export
 cybergeo_module_citation <- function( input, output, session, citation_cybergeodata, citation_keyword_data, citation_edges, citation_data ){
@@ -172,7 +188,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
   
   output$citation_cited <- DT::renderDataTable({
-    DT::datatable(cited_by(), selection = "none", options = list(pageLength = 5) ) %>% 
+    datatable(cited_by(), selection = "none", options = list(pageLength = 5) ) %>% 
       formatStyle( "cyb", target = "row", backgroundColor = JS("value ? 'gray' : 'white' ") )
   })
   
@@ -188,7 +204,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   
   
   output$citation_citing <- DT::renderDataTable({
-    DT::datatable(citing(), selection = "none", options = list(pageLength = 5)) %>% 
+    datatable(citing(), selection = "none", options = list(pageLength = 5)) %>% 
       formatStyle( "cyb", target = "row", backgroundColor = JS("value ? 'gray' : 'white' ") )
   })
   
