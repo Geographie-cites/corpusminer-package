@@ -69,7 +69,7 @@ cybergeo_module_citation_UI <- function(id){
         column(3, 
           h4("Data Selection"),
           tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-          DT::dataTableOutput( ns("citationcybergeo") ), 
+          DT::dataTableOutput( ns("citationcybergeo"),selected = c(1) ), 
           hr(), 
           sliderInput(ns("wordcloud_size"), 
             label  = "size", min = 0, max = 2, step = .1, value = .3
@@ -199,9 +199,9 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
       summarise( n = n() )
     n_all <- sum(data$n)
     n_cyb <- sum(data$n[data$cyb])
-    if(n_all>0){
-      sprintf( "Article citing %d articles (%d from cybergeo)", n_all, n_cyb)
-    }else{"Please select an article"}
+    
+    sprintf( "Article citing %d articles (%d from cybergeo)", n_all, n_cyb)
+    
   })
   
   
@@ -217,9 +217,9 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     n_all <- sum(data$n)
     n_cyb <- sum(data$n[data$cyb])
     
-    if(n_all>0){
-      sprintf( "Article cited by %d articles (%d from cybergeo)", n_all, n_cyb)
-    }else{""}
+   
+    sprintf( "Article cited by %d articles (%d from cybergeo)", n_all, n_cyb)
+   
   })
   
   
