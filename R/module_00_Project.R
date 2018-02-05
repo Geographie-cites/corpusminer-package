@@ -63,17 +63,18 @@ cybergeo_module_project_UI <- function(id){
 
         h3("About the app"),
         "All data, materials and source codes are freely available on this repository: ",
-        a("github.com/Geographie-cites/cybergeo20",href="https://github.com/Geographie-cites/cybergeo20"),
-        br(),
+        #a("github.com/Geographie-cites/cybergeo20",href="https://github.com/Geographie-cites/cybergeo20"),
+        a("github.com/AnonymousAuthor3/cybergeo20",href="https://github.com/AnonymousAuthor3/cybergeo20"),
+	br()#,
 
-        h3("The Team"),
-        "Pierre-Olivier Chasset", a("(@chasset)",href="https://github.com/chasset"), br(),
-        "Hadrien Commenges", a("(@hcommenges)",href="https://github.com/hcommenges"), br(),
-        "Clémentine Cottineau", a("(@ClementineCttn)",href="https://github.com/ClementineCttn"), br(),
-        "Antoine Fleury", br(),
-        "Christine Kosmopoulos", br(),
-        "Denise Pumain", br(),
-        "Juste Raimbault", a("(@JusteRaimbault)",href="https://github.com/JusteRaimbault")
+        #h3("The Team"),
+        #"Pierre-Olivier Chasset", a("(@chasset)",href="https://github.com/chasset"), br(),
+        #"Hadrien Commenges", a("(@hcommenges)",href="https://github.com/hcommenges"), br(),
+        #"Clémentine Cottineau", a("(@ClementineCttn)",href="https://github.com/ClementineCttn"), br(),
+        #"Antoine Fleury", br(),
+        #"Christine Kosmopoulos", br(),
+        #"Denise Pumain", br(),
+        #"Juste Raimbault", a("(@JusteRaimbault)",href="https://github.com/JusteRaimbault")
       ) ,
       column(3,
         img(src = "favicon.png",class="img-responsive"))
