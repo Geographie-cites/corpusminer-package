@@ -155,7 +155,12 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   })
   
   schid <- eventReactive(input$citationcybergeo_rows_selected, {
-    as.numeric(filtered_data$SCHID[ input$citationcybergeo_rows_selected ])
+    if(is.numeric(input$citationcybergeo_rows_selected)){
+      as.numeric(filtered_data$SCHID[ input$citationcybergeo_rows_selected ])
+    }else{
+      input$citationcybergeo_rows_selected = 1
+      1
+    }
   })
   
   keywords <- reactive({
