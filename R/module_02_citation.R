@@ -199,8 +199,9 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
       summarise( n = n() )
     n_all <- sum(data$n)
     n_cyb <- sum(data$n[data$cyb])
-    
-    sprintf( "Article citing %d articles (%d from cybergeo)", n_all, n_cyb)
+    if(n_all>0){
+      sprintf( "Article citing %d articles (%d from cybergeo)", n_all, n_cyb)
+    }else{"Please select an article"}
   })
   
   
@@ -216,7 +217,9 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     n_all <- sum(data$n)
     n_cyb <- sum(data$n[data$cyb])
     
-    sprintf( "Article cited by %d articles (%d from cybergeo)", n_all, n_cyb)
+    if(n_all>0){
+      sprintf( "Article cited by %d articles (%d from cybergeo)", n_all, n_cyb)
+    }else{""}
   })
   
   
@@ -237,7 +240,9 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     col <- unname(semanticcolors[ kw$group ])
     data <- select(kw, word, freq) %>% as.data.frame()
     
-    wordcloud2(data, size = input$wordcloud_size , color = col, shuffle = FALSE)
+    if(nrow(data)>0){
+      wordcloud2(data, size = input$wordcloud_size , color = col, shuffle = FALSE)
+    }
   })
 
   output$desc_provided_keywords <- renderUI({
@@ -245,12 +250,14 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     nk <- length(unique(kw$word))
     ng <- length(unique(kw$group))
     
-    div(
-      "Keywords in the neighborhood", 
-      br(),
-      span( sprintf("%d keywords in %d semantic groups", nk, ng), style = "font-size: smaller; color: gray" )
-    )
-    
+    if(nk>0){
+      div(
+        "Keywords in the neighborhood", 
+        br(),
+        span( sprintf("%d keywords in %d semantic groups", nk, ng), style = "font-size: smaller; color: gray" )
+      )
+    }
+      
   })  
   
   output$cloud_provided_keywords <- renderWordcloud2({
@@ -258,7 +265,9 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
     col <- unname(semanticcolors[ kw$group ])
     
     data <- select(kw, word, freq) %>% as.data.frame()
-    wordcloud2(data, size =  input$wordcloud_size, color = col, shuffle = FALSE )
+    if(nrow(data)>0){
+      wordcloud2(data, size =  input$wordcloud_size, color = col, shuffle = FALSE )
+    }
   })
   
   
