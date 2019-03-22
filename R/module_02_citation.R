@@ -69,8 +69,9 @@ cybergeo_module_citation_UI <- function(id){
         column(3, 
           h4("Data Selection"),
           tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-          DT::dataTableOutput( ns("citationcybergeo"),selected = c(1) ), 
-          hr(), 
+          #DT::dataTableOutput( ns("citationcybergeo"),selected = c(1) ), 
+          DT::dataTableOutput(ns("citationcybergeo")),
+	  hr(), 
           sliderInput(ns("wordcloud_size"), 
             label  = "size", min = 0, max = 2, step = .1, value = .3
           )
