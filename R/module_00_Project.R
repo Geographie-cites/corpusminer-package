@@ -47,7 +47,7 @@ cybergeo_module_project_UI <- function(id){
     fluidRow(
       column(9,
         h1("Cybergeo | 1996-2016", style = "font-family: 'Orbitron', sans-serif; font-weight: 500; line-height: 1.1; color: #ffffff;"),
-        tags$p(class="text-justify", "Cybergeo turns 20: it’s time to look back for reflection and to anticipate future evolution!", a("cybergeo.revues.org/",href="http://cybergeo.revues.org/"), br()),
+        tags$p(class="text-justify", "Cybergeo turns 20: it’s time to look back for reflection and to anticipate future evolution!", a("journals.openedition.org/cybergeo/",href="https://journals.openedition.org/cybergeo/"), br()),
         h3("The editorial policy"),
         tags$p(class="text-justify",
               "First entirely electronic journal for social sciences in the world, peer reviewed, European, open (free of charge for authors and readers), with a focus on geography and widely open to the diversity of research agendas and methodologies in all countries.
