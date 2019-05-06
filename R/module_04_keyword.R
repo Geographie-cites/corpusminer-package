@@ -143,7 +143,7 @@ VisuSem <- function(g, kw, chidist, textsizemin, textsizemax) {
 
 
 #####################################
-# Fonctions de second niveau (internes)
+# Low-level functions
 #####################################
 
 
@@ -183,7 +183,7 @@ SemanticField <- function(g, kw){
 
 
 #####################################
-# Fonctions de pré-production
+# Pre-processing functions
 #####################################
 
 #' Clean a corpus
@@ -303,7 +303,7 @@ extract_community_graph <- function( g, community ){
 }
 
 
-#### ------------ module shiny
+#### ------------ shiny module
 
 #' @param id module id
 #' @rdname cybergeo_module_keyword
