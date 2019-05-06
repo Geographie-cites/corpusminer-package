@@ -9,7 +9,7 @@ Exploratory Analysis of Cybergeo Keywords
 #### Vertices and nodes attributes
 
 The vertices are described by two variables: **frequency** and **degree**. The **frequency** is the number of articles citing the keyword. The **degree** is the total degree of the nodes in the network, that is the number of edges linking thiw keyword to the others (there is no distinction between in- and out- degree as the network is undirected). Both variables are distinct but correlated.
-  
+
 The edges are described by two variables: **observed weight** and **relative residual**. For two given keywords the **observed weight** is the number of articles citing both keywords. The **relative residual** is the ratio between the **observed weight** and the **expected weigth** of the edge. For a given edge the expected weight is the probability that this edge exists considering the degree of the nodes. It is computed as the union of two dependant probabilities.
 
 The probability of drawing a vertex *i* equals <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -25,7 +25,7 @@ The probability of drawing a vertex *i* equals <math xmlns="http://www.w3.org/19
     <mi>w</mi>
     <mi>i</mi>
   </msub>
-</math> is the degree of vertex *i* (weighted degree) and *w* the half sum of weights. 
+</math> is the degree of vertex *i* (weighted degree) and *w* the half sum of weights.
 
 Then the probability of drawing a vertex *j* distinct from *i* equals <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfrac>
@@ -42,7 +42,7 @@ Then the probability of drawing a vertex *j* distinct from *i* equals <math xmln
       </msub>
     </mrow>
   </mfrac>
-</math>. 
+</math>.
 
 The probability of existence of an edge between *i* and *j* is:
 
@@ -181,8 +181,6 @@ Eventually the expected weight is:
   <mo stretchy="false">)</mo>
 </math>
 
-#### Algorithme de détection de communautés
+#### Community detection algorithm
 
 The community detection is computed with the Louvain algorithm which finds an optimum of modularity. See Blondel *et al.* 2008.
-
-
