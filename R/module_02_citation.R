@@ -69,7 +69,7 @@ cybergeo_module_citation_UI <- function(id){
         column(3, 
           h4("Data Selection"),
           tags$p(class="text-justify","Search and select a cybergeo paper in the table."),
-          DT::dataTableOutput( ns("citationcybergeo"),selected = c(1) ), 
+          DT::dataTableOutput( ns("citationcybergeo") ), 
           hr(), 
           sliderInput(ns("wordcloud_size"), 
             label  = "size", min = 0, max = 2, step = .1, value = .3
@@ -151,20 +151,16 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   ## selection datatable
   output$citationcybergeo <- DT::renderDataTable({
     select(filtered_data, title, authors) %>% 
-      datatable(selection = "single", rownames = FALSE, options = list(pageLength = 5) )  
+      datatable(selection = list(mode = 'single', selected = c(1), target = 'row'), rownames = FALSE, options = list(pageLength = 5) )  
   })
   
   schid <- eventReactive(input$citationcybergeo_rows_selected, {
-    if(is.numeric(input$citationcybergeo_rows_selected)){
-      as.numeric(filtered_data$SCHID[ input$citationcybergeo_rows_selected ])
-    }else{
-      input$citationcybergeo_rows_selected = 1
-      1
-    }
+    as.numeric(filtered_data$SCHID[ input$citationcybergeo_rows_selected ])
   })
   
   keywords <- reactive({
-    citationLoadKeywords( schid(), citation_edges, citation_data, citation_keyword_data )
+    id <- req(schid())
+    citationLoadKeywords(id, citation_edges, citation_data, citation_keyword_data )
   })
   
   keywords_id <- reactive({
