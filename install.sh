@@ -3,7 +3,8 @@ cd ..
 tar -czf corpusminer.tgz corpusminer-package
 
 # install the package
-R -e 'install.packages("corpusminer.tgz",repos=NULL,source=TRUE)'
+# must specify local lib (or run from the console after a fresh R install)
+R -e 'install.packages("corpusminer.tgz",repos=NULL,source=TRUE,lib="~/R/x86_64-pc-linux-gnu-library/3.6")'
 # test
 R -e 'library(corpusminer)'
 
