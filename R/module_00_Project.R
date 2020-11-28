@@ -65,9 +65,9 @@ cybergeo_module_project_UI <- function(id){
         "All data, materials and source codes are freely available on these repositories: ",
         a("github.com/Geographie-cites/cybergeo20",href="https://github.com/Geographie-cites/cybergeo20"),
 	" and ",
-	a("github.com/Geographie-cites/corpusminer-package","https://github.com/Geographie-cites/corpusminer-package"),
+	a("github.com/Geographie-cites/corpusminer-package",href="https://github.com/Geographie-cites/corpusminer-package"),
         #a("github.com/AnonymousAuthor3/cybergeo20",href="https://github.com/AnonymousAuthor3/cybergeo20"),
-	br()#,
+	br(),
 
         h3("The Team"),
         "Pierre-Olivier Chasset", a("(@chasset)",href="https://github.com/chasset"), br(),
