@@ -152,7 +152,7 @@ cybergeo_module_citation <- function( input, output, session, citation_cybergeod
   ## selection datatable
   output$citationcybergeo <- DT::renderDataTable({
     select(filtered_data, title, authors) %>% 
-      datatable(selection = "single", rownames = FALSE, options = list(pageLength = 5) )  
+      datatable(selection = list(mode = 'single', selected = c(1), target = 'row'), rownames = FALSE, options = list(pageLength = 5) )  
   })
   
   schid <- eventReactive(input$citationcybergeo_rows_selected, {
